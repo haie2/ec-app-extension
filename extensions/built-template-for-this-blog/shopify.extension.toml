@@ -1,0 +1,9 @@
+[[extensions]]
+uid = "52d262e0-1f75-4811-2235-d4c459546caf8dfb52ed"
+type = "admin_link"
+name = "Built template for this blog"
+handle = "built-template-for-this-blog"
+
+  [[extensions.targeting]]
+  url = "app://shop/admin-link?page=blog"
+  target = "admin.blog-details.action.link"

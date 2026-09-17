@@ -1,0 +1,9 @@
+[[extensions]]
+uid = "d3ac847d-c086-ab9b-a653-592877b8bbaaaf6087c7"
+type = "admin_link"
+name = "Build template for this article"
+handle = "build-template-for-this-article"
+
+  [[extensions.targeting]]
+  url = "app://shop/admin-link?page=article"
+  target = "admin.article-details.action.link"

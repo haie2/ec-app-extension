@@ -1,0 +1,32 @@
+
+uid = "285385a2-b008-70f4-31cd-9f953a60428624de4089"
+type = "web_pixel_extension"
+name = "EComposer Pixel"
+
+runtime_context = "strict"
+
+[customer_privacy]
+analytics = true
+marketing = true
+preferences = false
+sale_of_data = "enabled"
+
+
+[settings]
+type = "object"
+
+[settings.fields.accountID]
+name = "Account ID"
+description = "Account ID"
+type = "single_line_text_field"
+validations =  [
+  { name = "min", value = "1" }
+]
+[settings.fields.shopify_domain]
+name = "shopify_domain"
+description = "Shopify domain"
+type = "single_line_text_field"
+[settings.fields.ga4ID]
+name = "GA4 ID"
+description = "GA4 ID"
+type = "single_line_text_field"

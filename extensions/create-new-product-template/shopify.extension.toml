@@ -1,0 +1,9 @@
+[[extensions]]
+uid = "cefd07af-ac14-2d22-0c45-c34c20627e9a103b8331"
+type = "admin_link"
+name = "Create new product template"
+handle = "create-new-product-template"
+
+  [[extensions.targeting]]
+  url = "app://shop/admin-link?page=product"
+  target = "admin.product-index.action.link"

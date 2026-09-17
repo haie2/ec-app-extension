@@ -1,0 +1,9 @@
+[[extensions]]
+uid = "417d7de9-72e7-2fdf-e6cc-c1be8e3b6ecdf5931adf"
+type = "admin_link"
+name = "Create new collection template"
+handle = "create-new-collection-template"
+
+  [[extensions.targeting]]
+  url = "app://shop/admin-link?page=collection"
+  target = "admin.collection-index.action.link"

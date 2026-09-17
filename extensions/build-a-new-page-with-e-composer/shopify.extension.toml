@@ -1,0 +1,9 @@
+[[extensions]]
+uid = "e3b550c5-b8a8-ca9b-f6df-14f0b13d5af95021ea92"
+type = "admin_link"
+name = "Build a new page with EComposer"
+handle = "build-a-new-page-with-ecomposer"
+
+  [[extensions.targeting]]
+  url = "app://shop/admin-link?page=page"
+  target = "admin.page-index.action.link"

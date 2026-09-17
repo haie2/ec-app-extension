@@ -10,7 +10,10 @@
     "generate": "shopify app generate",
     "deploy": "shopify app deploy"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@shopify/shopify_function": "^2.0.1",
+    "@shopify/web-pixels-extension": "^2.18.0"
+  },
   "trustedDependencies": [
     "@shopify/plugin-cloudflare"
   ],
