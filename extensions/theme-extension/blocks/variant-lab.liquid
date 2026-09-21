@@ -1,0 +1,114 @@
+<style>
+  .shopify-block:has(> ecom-variant-lab) {
+    width: 100%;
+  }
+</style>
+
+{%- assign fixed_bundles = shop.metafields.cro_hub.fixed_bundles.value -%}
+{%- assign stored_fixed_bundle = fixed_bundles | find: "bundleHandle", "fixed-bundle-with-2048-variants" -%}
+{%- assign product_bundle = all_products[stored_fixed_bundle.bundleHandle] -%}
+
+{%- assign p = product -%}
+
+<ecom-variant-lab data-block-id="{{ block.id }}"></ecom-variant-lab>
+
+{%- comment -%}
+  Resolved variant of the URL's product. On the current (arbitrary) page it may be
+  null; when this section is re-rendered via `/products/{handle}?option_values=…`
+  it carries that product's resolved variant — read back to update a component card.
+{%- endcomment -%}
+<script type="application/json" id="ecom-vlab-current-{{ block.id }}">
+  {%- if p.selected_or_first_available_variant -%}
+    {
+      "id": {{ p.selected_or_first_available_variant.id | json }},
+      "price": {{ p.selected_or_first_available_variant.price | json }},
+      "compareAtPrice": {{ p.selected_or_first_available_variant.compare_at_price | json }},
+      "available": {{ p.selected_or_first_available_variant.available | json }},
+      "options": {{ p.selected_or_first_available_variant.options | json }},
+      "image": {%- if p.selected_or_first_available_variant.featured_image -%}{{ p.selected_or_first_available_variant.featured_image | image_url: width: 400 | json }}{%- else -%}null{%- endif -%}
+    }
+  {%- else -%}null{%- endif -%}
+</script>
+
+{%- if stored_fixed_bundle and product_bundle and product_bundle != blank -%}
+  <script type="application/json" id="ecom-vlab-bundle-{{ block.id }}">
+    {
+      "handle": {{ product_bundle.handle | json }},
+      "title": {{ stored_fixed_bundle.title | json }},
+      "bundleOptions": [
+        {%- for opt in product_bundle.options_with_values -%}
+          {%- unless forloop.first %},{% endunless -%}
+          {
+            "name": {{ opt.name | json }},
+            "position": {{ opt.position | json }},
+            "values": [
+              {%- for v in opt.values -%}
+                {%- unless forloop.first %},{% endunless -%}
+                { "id": {{ v.id | json }}, "value": {{ v.name | json }}, "available": {{ v.available | json }} }
+              {%- endfor -%}
+            ]
+          }
+        {%- endfor -%}
+      ],
+      "components": [
+        {%- assign comp_first = true -%}
+        {%- for c in stored_fixed_bundle.components -%}
+          {%- assign cp = all_products[c.handle] -%}
+          {%- unless cp and cp != blank -%}{%- continue -%}{%- endunless -%}
+          {%- unless comp_first %},{% endunless -%}
+          {%- assign comp_first = false -%}
+          {
+            "handle": {{ c.handle | json }},
+            "productId": {{ c.productId | json }},
+            "quantity": {{ c.quantity | json }},
+            "url": {{ cp.url | json }},
+            "title": {{ cp.title | json }},
+            "image": {%- if cp.featured_image -%}{{ cp.featured_image | image_url: width: 400 | json }}{%- else -%}null{%- endif -%},
+            "price": {{ cp.price | json }},
+            "compareAtPrice": {{ cp.compare_at_price | json }},
+            "available": {{ cp.available | json }},
+            "variantsCount": {{ cp.variants_count | json }},
+            "options": [
+              {%- for opt in cp.options_with_values -%}
+                {%- assign meta_opt = c.options[forloop.index0] -%}
+                {%- unless forloop.first %},{% endunless -%}
+                {
+                  "name": {{ opt.name | json }},
+                  "position": {{ opt.position | json }},
+                  "parentName": {{ meta_opt.parentName | json }},
+                  "values": [
+                    {%- for v in opt.values -%}
+                      {%- unless forloop.first %},{% endunless -%}
+                      { "id": {{ v.id | json }}, "value": {{ v.name | json }}, "available": {{ v.available | json }}, "selected": {{ v.selected | json }} }
+                    {%- endfor -%}
+                  ]
+                }
+              {%- endfor -%}
+            ],
+            "selectedVariant": {%- if cp.selected_or_first_available_variant -%}
+              {
+                "id": {{ cp.selected_or_first_available_variant.id | json }},
+                "price": {{ cp.selected_or_first_available_variant.price | json }},
+                "compareAtPrice": {{ cp.selected_or_first_available_variant.compare_at_price | json }},
+                "available": {{ cp.selected_or_first_available_variant.available | json }},
+                "options": {{ cp.selected_or_first_available_variant.options | json }},
+                "image": {%- if cp.selected_or_first_available_variant.featured_image -%}{{ cp.selected_or_first_available_variant.featured_image | image_url: width: 400 | json }}{%- else -%}null{%- endif -%}
+              }
+            {%- else -%}null{%- endif -%}
+          }
+        {%- endfor -%}
+      ]
+    }
+  </script>
+{%- endif -%}
+
+<script src="{{ 'variant-lab.js' | asset_url }}" defer></script>
+
+{%- schema -%}
+{
+  "name": "Variant Lab (test)",
+  "target": "section",
+  "javascript": "variant-lab.js",
+  "settings": []
+}
+{%- endschema -%}

@@ -1,0 +1,168 @@
+<style>
+  .shopify-block:has(> cro-fixed-bundle-widget) {
+    width: 100%;
+  }
+  .shopify-section:has(cro-fixed-bundle-widget) {
+    z-index: 9999 !important;
+    position: relative !important;
+  }
+</style>
+
+{%- assign fixed_bundles = shop.metafields.cro_hub.fixed_bundles.value -%}
+{%- assign fixed_widget = shop.metafields.cro_hub.fixed_bundle_widget.value -%}
+{%- assign fixed_store_id = shop.metafields.cro_hub.store_id.value.storeId -%}
+
+<cro-fixed-bundle-widget
+  is-builder-mode="{{ EComBuilderMode | json }}"
+  design-mode="{{ request.design_mode }}"
+  widget-id="{{ block.id }}"
+  section-id="{{ section.id }}"
+  store-id="{{ fixed_store_id }}"
+  shop-currency="{{ shop.currency }}"
+></cro-fixed-bundle-widget>
+
+{%- assign max_fixed_bundles_to_show = fixed_widget.settings.max_bundles_display | default: 3 -%}
+{%- assign bundle_handles = '' | split: ',' -%}
+{%- assign matched_count = 0 -%}
+{%- assign current_fixed_bundle = fixed_bundles | where: "bundleHandle", product.handle | first -%}
+
+{%- capture available_fixed_bundles -%}
+  {%- if current_fixed_bundle -%}
+    {{- current_fixed_bundle | json -}}
+
+    {%- assign matched_count = 1 -%}
+    {%- assign bundle_handle_arr = current_fixed_bundle.bundleHandle | split: '~~~cro~~~' -%}
+    {%- assign bundle_handles = bundle_handles | concat: bundle_handle_arr | uniq -%}
+  {%- else -%}
+    {%- for bundle in fixed_bundles -%}
+      {%- if matched_count == max_fixed_bundles_to_show -%}{%- break -%}{%- endif -%}
+
+      {%- assign is_match = false -%}
+      {%- for component in bundle.components -%}
+        {%- if component.productId == product.id -%}{%- assign is_match = true -%}{%- break -%}{%- endif -%}
+      {%- endfor -%}
+      {%- unless is_match -%}{%- continue -%}{%- endunless -%}
+
+      {%- assign product_bundle = all_products[bundle.bundleHandle] -%}
+
+      {%- if bundle.hideIfUnavailable -%}
+        {%- unless product_bundle.available -%}{%- continue -%}{%- endunless -%}
+      {%- endif -%}
+
+      {%- unless matched_count == 0 -%},{%- endunless -%}
+      {{- bundle | json -}}
+
+      {%- assign matched_count = matched_count | plus: 1 -%}
+      {%- assign bundle_handle_arr = bundle.bundleHandle | split: '~~~cro~~~' -%}
+      {%- assign bundle_handles = bundle_handles | concat: bundle_handle_arr | uniq -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if matched_count > 0 -%}
+  {%- assign fixed_bundles_json = '[' | append: available_fixed_bundles | append: ']' -%}
+{%- endif -%}
+
+{%- capture bundle_products_info -%}
+  {
+    {%- assign bp_sep = '' -%}
+    {%- for bundle_handle in bundle_handles -%}
+      {%- assign bundle_product = all_products[bundle_handle] -%}
+      {%- unless bundle_product.id -%}{%- continue -%}{%- endunless -%}
+      {{ bp_sep }}{{ bundle_handle | json }}: {
+        "id": {{ bundle_product.id | json }},
+        "title": {{ bundle_product.title | json }},
+        "handle": {{ bundle_product.handle | json }},
+        "variantsCount": {{ bundle_product.variants_count | json }},
+        "optionNames": [
+          {%- assign bon_sep = '' -%}
+          {%- for opt in bundle_product.options_with_values -%}
+            {{ bon_sep }}{{ opt.name | json }}{%- assign bon_sep = ',' -%}
+          {%- endfor -%}
+        ],
+        "optionValues": [
+          {%- assign bov_sep = '' -%}
+          {%- for opt in bundle_product.options_with_values -%}
+            {{ bov_sep }}{
+              "name": {{ opt.name | json }},
+              "values": [
+                {%- assign bovv_sep = '' -%}
+                {%- for val in opt.values -%}{{ bovv_sep }}{ "id": {{ val.id | json }}, "value": {{ val.name | json }} }{%- assign bovv_sep = ',' -%}{%- endfor -%}
+              ]
+            }{%- assign bov_sep = ',' -%}
+          {%- endfor -%}
+        ],
+        "variants": [
+          {%- assign bv_sep = '' -%}
+          {%- for v in bundle_product.variants -%}
+            {{ bv_sep }}{
+              "id": {{ v.id | json }},
+              "values": [
+                {%- assign bval_sep = '' -%}
+                {%- for val in v.options -%}{{ bval_sep }}{{ val | json }}{%- assign bval_sep = ',' -%}{%- endfor -%}
+              ],
+              "price": {{ v.price | json }},
+              "compareAtPrice": {{ v.compare_at_price | json }},
+              "available": {{ v.available | json }}
+            }
+            {%- assign bv_sep = ',' -%}
+          {%- endfor -%}
+        ]
+      }
+      {%- assign bp_sep = ',' -%}
+    {%- endfor -%}
+  }
+{%- endcapture -%}
+
+<script type="application/json" data-id="{{ block.id }}">
+  {
+    "isCurrentProductBundle": {% if current_fixed_bundle %}true{% else %}false{% endif %},
+    "currentProductId": {{ product.id | json }},
+    "bundles": {{ fixed_bundles_json | default: '[]' }},
+    "bundleProducts": {{ bundle_products_info }},
+    "fixedWidget": {{ fixed_widget | json }}
+  }
+</script>
+
+{%- comment -%}
+  Resolved variant of the URL's product. Read back after a
+  `/products/{handle}?section_id=…&option_values=…` section render to resolve a
+  high-variant (>250) bundle or component variant without inlining every variant.
+{%- endcomment -%}
+<script type="application/json" data-cro-current="{{ block.id }}">
+  {%- if product.selected_or_first_available_variant -%}
+    {
+      "id": {{ product.selected_or_first_available_variant.id | json }},
+      "price": {{ product.selected_or_first_available_variant.price | json }},
+      "compareAtPrice": {{ product.selected_or_first_available_variant.compare_at_price | json }},
+      "available": {{ product.selected_or_first_available_variant.available | json }},
+      "options": {{ product.selected_or_first_available_variant.options | json }},
+      "imageUrl": {%- if product.selected_or_first_available_variant.image -%}{{ product.selected_or_first_available_variant.image | image_url | json }}{%- else -%}null{%- endif -%}
+    }
+  {%- else -%}null{%- endif -%}
+</script>
+
+
+{%- unless EComBuilderMode -%}
+  <script>
+    if (!window.CRO_FIXED_BUNDLE_WIDGET_LOADED) {
+      window.CRO_FIXED_BUNDLE_WIDGET_LOADED = true;
+      var loadWidget = function () {
+        var script = document.createElement('script');
+        script.src = "{{ 'CroFixedBundleWidget.js' | asset_url }}";
+        script.type = 'module';
+        document.head.appendChild(script);
+      };
+      if (window.CRO_HUB || document.readyState !== 'loading') loadWidget();
+      else document.addEventListener('DOMContentLoaded', loadWidget, { once: true });
+    }
+  </script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "CRO Product Fixed Bundle",
+  "target": "section",
+  "javascript": "cro-helper.js"
+}
+{% endschema %}
