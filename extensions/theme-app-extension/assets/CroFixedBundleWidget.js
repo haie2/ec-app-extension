@@ -1,4 +1,4 @@
-const productCardStyles = "/* Shared product card styles for BaseWidget.renderProductCard/renderVariantSelector/\n   renderProductQuickView/renderPendingQtyStepper — moved out of\n   CroMixMatchBundleWidget.css so any widget extending BaseWidget can reuse the\n   same card/variant-selector/quickview markup+styles. */\n\n.cro-card {\n    display: flex;\n    flex-direction: column;\n    border: var(--cro-card-border-width, 1px) solid var(--cro-card-border, #eaeaea);\n    border-radius: var(--cro-card-radius, 12px);\n    background: var(--cro-card-bg, #fff);\n    box-shadow: var(--cro-card-shadow, none);\n    container-type: inline-size;\n}\n\n.cro-card--horizontal {\n    flex-direction: row;\n}\n\n/* Clip only the media, not the whole card — an ancestor\n   overflow:hidden would also clip the variant popover menu\n   (position:absolute, see .cro-card-variant-popover-menu). */\n.cro-card-media {\n    position: relative;\n    aspect-ratio: var(--cro-card-media-ratio, 1/1);\n    overflow: hidden;\n    border-radius: calc(var(--cro-card-radius, 12px) - 1px) calc(var(--cro-card-radius, 12px) - 1px) 0 0;\n    padding: var(--cro-card-media-padding, 0);\n    box-sizing: border-box;\n}\n\n/* Inset from the card edges — matching `.cro-card-body`'s padding — instead of\n   bleeding into the border the way the vertical layout's full-width media does. */\n.cro-card--horizontal .cro-card-media {\n    width: 96px;\n    height: 96px;\n    aspect-ratio: 1/1;\n    flex-shrink: 0;\n    align-self: flex-start;\n    margin: 12px 0 12px 12px;\n    border-radius: calc(var(--cro-card-radius, 12px) - 4px);\n}\n\n.cro-card-media img {\n    display: block;\n    width: 100%;\n    height: var(--cro-card-media-img-height, 100%);\n    object-fit: var(--cro-card-media-fit, cover);\n}\n\n.cro-card-media-hover {\n    position: absolute;\n    inset: 0;\n    opacity: 0;\n    transition: opacity .2s ease;\n}\n\n.cro-card:hover .cro-card-media-hover {\n    opacity: 1;\n}\n\n.cro-card-flag {\n    position: absolute;\n    top: 8px;\n    left: 8px;\n    padding: 2px 8px;\n    border-radius: 999px;\n    background: var(--cro-card-badge-bg, #111);\n    color: var(--cro-card-badge-text, #fff);\n    font-size: 10px;\n    font-weight: 650;\n}\n\n.cro-card-flag--soldout {\n    border-radius: 4px;\n    background: var(--cro-card-soldout-bg, #6b6257);\n    color: var(--cro-card-soldout-text, #fff);\n}\n\n.cro-card-flag--sale {\n    border-radius: 4px;\n    background: var(--cro-card-sale-bg, #c0392b);\n    color: var(--cro-card-sale-text, #fff);\n}\n\n.cro-card-quickview {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 28px;\n    height: 28px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    border: none;\n    border-radius: 999px;\n    background: #fff;\n    color: #171717;\n    cursor: pointer;\n    box-shadow: 0 1px 4px rgba(0, 0, 0, .2);\n    opacity: 0;\n    transition: opacity .15s ease;\n}\n\n/* Kept in the layout (only faded out) so revealing it on hover doesn't shift\n   anything; `:focus-visible` keeps it reachable by keyboard. */\n.cro-card:hover .cro-card-quickview,\n.cro-card-quickview:focus-visible {\n    opacity: 1;\n}\n\n/* Touch devices have no hover state — the button would never appear. */\n@media (hover: none) {\n    .cro-card-quickview {\n        opacity: 1;\n    }\n}\n\n.cro-card-quickview-overlay {\n    position: fixed;\n    inset: 0;\n    z-index: 20;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background: rgba(0, 0, 0, .5);\n    padding: 52px 16px 16px;\n}\n\n.cro-card-quickview-wrap {\n    position: relative;\n    width: 100%;\n    max-width: 760px;\n    max-height: 100%;\n}\n\n.cro-card-quickview-modal {\n    display: flex;\n    flex-direction: column;\n    width: 100%;\n    max-height: 90vh;\n    overflow: hidden;\n    background: #fff;\n    border-radius: 14px;\n    padding: 20px;\n}\n\n.cro-card-quickview-close {\n    position: absolute;\n    top: -30px;\n    right: -30px;\n    width: 28px;\n    height: 28px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    border: none;\n    border-radius: 999px;\n    background: #fff;\n    color: #171717;\n    cursor: pointer;\n    box-shadow: 0 1px 4px rgba(0, 0, 0, .25);\n}\n\n.cro-card-quickview-layout {\n    display: grid;\n    grid-template-columns: 1fr 1fr;\n    gap: 20px;\n    flex: 1;\n    min-height: 0;\n}\n\n@container (max-width:480px) {\n    .cro-card-quickview-layout {\n        grid-template-columns: 1fr;\n    }\n}\n\n.cro-card-quickview-gallery {\n    min-width: 0;\n    overflow-y: auto;\n}\n\n.cro-card-quickview-media {\n    aspect-ratio: 1/1;\n    border-radius: 10px;\n    overflow: hidden;\n    background: #f4f4f4;\n}\n\n.cro-card-quickview-media img {\n    display: block;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n}\n\n.cro-card-quickview-thumbs {\n    display: flex;\n    gap: 8px;\n    margin-top: 8px;\n    overflow-x: auto;\n    min-width: 0;\n}\n\n.cro-card-quickview-thumb {\n    flex-shrink: 0;\n    width: 48px;\n    height: 48px;\n    padding: 0;\n    border: 2px solid transparent;\n    border-radius: 8px;\n    overflow: hidden;\n    background: #f4f4f4;\n    cursor: pointer;\n}\n\n.cro-card-quickview-thumb.is-active {\n    border-color: #111;\n}\n\n.cro-card-quickview-thumb img {\n    display: block;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n}\n\n.cro-card-quickview-body {\n    display: flex;\n    flex-direction: column;\n    min-width: 0;\n    min-height: 0;\n}\n\n.cro-card-quickview-scroll {\n    flex: 1;\n    min-height: 0;\n    overflow-y: auto;\n}\n\n.cro-card-quickview-title {\n    font-size: 16px;\n    font-weight: 650;\n    margin-bottom: 6px;\n}\n\n.cro-card-quickview-rating {\n    display: flex;\n    align-items: center;\n    gap: 4px;\n    font-size: 13px;\n    color: #444;\n    margin-bottom: 8px;\n}\n\n.cro-card-quickview-rating-star {\n    color: #e5a134;\n}\n\n.cro-card-quickview-rating-count {\n    color: #767676;\n}\n\n.cro-card-quickview-price-row {\n    display: flex;\n    align-items: baseline;\n    gap: 8px;\n    margin-bottom: 10px;\n}\n\n.cro-card-quickview-price {\n    font-size: 15px;\n    font-weight: 600;\n}\n\n.cro-card-quickview-compare {\n    font-size: 13px;\n    color: #9a9a9a;\n    text-decoration: line-through;\n}\n\n.cro-card-quickview-soldout {\n    font-size: 12px;\n    color: #c0392b;\n    margin-bottom: 10px;\n}\n\n.cro-card-quickview-description {\n    display: -webkit-box;\n    -webkit-box-orient: vertical;\n    -webkit-line-clamp: 5;\n    overflow: hidden;\n    font-size: 13px;\n    line-height: 1.5;\n    color: #444;\n    margin-bottom: 4px;\n    white-space: pre-line;\n}\n\n.cro-card-quickview-description.is-expanded {\n    display: block;\n    -webkit-line-clamp: unset;\n    overflow: visible;\n}\n\n.cro-card-quickview-description-toggle {\n    display: block;\n    margin-bottom: 12px;\n    padding: 0;\n    border: none;\n    background: none;\n    color: #111;\n    font-size: 12px;\n    font-weight: 650;\n    text-decoration: underline;\n    cursor: pointer;\n}\n\n.cro-card-quickview-add-row {\n    flex-shrink: 0;\n    display: flex;\n    align-items: stretch;\n    gap: 8px;\n    min-height: 38px;\n    margin-top: 12px;\n    padding-top: 12px;\n    border-top: 1px solid #eee;\n}\n\n.cro-card-quickview-add-row .cro-card-add {\n    min-height: 38px;\n}\n\n.cro-card-body {\n    display: flex;\n    flex: 1;\n    flex-direction: column;\n    gap: 6px;\n    padding: 12px;\n}\n\n.cro-card-vendor {\n    font-size: 11px;\n    font-weight: 600;\n    letter-spacing: .02em;\n    text-transform: uppercase;\n    color: #767676;\n}\n\n/* `--cro-card-title-lines` unset means no clamp — the fallback is high enough\n   that the -webkit-box never truncates a real product title. */\n.cro-card-title {\n    display: -webkit-box;\n    -webkit-box-orient: vertical;\n    -webkit-line-clamp: var(--cro-card-title-lines, 99);\n    line-clamp: var(--cro-card-title-lines, 99);\n    overflow: hidden;\n    font-size: 14px;\n    font-weight: 650;\n}\n\n.cro-card-price {\n    display: flex;\n    align-items: baseline;\n    gap: 6px;\n    font-size: 13px;\n    color: #444;\n}\n\n.cro-card-compare {\n    font-size: 12px;\n    color: var(--cro-card-compare-color, #616161);\n    text-decoration: line-through;\n}\n\n.cro-card-savings {\n    margin-top: 2px;\n    font-size: 12px;\n    font-weight: 650;\n    color: var(--cro-card-savings-color, #c0392b);\n}\n\n.cro-card-rating {\n    font-size: 12px;\n    color: #e0a000;\n}\n\n.cro-card-rating-count {\n    color: #767676;\n}\n\n.cro-card-variant {\n    height: 38px;\n    padding: 0 26px 0 8px;\n    background-color: var(--cro-card-variant-bg, #fff);\n    background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23767676' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\");\n    background-repeat: no-repeat;\n    background-position: right 8px center;\n    background-size: 14px;\n    color: var(--cro-card-variant-color, #241f1a);\n    font-size: 12px;\n    border: var(--cro-card-variant-border-width, 1px) solid var(--cro-card-variant-border-color, #ddd);\n    border-radius: var(--cro-card-variant-radius, 6px);\n    appearance: none;\n    -webkit-appearance: none;\n    cursor: pointer;\n}\n\n.cro-card-variant-options {\n    display: flex;\n    flex-direction: column;\n    gap: 6px;\n}\n\n.cro-card-variant-option-row {\n    display: flex;\n    flex-direction: column;\n    gap: 3px;\n}\n\n.cro-card-variant-option-name {\n    font-size: 10px;\n    font-weight: 650;\n    color: var(--cro-card-option-name-color, #616161);\n    text-transform: uppercase;\n    letter-spacing: .03em;\n}\n\n.cro-card-variant-pills {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 4px;\n}\n\n.cro-card-variant-pill {\n    padding: 4px 9px;\n    border: var(--cro-card-variant-border-width, 1px) solid var(--cro-card-variant-border-color, #ddd);\n    border-radius: var(--cro-card-variant-radius, 6px);\n    font-size: 11px;\n    font-weight: 600;\n    background: var(--cro-card-variant-bg, #f2f2f2);\n    color: var(--cro-card-variant-color, #444);\n    cursor: pointer;\n}\n\n.cro-card-variant-pill.is-active {\n    background: var(--cro-card-variant-active-bg, #111);\n    border-color: var(--cro-card-variant-active-bg, #111);\n    color: var(--cro-card-variant-active-color, #fff);\n}\n\n.cro-card-variant-popover-wrap {\n    position: relative;\n}\n\n.cro-card-variant-popover {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 6px;\n    height: 38px;\n    padding: 0 8px;\n    background: var(--cro-card-variant-bg, #fff);\n    border: var(--cro-card-variant-border-width, 1px) solid var(--cro-card-variant-border-color, #ddd);\n    border-radius: var(--cro-card-variant-radius, 6px);\n    font-size: 14px;\n    color: var(--cro-card-variant-color, #241f1a);\n    cursor: pointer;\n}\n\n.cro-card-variant-popover span:first-child {\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis;\n    min-width: 0;\n}\n\n.cro-card-variant-popover-caret {\n    display: flex;\n    flex-shrink: 0;\n    color: #767676;\n}\n\n.cro-card-variant-popover-menu {\n    position: absolute;\n    top: calc(100% + 4px);\n    left: 0;\n    z-index: 6;\n    min-width: 170px;\n    display: flex;\n    flex-direction: column;\n    gap: 8px;\n    padding: 8px;\n    background: #fff;\n    border: 1px solid #e0ddd7;\n    border-radius: 10px;\n    box-shadow: 0 10px 26px rgba(36, 31, 26, .16);\n}\n\n.cro-card-add-row {\n    margin-top: auto;\n    display: flex;\n    align-items: stretch;\n    gap: 8px;\n    min-height: 38px;\n}\n\n/* Below this card width there isn't room for the qty stepper and the Add\n   button side by side without either getting cramped — stack them instead.\n   `align-items: stretch` above then stretches the qty stepper (no explicit\n   width of its own) to the row's full width; its grid columns switch to `fr`\n   so the −/qty/+ cells spread out evenly across that width instead of\n   leaving blank space after their fixed px sizes. */\n@container (max-width: 210px) {\n    .cro-card-add-row {\n        flex-direction: column;\n    }\n\n    .cro-card-add-row .cro-card-qty {\n        grid-template-columns: 1fr 1fr 1fr;\n    }\n}\n\n.cro-card-add {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    flex: 1 1 auto;\n    height: 38px;\n    padding: 0 8px;\n    border: var(--cro-card-add-border-width, 0) solid var(--cro-card-add-border-color, transparent);\n    border-radius: var(--cro-card-add-radius, 8px);\n    box-shadow: var(--cro-card-add-shadow, none);\n    background: var(--cro-card-add-bg, #111);\n    color: var(--cro-card-add-text, #fff);\n    line-height: 1;\n    cursor: pointer;\n}\n\n.cro-card-add:not(:disabled):hover {\n    background: var(--cro-card-add-hover-bg, var(--cro-card-add-bg, #111));\n    color: var(--cro-card-add-hover-text, var(--cro-card-add-text, #fff));\n}\n\n.cro-card-add:disabled {\n    background: #d8d8d8;\n    color: #888;\n    cursor: not-allowed;\n}\n\n.cro-card-add-row .cro-card-qty {\n    flex-shrink: 0;\n}\n\n.cro-card-qty {\n    display: grid;\n    grid-template-columns: 28px 32px 28px;\n    height: 38px;\n    overflow: hidden;\n    border: var(--cro-card-qty-border-width, 1px) solid var(--cro-card-qty-border-color, #ddd);\n    border-radius: var(--cro-card-qty-radius, 6px);\n}\n\n.cro-card-qty button,\n.cro-card-qty span {\n    display: grid;\n    height: 100%;\n    place-items: center;\n    border: 0;\n    background: var(--cro-card-qty-bg, #fff);\n    color: var(--cro-card-qty-color, inherit);\n}\n\n.cro-card-qty button {\n    cursor: pointer;\n}";
+const productCardStyles = "/* Shared product card styles for BaseWidget.renderProductCard/renderVariantSelector/\n   renderProductQuickView/renderPendingQtyStepper — moved out of\n   CroMixMatchBundleWidget.css so any widget extending BaseWidget can reuse the\n   same card/variant-selector/quickview markup+styles. */\n\n.cro-card {\n    display: flex;\n    flex-direction: column;\n    border: var(--cro-card-border-width, 1px) solid var(--cro-card-border, #eaeaea);\n    border-radius: var(--cro-card-radius, 12px);\n    background: var(--cro-card-bg, #fff);\n    box-shadow: var(--cro-card-shadow, none);\n    container-type: inline-size;\n}\n\n.cro-card--horizontal {\n    flex-direction: row;\n}\n\n/* Clip only the media, not the whole card — an ancestor\n   overflow:hidden would also clip the variant popover menu\n   (position:absolute, see .cro-card-variant-popover-menu). */\n.cro-card-media {\n    position: relative;\n    aspect-ratio: var(--cro-card-media-ratio, 1/1);\n    overflow: hidden;\n    border-radius: calc(var(--cro-card-radius, 12px) - 1px) calc(var(--cro-card-radius, 12px) - 1px) 0 0;\n    padding: var(--cro-card-media-padding, 0);\n    box-sizing: border-box;\n}\n\n/* Inset from the card edges — matching `.cro-card-body`'s padding — instead of\n   bleeding into the border the way the vertical layout's full-width media does. */\n.cro-card--horizontal .cro-card-media {\n    width: 96px;\n    height: 96px;\n    aspect-ratio: 1/1;\n    flex-shrink: 0;\n    align-self: flex-start;\n    margin: 12px 0 12px 12px;\n    border-radius: calc(var(--cro-card-radius, 12px) - 4px);\n}\n\n.cro-card-media img {\n    display: block;\n    width: 100%;\n    height: var(--cro-card-media-img-height, 100%);\n    object-fit: var(--cro-card-media-fit, cover);\n}\n\n.cro-card-media-hover {\n    position: absolute;\n    inset: 0;\n    opacity: 0;\n    transition: opacity .2s ease;\n}\n\n.cro-card:hover .cro-card-media-hover {\n    opacity: 1;\n}\n\n.cro-card-flag {\n    position: absolute;\n    top: 8px;\n    left: 8px;\n    padding: 2px 8px;\n    border-radius: 999px;\n    background: var(--cro-card-badge-bg, #111);\n    color: var(--cro-card-badge-text, #fff);\n    font-size: 10px;\n    font-weight: 650;\n}\n\n.cro-card-flag--soldout {\n    border-radius: 4px;\n    background: var(--cro-card-soldout-bg, #6b6257);\n    color: var(--cro-card-soldout-text, #fff);\n}\n\n.cro-card-flag--sale {\n    border-radius: 4px;\n    background: var(--cro-card-sale-bg, #c0392b);\n    color: var(--cro-card-sale-text, #fff);\n}\n\n.cro-card-quickview {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    width: 28px;\n    height: 28px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    border: none;\n    border-radius: 999px;\n    background: #fff;\n    color: #171717;\n    cursor: pointer;\n    box-shadow: 0 1px 4px rgba(0, 0, 0, .2);\n    opacity: 0;\n    transition: opacity .15s ease;\n}\n\n/* Kept in the layout (only faded out) so revealing it on hover doesn't shift\n   anything; `:focus-visible` keeps it reachable by keyboard. */\n.cro-card:hover .cro-card-quickview,\n.cro-card-quickview:focus-visible {\n    opacity: 1;\n}\n\n/* Touch devices have no hover state — the button would never appear. */\n@media (hover: none) {\n    .cro-card-quickview {\n        opacity: 1;\n    }\n}\n\n.cro-card-quickview-overlay {\n    position: fixed;\n    inset: 0;\n    z-index: 20;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background: rgba(0, 0, 0, .5);\n    padding: 52px 16px 16px;\n}\n\n/* Shown via showPopover() so it lands in the browser's top layer — a theme\n   ancestor with its own z-index (a stacking context) otherwise traps the\n   overlay below the theme's sticky header. These reset the UA popover box. */\n.cro-card-quickview-overlay[popover] {\n    width: auto;\n    height: auto;\n    max-width: none;\n    max-height: none;\n    margin: 0;\n    border: 0;\n    overflow: visible;\n    color: inherit;\n}\n\n.cro-card-quickview-wrap {\n    position: relative;\n    width: 100%;\n    max-width: 760px;\n    max-height: 100%;\n}\n\n.cro-card-quickview-modal {\n    display: flex;\n    flex-direction: column;\n    width: 100%;\n    max-height: 90vh;\n    overflow: hidden;\n    background: #fff;\n    border-radius: 14px;\n    padding: 20px;\n}\n\n.cro-card-quickview-close {\n    position: absolute;\n    top: -30px;\n    right: -30px;\n    width: 28px;\n    height: 28px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    border: none;\n    border-radius: 999px;\n    background: #fff;\n    color: #171717;\n    cursor: pointer;\n    box-shadow: 0 1px 4px rgba(0, 0, 0, .25);\n}\n\n.cro-card-quickview-layout {\n    display: grid;\n    grid-template-columns: 1fr 1fr;\n    gap: 20px;\n    flex: 1;\n    min-height: 0;\n}\n\n@container (max-width:480px) {\n    .cro-card-quickview-layout {\n        grid-template-columns: 1fr;\n    }\n\n    /* Below 480px the wrap spans almost the full viewport width, so the\n       button's -30px offset pushes it past the screen edge — clipped to a\n       sliver that reads as a \"›\" instead of \"✕\". Pull it inside the modal\n       instead of floating above it. */\n    .cro-card-quickview-overlay {\n        padding: 16px;\n    }\n\n    .cro-card-quickview-close {\n        top: 8px;\n        right: 8px;\n        background: rgba(255, 255, 255, .92);\n    }\n}\n\n.cro-card-quickview-gallery {\n    min-width: 0;\n    overflow-y: auto;\n}\n\n.cro-card-quickview-media {\n    aspect-ratio: 1/1;\n    border-radius: 10px;\n    overflow: hidden;\n    background: #f4f4f4;\n}\n\n.cro-card-quickview-media img {\n    display: block;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n}\n\n.cro-card-quickview-thumbs {\n    display: flex;\n    gap: 8px;\n    margin-top: 8px;\n    overflow-x: auto;\n    min-width: 0;\n}\n\n.cro-card-quickview-thumb {\n    flex-shrink: 0;\n    width: 48px;\n    height: 48px;\n    padding: 0;\n    border: 2px solid transparent;\n    border-radius: 8px;\n    overflow: hidden;\n    background: #f4f4f4;\n    cursor: pointer;\n}\n\n.cro-card-quickview-thumb.is-active {\n    border-width: 1px;\n    border-color: #bbb;\n}\n\n.cro-card-quickview-thumb img {\n    display: block;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n}\n\n.cro-card-quickview-body {\n    display: flex;\n    flex-direction: column;\n    min-width: 0;\n    min-height: 0;\n}\n\n.cro-card-quickview-scroll {\n    flex: 1;\n    min-height: 0;\n    overflow-y: auto;\n}\n\n.cro-card-quickview-title {\n    font-size: 16px;\n    font-weight: 650;\n    margin-bottom: 6px;\n}\n\n.cro-card-quickview-rating {\n    display: flex;\n    align-items: center;\n    gap: 4px;\n    font-size: 13px;\n    color: #444;\n    margin-bottom: 8px;\n}\n\n.cro-card-quickview-rating-star {\n    color: #e5a134;\n}\n\n.cro-card-quickview-rating-count {\n    color: #767676;\n}\n\n.cro-card-quickview-price-row {\n    display: flex;\n    align-items: baseline;\n    gap: 8px;\n    margin-bottom: 10px;\n}\n\n.cro-card-quickview-price {\n    font-size: 15px;\n    font-weight: 600;\n}\n\n.cro-card-quickview-compare {\n    font-size: 13px;\n    color: #9a9a9a;\n    text-decoration: line-through;\n}\n\n.cro-card-quickview-soldout {\n    font-size: 12px;\n    color: #c0392b;\n    margin-bottom: 10px;\n}\n\n.cro-card-quickview-description {\n    display: -webkit-box;\n    -webkit-box-orient: vertical;\n    -webkit-line-clamp: 5;\n    overflow: hidden;\n    font-size: 13px;\n    line-height: 1.5;\n    color: #444;\n    margin-bottom: 4px;\n    white-space: pre-line;\n}\n\n.cro-card-quickview-description.is-expanded {\n    display: block;\n    -webkit-line-clamp: unset;\n    overflow: visible;\n}\n\n.cro-card-quickview-description-toggle {\n    display: block;\n    margin-bottom: 12px;\n    padding: 0;\n    border: none;\n    background: none;\n    color: #111;\n    font-size: 12px;\n    font-weight: 650;\n    text-decoration: underline;\n    cursor: pointer;\n}\n\n.cro-card-quickview-add-row {\n    flex-shrink: 0;\n    display: flex;\n    align-items: stretch;\n    gap: 8px;\n    min-height: 38px;\n    margin-top: 12px;\n    padding-top: 12px;\n    border-top: 1px solid #eee;\n}\n\n.cro-card-quickview-add-row .cro-card-add {\n    min-height: 38px;\n}\n\n.cro-card-body {\n    display: flex;\n    flex: 1;\n    flex-direction: column;\n    gap: 8px;\n    padding: 12px;\n}\n\n.cro-card-vendor {\n    font-size: 11px;\n    font-weight: 600;\n    letter-spacing: .02em;\n    text-transform: uppercase;\n    color: #767676;\n}\n\n/* `--cro-card-title-lines` unset means no clamp — the fallback is high enough\n   that the -webkit-box never truncates a real product title. */\n.cro-card-title {\n    display: -webkit-box;\n    -webkit-box-orient: vertical;\n    -webkit-line-clamp: var(--cro-card-title-lines, 99);\n    line-clamp: var(--cro-card-title-lines, 99);\n    overflow: hidden;\n    font-size: 14px;\n    font-weight: 650;\n}\n\n.cro-card-price {\n    display: flex;\n    align-items: baseline;\n    gap: 6px;\n    font-size: 13px;\n    color: #444;\n}\n\n.cro-card-compare {\n    font-size: 12px;\n    color: var(--cro-card-compare-color, #616161);\n    text-decoration: line-through;\n}\n\n.cro-card-savings {\n    margin-top: 2px;\n    font-size: 12px;\n    font-weight: 650;\n    color: var(--cro-card-savings-color, #c0392b);\n}\n\n.cro-card-rating {\n    font-size: 12px;\n    color: #e0a000;\n}\n\n.cro-card-rating-count {\n    color: #767676;\n}\n\n.cro-card-variant {\n    height: 38px;\n    padding: 0 26px 0 8px;\n    background-color: var(--cro-card-variant-bg, #fff);\n    background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23767676' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\");\n    background-repeat: no-repeat;\n    background-position: right 8px center;\n    background-size: 14px;\n    color: var(--cro-card-variant-color, #241f1a);\n    font-size: 12px;\n    border: var(--cro-card-variant-border-width, 1px) solid var(--cro-card-variant-border-color, #ddd);\n    border-radius: var(--cro-card-variant-radius, 6px);\n    appearance: none;\n    -webkit-appearance: none;\n    cursor: pointer;\n}\n\n.cro-card-variant-options {\n    display: flex;\n    flex-direction: column;\n    gap: 6px;\n}\n\n.cro-card-variant-option-row {\n    display: flex;\n    flex-direction: column;\n    gap: 3px;\n}\n\n.cro-card-variant-option-name {\n    font-size: 10px;\n    font-weight: 650;\n    color: var(--cro-card-option-name-color, #616161);\n    text-transform: uppercase;\n    letter-spacing: .03em;\n}\n\n.cro-card-variant-pills {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 4px;\n}\n\n.cro-card-variant-pill {\n    padding: 4px 9px;\n    border: var(--cro-card-variant-border-width, 1px) solid var(--cro-card-variant-border-color, #ddd);\n    border-radius: var(--cro-card-variant-radius, 6px);\n    font-size: 11px;\n    font-weight: 600;\n    background: var(--cro-card-variant-bg, #f2f2f2);\n    color: var(--cro-card-variant-color, #444);\n    cursor: pointer;\n}\n\n.cro-card-variant-pill.is-active {\n    background: var(--cro-card-variant-active-bg, #111);\n    border-color: var(--cro-card-variant-active-bg, #111);\n    color: var(--cro-card-variant-active-color, #fff);\n}\n\n.cro-card-variant-popover-wrap {\n    position: relative;\n}\n\n.cro-card-variant-popover {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 6px;\n    height: 38px;\n    padding: 0 8px;\n    background: var(--cro-card-variant-bg, #fff);\n    border: var(--cro-card-variant-border-width, 1px) solid var(--cro-card-variant-border-color, #ddd);\n    border-radius: var(--cro-card-variant-radius, 6px);\n    font-size: 14px;\n    color: var(--cro-card-variant-color, #241f1a);\n    cursor: pointer;\n}\n\n.cro-card-variant-popover span:first-child {\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis;\n    min-width: 0;\n}\n\n.cro-card-variant-popover-caret {\n    display: flex;\n    flex-shrink: 0;\n    color: #767676;\n}\n\n.cro-card-variant-popover-menu {\n    position: absolute;\n    top: calc(100% + 4px);\n    left: 0;\n    z-index: 6;\n    min-width: 170px;\n    display: flex;\n    flex-direction: column;\n    gap: 8px;\n    padding: 8px;\n    background: #fff;\n    border: 1px solid #e0ddd7;\n    border-radius: 10px;\n    box-shadow: 0 10px 26px rgba(36, 31, 26, .16);\n}\n\n.cro-card-add-row {\n    margin-top: auto;\n    display: flex;\n    align-items: stretch;\n    gap: 8px;\n    min-height: 38px;\n}\n\n/* Below this card width there isn't room for the qty stepper and the Add\n   button side by side without either getting cramped — stack them instead.\n   `align-items: stretch` above then stretches the qty stepper (no explicit\n   width of its own) to the row's full width; its grid columns switch to `fr`\n   so the −/qty/+ cells spread out evenly across that width instead of\n   leaving blank space after their fixed px sizes. */\n@container (max-width: 210px) {\n    .cro-card-add-row {\n        flex-direction: column;\n    }\n\n    .cro-card-add-row .cro-card-qty {\n        grid-template-columns: 1fr 1fr 1fr;\n    }\n}\n\n.cro-card-add {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    flex: 1 1 auto;\n    height: 38px;\n    padding: 0 8px;\n    border: var(--cro-card-add-border-width, 0) solid var(--cro-card-add-border-color, transparent);\n    border-radius: var(--cro-card-add-radius, 8px);\n    box-shadow: var(--cro-card-add-shadow, none);\n    background: var(--cro-card-add-bg, #111);\n    color: var(--cro-card-add-text, #fff);\n    line-height: 1;\n    cursor: pointer;\n}\n\n.cro-card-add:not(:disabled):hover {\n    background: var(--cro-card-add-hover-bg, var(--cro-card-add-bg, #111));\n    color: var(--cro-card-add-hover-text, var(--cro-card-add-text, #fff));\n}\n\n.cro-card-add:disabled {\n    background: #d8d8d8;\n    color: #888;\n    cursor: not-allowed;\n}\n\n.cro-card-add-row .cro-card-qty {\n    flex-shrink: 0;\n}\n\n.cro-card-qty {\n    display: grid;\n    grid-template-columns: 28px 32px 28px;\n    height: 38px;\n    overflow: hidden;\n    border: var(--cro-card-qty-border-width, 1px) solid var(--cro-card-qty-border-color, #ddd);\n    border-radius: var(--cro-card-qty-radius, 6px);\n}\n\n.cro-card-qty button,\n.cro-card-qty span {\n    display: grid;\n    height: 100%;\n    place-items: center;\n    border: 0;\n    background: var(--cro-card-qty-bg, #fff);\n    color: var(--cro-card-qty-color, inherit);\n}\n\n.cro-card-qty button {\n    cursor: pointer;\n}";
 const isBrowser = typeof window !== "undefined" && typeof HTMLElement !== "undefined";
 class BaseWidget extends (isBrowser ? HTMLElement : class {
 }) {
@@ -82,10 +82,11 @@ class BaseWidget extends (isBrowser ? HTMLElement : class {
     if (typeof value === "string") return value;
     if (typeof value === "object" && !Array.isArray(value)) {
       const { current, primary } = this._locales;
-      const first = Object.keys(value)[0];
-      const v = value[current];
-      if (typeof v === "string" && v !== "") return v;
-      return value[primary] ?? value[first] ?? fallback;
+      const currentValue = value[current];
+      if (typeof currentValue === "string" && currentValue !== "") return currentValue;
+      const primaryValue = value[primary];
+      if (typeof primaryValue === "string") return primaryValue;
+      return fallback;
     }
     return fallback;
   }
@@ -374,7 +375,7 @@ class BaseWidget extends (isBrowser ? HTMLElement : class {
   }) {
     const addButtonStyle = (addButtonBackground ? `--cro-card-add-bg:${addButtonBackground};` : "") + (addButtonTextColor ? `--cro-card-add-text:${addButtonTextColor};` : "") + (addButtonHoverBackground ? `--cro-card-add-hover-bg:${addButtonHoverBackground};` : "") + (addButtonHoverText ? `--cro-card-add-hover-text:${addButtonHoverText};` : "");
     return `
-            <div class="cro-card-quickview-overlay" data-action="close-quick-view">
+            <div class="cro-card-quickview-overlay" data-action="close-quick-view" popover="manual">
                 <div class="cro-card-quickview-wrap" style="${this.styleAttr(cardStyle)}">
                     <button type="button" class="cro-card-quickview-close" data-action="close-quick-view" aria-label="Close">✕</button>
                     <div class="cro-card-quickview-modal">
@@ -440,344 +441,7 @@ class BaseWidget extends (isBrowser ? HTMLElement : class {
   render() {
   }
 }
-const fixedBundleStyles = '*,\n*::before,\n*::after {\n    box-sizing: border-box;\n    margin: 0;\n    padding: 0;\n}\n\n:host {\n    display: block;\n    width: 100%;\n}\n\n/* While the variant popover is open, lift the whole widget above unrelated\n   page elements so the popover is never covered by outside stacking contexts. */\n:host([data-editing]) {\n    position: relative;\n    z-index: 2147483000;\n}\n\nbutton,\nselect,\ninput {\n    font: inherit;\n    color: inherit;\n}\n\n.cro-fbw {\n    /* Colors */\n    --cro-fg: #17191c;\n    --cro-muted: #71767c;\n    --cro-bg: #ffffff;\n    --cro-surface: #f6f7f8;\n    --cro-line-2: #cfd2d5;\n    --cro-faint: color-mix(in srgb, var(--cro-fg) 45%, var(--cro-bg));\n    --cro-line: color-mix(in srgb, var(--cro-border-subtle) 45%, transparent);\n    --cro-sel: #17191c;\n    --cro-sel-fg: #ffffff;\n    --cro-cta-bg: #17191c;\n    --cro-cta-fg: #ffffff;\n    --cro-save-color: #BB0606;\n    --cro-border-subtle: #00000033;\n    --cro-header-bg: var(--cro-surface);\n    --cro-header-fg: var(--cro-muted);\n    --cro-badge-bg: var(--cro-sel);\n    --cro-badge-fg: var(--cro-sel-fg);\n\n    --cro-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n    --cro-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;\n    --cro-fs-base: 16px;\n    --cro-fs-xl: calc(var(--cro-fs-base) * 1.25);\n    --cro-fs-lg: calc(var(--cro-fs-base) * 1.125);\n    --cro-fs-md: calc(var(--cro-fs-base) * 0.875);\n    --cro-fs-sm: calc(var(--cro-fs-base) * 0.75);\n    --cro-fs-xs: calc(var(--cro-fs-base) * 0.625);\n\n    --cro-fw-medium: 500;\n    --cro-fw-semibold: 600;\n    --cro-fw-bold: 700;\n\n    --cro-lh-base: 1;\n    --cro-ls-flat: 0;\n\n    --cro-card-title-fs: var(--cro-fs-md);\n    --cro-card-price-fs: var(--cro-fs-md);\n    --cro-cta-fs: var(--cro-fs-lg);\n    --cro-control-fs: var(--cro-fs-sm);\n    --cro-badge-fs: var(--cro-fs-xs);\n    --cro-badge-tracking: .04em;\n    --cro-badge-case: uppercase;\n    --cro-header-align: center;\n\n    /* Shape */\n    --cro-radius: 10px;\n    --cro-radius-sm: 4px;\n    --cro-radius-md: 8px;\n    --cro-radius-full: 50%;\n    --cro-card-radius: 12px;\n    --cro-image-radius: var(--cro-radius-sm);\n    --cro-badge-radius: 5px;\n    --cro-btn-radius: var(--cro-radius-md);\n    --cro-control-radius: 7px;\n    --cro-container-border-w: 2px;\n    --cro-inner-radius: max(0px, calc(var(--cro-radius) - var(--cro-container-border-w)));\n    --cro-card-border-w: 1px;\n    --cro-divider-w: 1px;\n\n    /* Spacing */\n    --cro-space: 8px;\n    --cro-container-margin: 0px;\n    --cro-content-padding: 20px;\n    --cro-header-pad: 16px;\n    --cro-row-pad: 18px;\n    --cro-grid-gap: 12px;\n    --cro-slide-gap: 10px;\n    --cro-card-pad: 5px;\n    --cro-card-body-pad: 10px;\n    --cro-card-body-gap: 12px;\n    --cro-foot-gap: 12px;\n    --cro-foot-pad: 12px 20px;\n    --cro-cta-pad: 19px;\n    --cro-cta-gap: 8px;\n    --cro-cta-min-h: 52px;\n    --cro-badge-pad: 3px 8px;\n    --cro-control-pad: 8px 10px;\n    --cro-sheet-pad: 14px;\n    --cro-change-pad: 10px;\n\n    /* Dimensions */\n    --cro-card-min-w: 200px;\n    --cro-slide-card-w: 262px;\n    --cro-img-ratio: 200 / 180;\n    --cro-img-h-w: 105px;\n    --cro-img-h-h: 124px;\n    --cro-qty-size: 27px;\n    --cro-thumb-size: 31px;\n    --cro-chevron-size: 24px;\n    --cro-chevron-icon: 14px;\n    --cro-arrow-size: 30px;\n    --cro-arrow-offset: -4px;\n    --cro-arrow-shadow: 0 1px 3px rgba(0, 0, 0, .12);\n    --cro-control-h: 40px;\n    --cro-radio-dot: 15px;\n    --cro-option-min-w: 92px;\n    --cro-spinner-size: 15px;\n\n    position: relative;\n    container-type: inline-size;\n    width: 100%;\n    min-width: min(100%, 320px);\n    max-width: 705px;\n    margin: var(--cro-container-margin);\n    background-color: var(--cro-bg);\n    color: var(--cro-fg);\n    border-radius: var(--cro-radius);\n    border: var(--cro-container-border-w) solid var(--cro-border-subtle);\n    font-family: var(--cro-font);\n    line-height: var(--cro-lh-base);\n}\n\n.cro-fbw__header {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    gap: 19px;\n    padding: var(--cro-header-pad);\n    background: var(--cro-header-bg);\n    border-radius: var(--cro-inner-radius) var(--cro-inner-radius) 0 0;\n}\n\n.cro-fbw__header::before,\n.cro-fbw__header::after {\n    content: "";\n    flex: none;\n    width: 37px;\n    height: 1px;\n    background: var(--cro-header-fg);\n}\n\n.cro-fbw__header-text {\n    text-align: center;\n    color: var(--cro-header-fg);\n    font-size: var(--cro-fs-xl);\n    font-weight: var(--cro-fw-semibold);\n    letter-spacing: .04em;\n    text-transform: uppercase;\n}\n\n.cro-fbw__list {\n    display: flex;\n    flex-direction: column;\n}\n\n.cro-fbw__bundle+.cro-fbw__bundle::before {\n    content: "";\n    display: block;\n    border-top: var(--cro-divider-w) solid var(--cro-border-subtle);\n    margin-inline: var(--cro-content-padding);\n}\n\n.cro-fbw__head {\n    width: 100%;\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    background: none;\n    border: 0;\n    text-align: left;\n    cursor: pointer;\n    color: inherit;\n    padding: var(--cro-row-pad) var(--cro-content-padding);\n}\n\n.cro-fbw__head--static {\n    cursor: default;\n}\n\n.cro-fbw__chevron-wrap {\n    width: var(--cro-chevron-size);\n    height: var(--cro-chevron-size);\n    border-radius: var(--cro-radius-full);\n    display: grid;\n    place-items: center;\n    flex: none;\n    text-decoration: none;\n    transition: background .15s ease, border-color .15s ease;\n}\n\n.cro-fbw__bundle--open .cro-fbw__chevron-wrap {\n    background: var(--cro-cta-bg);\n    border: 1.5px solid var(--cro-cta-bg);\n}\n\n.cro-fbw__chevron {\n    width: var(--cro-chevron-icon);\n    height: var(--cro-chevron-icon);\n    flex: none;\n    color: var(--cro-muted);\n    transform: rotate(-90deg);\n    transition: transform .2s ease;\n}\n\n.cro-fbw__bundle--open .cro-fbw__chevron {\n    color: var(--cro-cta-fg);\n    transform: rotate(0deg);\n}\n\n.cro-fbw__head-copy {\n    flex: 1;\n    min-width: 0;\n    display: flex;\n    flex-direction: column;\n    gap: 5px;\n}\n\n.cro-fbw__bundle-title-wrapper {\n    display: flex;\n    align-items: center;\n    gap: 9px;\n    flex-wrap: wrap;\n}\n\n.cro-fbw__bundle-title {\n    font-size: var(--cro-fs-lg);\n    font-weight: var(--cro-fw-medium);\n    letter-spacing: -.02em;\n    overflow-wrap: anywhere;\n}\n\n.cro-fbw__flag {\n    font-size: var(--cro-badge-fs);\n    font-weight: var(--cro-fw-bold);\n    text-transform: var(--cro-badge-case);\n    letter-spacing: var(--cro-badge-tracking);\n    color: var(--cro-badge-fg);\n    background: var(--cro-badge-bg);\n    border-radius: var(--cro-badge-radius);\n    padding: var(--cro-badge-pad);\n}\n\n.cro-fbw__thumbs {\n    display: flex;\n    align-items: center;\n}\n\n.cro-fbw__head:not(.cro-fbw__head--static) .cro-fbw__thumbs {\n    padding-left: 33px;\n}\n\n.cro-fbw__thumb {\n    width: var(--cro-thumb-size);\n    height: var(--cro-thumb-size);\n    border-radius: var(--cro-radius-full);\n    overflow: hidden;\n    border: 1px solid var(--cro-border-subtle);\n    margin-right: calc(var(--cro-thumb-size) * -.5);\n}\n\n.cro-fbw__thumb img {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    display: block;\n}\n\n.cro-fbw__thumb-more {\n    font-size: var(--cro-fs-md);\n    color: var(--cro-fg);\n    font-weight: var(--cro-fw-medium);\n    margin-left: 20px;\n}\n\n.cro-fbw__price {\n    text-align: right;\n    flex: none;\n    display: flex;\n    flex-direction: column;\n    align-items: flex-end;\n    gap: 11px;\n}\n\n.cro-fbw__price-now {\n    font-size: var(--cro-fs-lg);\n    font-weight: var(--cro-fw-medium);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n.cro-fbw__price-was {\n    font-size: var(--cro-fs-md);\n    color: var(--cro-muted);\n    text-decoration: line-through;\n    font-weight: var(--cro-fw-medium);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n.cro-fbw__save {\n    font-size: var(--cro-fs-sm);\n    color: var(--cro-save-color);\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__bundle--unavailable .cro-fbw__bundle-title,\n.cro-fbw__bundle--unavailable .cro-fbw__price {\n    opacity: .5;\n}\n\n.cro-fbw__panel[hidden] {\n    display: none;\n}\n\n.cro-fbw__panel {\n    padding: 0 var(--cro-content-padding);\n}\n\n.cro-fbw__bundle--products .cro-fbw__panel {\n    padding-bottom: var(--cro-content-padding);\n}\n\n.cro-fbw__cards--grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(var(--cro-card-min-w), 1fr));\n    gap: var(--cro-grid-gap);\n}\n\n.cro-fbw__cards--grid:has(.cro-fbw__card--h) {\n    grid-template-columns: repeat(auto-fill, minmax(calc(var(--cro-card-min-w) + 80px), 1fr));\n}\n\n.cro-fbw__slider {\n    position: relative;\n}\n\n.cro-fbw__cards--slide {\n    display: flex;\n    gap: var(--cro-slide-gap);\n    overflow-x: auto;\n    scroll-snap-type: x mandatory;\n    padding-bottom: 2px;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n}\n\n.cro-fbw__cards--slide::-webkit-scrollbar {\n    display: none;\n}\n\n.cro-fbw__cards--slide .cro-fbw__card {\n    flex: 0 0 auto;\n    scroll-snap-align: start;\n    width: var(--cro-slide-card-w);\n}\n\n.cro-fbw__arrow {\n    position: absolute;\n    top: calc(50% - var(--cro-arrow-size) * 0.8);\n    width: var(--cro-arrow-size);\n    height: var(--cro-arrow-size);\n    border-radius: var(--cro-radius-full);\n    border: 0;\n    background: var(--cro-cta-bg);\n    cursor: pointer;\n    display: grid;\n    place-items: center;\n    color: var(--cro-cta-fg);\n    font-size: calc(var(--cro-arrow-size) * .6);\n    line-height: 1;\n    z-index: 4;\n    box-shadow: var(--cro-arrow-shadow);\n}\n\n.cro-fbw__arrow:hover {\n    opacity: .92;\n}\n\n.cro-fbw__arrow--prev {\n    left: var(--cro-arrow-offset);\n}\n\n.cro-fbw__arrow--next {\n    right: var(--cro-arrow-offset);\n}\n\n.cro-fbw__arrow[disabled] {\n    opacity: 0;\n    pointer-events: none;\n}\n\n.cro-fbw__card {\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-card-radius);\n    padding: var(--cro-card-pad);\n    display: flex;\n    overflow: hidden;\n}\n\n.cro-fbw__card--v {\n    flex-direction: column;\n}\n\n.cro-fbw__card--h {\n    flex-direction: row;\n    gap: var(--cro-card-body-gap);\n    align-items: stretch;\n}\n\n.cro-fbw__card--unavailable {\n    opacity: .7;\n}\n\n.cro-fbw__media {\n    position: relative;\n    border-radius: var(--cro-image-radius);\n    overflow: hidden;\n    background: var(--cro-surface);\n    border: 1px solid var(--cro-line);\n}\n\n.cro-fbw__card--v .cro-fbw__media {\n    width: 100%;\n    aspect-ratio: var(--cro-img-ratio);\n}\n\n.cro-fbw__card--h .cro-fbw__media {\n    flex: none;\n    width: var(--cro-img-h-w);\n    height: var(--cro-img-h-h);\n}\n\n.cro-fbw__img {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    display: block;\n}\n\n.cro-fbw__img--ph {\n    background: var(--cro-surface);\n}\n\n.cro-fbw__qty {\n    position: absolute;\n    top: 8px;\n    right: 8px;\n    min-width: var(--cro-qty-size);\n    height: var(--cro-qty-size);\n    padding: 9px;\n    border-radius: var(--cro-radius-sm);\n    background: var(--cro-fg);\n    color: var(--cro-bg);\n    font-size: var(--cro-fs-sm);\n    font-weight: var(--cro-fw-semibold);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.cro-fbw__card-body {\n    min-width: 0;\n    display: flex;\n    flex-direction: column;\n    gap: var(--cro-card-body-gap);\n    padding: var(--cro-card-body-pad);\n}\n\n.cro-fbw__card--h .cro-fbw__card-body {\n    flex: 1;\n    padding: 0;\n    gap: calc(var(--cro-card-body-gap) * .7);\n    justify-content: center;\n}\n\n.cro-fbw__card--h .cro-fbw__name {\n    -webkit-line-clamp: 1;\n}\n\n.cro-fbw__card--h .cro-fbw__variant {\n    -webkit-line-clamp: 1;\n}\n\n.cro-fbw__name {\n    font-size: var(--cro-card-title-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-base);\n    display: -webkit-box;\n    -webkit-line-clamp: 2;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    color: var(--cro-fg);\n}\n\na.cro-fbw__name {\n    text-decoration: none;\n}\n\na.cro-fbw__name:hover {\n    text-decoration: underline;\n}\n\n.cro-fbw__card-price {\n    font-size: var(--cro-card-price-fs);\n    line-height: var(--cro-lh-base);\n}\n\n.cro-fbw__card-was {\n    color: var(--cro-muted);\n    text-decoration: line-through;\n    margin-right: 6px;\n    font-size: var(--cro-card-price-fs);\n}\n\n.cro-fbw__card-now {\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__variant {\n    font-size: var(--cro-fs-sm);\n    color: var(--cro-muted);\n    line-height: var(--cro-lh-base);\n    display: -webkit-box;\n    -webkit-line-clamp: 2;\n    -webkit-box-orient: vertical;\n    font-weight: 400;\n    overflow: hidden;\n}\n\n.cro-fbw__change {\n    width: 100%;\n    background: var(--cro-bg);\n    border: 1px solid var(--cro-border-subtle);\n    border-radius: var(--cro-control-radius);\n    padding: var(--cro-change-pad);\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    gap: 6px;\n\n    font-size: var(--cro-fs-md);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-base);\n}\n\n.cro-fbw__card--v .cro-fbw__change {\n    margin-top: auto;\n}\n\n.cro-fbw__card--h .cro-fbw__qty {\n    top: 6px;\n    right: 6px;\n    min-width: calc(var(--cro-qty-size) * .8);\n    height: calc(var(--cro-qty-size) * .8);\n    padding: 0 6px;\n    font-size: var(--cro-fs-xs);\n}\n\n.cro-fbw__card--h .cro-fbw__change {\n    padding: calc(var(--cro-change-pad) * .8) calc(var(--cro-change-pad) * 1.4);\n}\n\n.cro-fbw__change:hover {\n    border-color: var(--cro-faint);\n}\n\n.cro-fbw__ico {\n    width: 14px;\n    height: 14px;\n}\n\n.cro-fbw__oos {\n    margin-top: 8px;\n    font-family: var(--cro-mono);\n    font-size: var(--cro-fs-sm);\n    font-weight: var(--cro-fw-bold);\n    color: var(--cro-muted);\n}\n\n/* CTA */\n.cro-fbw__foot {\n    display: flex;\n    flex-direction: column;\n    gap: var(--cro-foot-gap);\n    padding-block: var(--cro-foot-pad);\n}\n\n.cro-fbw__cta {\n    width: 100%;\n    min-height: var(--cro-cta-min-h);\n    border: 0;\n    border-radius: var(--cro-btn-radius);\n    padding: var(--cro-cta-pad);\n\n    background: var(--cro-cta-bg);\n    color: var(--cro-cta-fg);\n    font-size: var(--cro-cta-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-base);\n    letter-spacing: var(--cro-ls-flat);\n\n    cursor: pointer;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    gap: var(--cro-cta-gap);\n}\n\n.cro-fbw__cta:hover {\n    opacity: .92;\n}\n\n.cro-fbw__cta[disabled] {\n    cursor: not-allowed;\n}\n\n.cro-fbw__cta--loading {\n    opacity: .8;\n}\n\n.cro-fbw__cta--success {\n    background: var(--cro-bg);\n    color: var(--cro-fg);\n    border: 1.5px solid var(--cro-sel);\n}\n\n.cro-fbw__spinner {\n    width: var(--cro-spinner-size);\n    height: var(--cro-spinner-size);\n    border: 2px solid color-mix(in srgb, var(--cro-cta-fg) 35%, transparent);\n    border-top-color: var(--cro-cta-fg);\n    border-radius: var(--cro-radius-full);\n    animation: cro-fbw-spin .7s linear infinite;\n}\n\n@keyframes cro-fbw-spin {\n    to {\n        transform: rotate(360deg);\n    }\n}\n\n.cro-fbw__note {\n    font-size: var(--cro-fs-md);\n    text-align: center;\n    color: var(--cro-muted);\n    line-height: var(--cro-lh-base);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n.cro-fbw__note-save {\n    color: var(--cro-save-color);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-base);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n/* Editor: popover (desktop) / bottom sheet (mobile) */\n.cro-fbw__editor {\n    position: absolute;\n    inset: 0;\n    z-index: 30;\n}\n\n.cro-fbw__editor[hidden] {\n    display: none;\n}\n\n/* The popover needs no dim — just an invisible catcher to close on outside click. */\n.cro-fbw__backdrop {\n    position: absolute;\n    inset: 0;\n    background: transparent;\n    border-radius: var(--cro-inner-radius);\n}\n\n.cro-fbw__sheet {\n    position: absolute;\n    left: var(--cro-pop-left, 16px);\n    top: var(--cro-pop-top, 60px);\n    width: var(--cro-pop-w, 288px);\n    max-height: 74%;\n    overflow: auto;\n    background: var(--cro-bg);\n    border: 1px solid var(--cro-line-2);\n    border-radius: var(--cro-radius);\n    padding: var(--cro-sheet-pad);\n    box-shadow: 0 12px 34px rgba(0, 0, 0, .22);\n}\n\n.cro-fbw__sheet-head {\n    display: flex;\n    align-items: flex-start;\n    justify-content: space-between;\n    gap: 10px;\n    margin-bottom: 4px;\n}\n\n.cro-fbw__sheet-title {\n    margin: 0;\n    font-size: var(--cro-fs-md);\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__sheet-close {\n    border: 0;\n    background: var(--cro-surface);\n    width: 30px;\n    height: 30px;\n    border-radius: var(--cro-radius-md);\n    cursor: pointer;\n    font-size: 16px;\n    color: var(--cro-fg);\n    flex: none;\n}\n\n.cro-fbw__sheet-done {\n    width: 100%;\n    margin-top: 12px;\n    border: 0;\n    border-radius: var(--cro-btn-radius);\n    background: var(--cro-cta-bg);\n    color: var(--cro-cta-fg);\n    font-weight: var(--cro-fw-bold);\n    padding: calc(var(--cro-cta-pad) * .6);\n    min-height: 44px;\n    cursor: pointer;\n}\n\n.cro-fbw__opt {\n    margin-top: 10px;\n    border: 0;\n    padding: 0;\n}\n\n.cro-fbw__opt-label {\n    font-family: var(--cro-mono);\n    font-size: var(--cro-fs-sm);\n    font-weight: var(--cro-fw-bold);\n    color: var(--cro-muted);\n    text-transform: uppercase;\n    letter-spacing: .04em;\n    margin-bottom: 6px;\n    display: block;\n}\n\n.cro-fbw__radios {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(var(--cro-option-min-w), 1fr));\n    gap: 6px;\n}\n\n.cro-fbw__radio {\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    border: 1px solid var(--cro-line-2);\n    border-radius: var(--cro-control-radius);\n    padding: var(--cro-control-pad);\n    min-height: var(--cro-control-h);\n    cursor: pointer;\n    background: var(--cro-bg);\n    font-size: var(--cro-control-fs);\n}\n\n.cro-fbw__radio:hover {\n    border-color: var(--cro-faint);\n}\n\n.cro-fbw__radio-input {\n    position: absolute;\n    opacity: 0;\n    width: 0;\n    height: 0;\n}\n\n.cro-fbw__radio-dot {\n    width: var(--cro-radio-dot);\n    height: var(--cro-radio-dot);\n    border-radius: var(--cro-radius-full);\n    border: 1.5px solid var(--cro-line-2);\n    flex: none;\n    display: grid;\n    place-items: center;\n}\n\n.cro-fbw__radio:has(.cro-fbw__radio-input:checked) {\n    border-color: var(--cro-sel);\n    background: var(--cro-surface);\n}\n\n.cro-fbw__radio:has(.cro-fbw__radio-input:checked) .cro-fbw__radio-dot {\n    border-color: var(--cro-sel);\n}\n\n.cro-fbw__radio:has(.cro-fbw__radio-input:checked) .cro-fbw__radio-dot::after {\n    content: "";\n    width: calc(var(--cro-radio-dot) * .47);\n    height: calc(var(--cro-radio-dot) * .47);\n    border-radius: var(--cro-radius-full);\n    background: var(--cro-sel);\n}\n\n.cro-fbw__radio:has(.cro-fbw__radio-input:checked) .cro-fbw__radio-text {\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__radio--sold {\n    opacity: .4;\n    cursor: not-allowed;\n}\n\n.cro-fbw__radio--sold .cro-fbw__radio-text {\n    text-decoration: line-through;\n}\n\n.cro-fbw__radio-sub {\n    display: block;\n    font-family: var(--cro-mono);\n    font-size: var(--cro-fs-xs);\n    color: var(--cro-muted);\n    text-decoration: none;\n}\n\n.cro-fbw__select {\n    position: relative;\n}\n\n.cro-fbw__select select {\n    width: 100%;\n    min-height: calc(var(--cro-control-h) + 2px);\n    padding: 10px 32px 10px 11px;\n    border: 1px solid var(--cro-line-2);\n    border-radius: var(--cro-control-radius);\n    background: var(--cro-bg);\n    color: var(--cro-fg);\n    cursor: pointer;\n    appearance: none;\n    -webkit-appearance: none;\n    font-size: var(--cro-control-fs);\n}\n\n.cro-fbw__select::after {\n    content: "";\n    position: absolute;\n    right: 12px;\n    top: 50%;\n    width: 7px;\n    height: 7px;\n    border-right: 2px solid var(--cro-muted);\n    border-bottom: 2px solid var(--cro-muted);\n    transform: translateY(-70%) rotate(45deg);\n    pointer-events: none;\n}\n\n.cro-fbw__noopt {\n    font-family: var(--cro-mono);\n    font-size: var(--cro-fs-sm);\n    color: var(--cro-faint);\n}\n\n.cro-fbw__head:focus-visible,\n.cro-fbw__change:focus-visible,\n.cro-fbw__cta:focus-visible,\n.cro-fbw__arrow:focus-visible,\n.cro-fbw__radio:has(:focus-visible),\n.cro-fbw__select select:focus-visible,\n.cro-fbw__sheet-close:focus-visible,\n.cro-fbw__sheet-done:focus-visible {\n    outline: 2px solid var(--cro-fg);\n    outline-offset: 2px;\n}\n\n@container (max-width:430px) {\n    .cro-fbw__radios {\n        grid-template-columns: 1fr 1fr;\n    }\n}\n\n@media (prefers-reduced-motion:reduce) {\n\n    *,\n    *::before,\n    *::after {\n        transition: none !important;\n        animation: none !important;\n        scroll-behavior: auto !important;\n    }\n}';
-const DENSITY = Object.freeze({
-  compact: {
-    "--cro-space": "6px",
-    "--cro-content-padding": "14px",
-    "--cro-row-pad": "12px",
-    "--cro-header-pad": "12px",
-    "--cro-grid-gap": "8px",
-    "--cro-slide-gap": "8px",
-    "--cro-foot-gap": "8px",
-    "--cro-foot-pad": "8px 14px"
-  },
-  comfortable: {
-    "--cro-space": "8px",
-    "--cro-content-padding": "20px",
-    "--cro-row-pad": "18px",
-    "--cro-header-pad": "16px",
-    "--cro-grid-gap": "12px",
-    "--cro-slide-gap": "10px",
-    "--cro-foot-gap": "12px",
-    "--cro-foot-pad": "12px 20px"
-  },
-  spacious: {
-    "--cro-space": "11px",
-    "--cro-content-padding": "26px",
-    "--cro-row-pad": "24px",
-    "--cro-header-pad": "22px",
-    "--cro-grid-gap": "16px",
-    "--cro-slide-gap": "16px",
-    "--cro-foot-gap": "16px",
-    "--cro-foot-pad": "16px 26px"
-  }
-});
-const CORNER_STYLE = Object.freeze({
-  square: {
-    "--cro-radius": "0px",
-    "--cro-radius-sm": "0px",
-    "--cro-radius-md": "0px",
-    "--cro-card-radius": "0px",
-    "--cro-image-radius": "0px",
-    "--cro-badge-radius": "2px",
-    "--cro-btn-radius": "0px",
-    "--cro-control-radius": "2px"
-  },
-  soft: {
-    "--cro-radius": "6px",
-    "--cro-radius-sm": "3px",
-    "--cro-radius-md": "5px",
-    "--cro-card-radius": "8px",
-    "--cro-image-radius": "4px",
-    "--cro-badge-radius": "4px",
-    "--cro-btn-radius": "6px",
-    "--cro-control-radius": "6px"
-  },
-  rounded: {
-    "--cro-radius": "10px",
-    "--cro-radius-sm": "4px",
-    "--cro-radius-md": "8px",
-    "--cro-card-radius": "12px",
-    "--cro-image-radius": "4px",
-    "--cro-badge-radius": "5px",
-    "--cro-btn-radius": "8px",
-    "--cro-control-radius": "7px"
-  },
-  pill: {
-    "--cro-radius": "16px",
-    "--cro-radius-sm": "8px",
-    "--cro-radius-md": "12px",
-    "--cro-card-radius": "18px",
-    "--cro-image-radius": "10px",
-    "--cro-badge-radius": "999px",
-    "--cro-btn-radius": "999px",
-    "--cro-control-radius": "999px"
-  }
-});
-const CARD_SIZE = Object.freeze({
-  small: {
-    "--cro-card-pad": "4px",
-    "--cro-card-body-pad": "8px",
-    "--cro-card-body-gap": "8px",
-    "--cro-card-min-w": "170px",
-    "--cro-slide-card-w": "220px",
-    "--cro-img-h-w": "84px",
-    "--cro-img-h-h": "100px",
-    "--cro-card-title-fs": "calc(var(--cro-fs-base) * 0.8125)",
-    "--cro-card-price-fs": "calc(var(--cro-fs-base) * 0.8125)",
-    "--cro-qty-size": "22px",
-    "--cro-change-pad": "8px"
-  },
-  medium: {
-    "--cro-card-pad": "5px",
-    "--cro-card-body-pad": "10px",
-    "--cro-card-body-gap": "12px",
-    "--cro-card-min-w": "200px",
-    "--cro-slide-card-w": "262px",
-    "--cro-img-h-w": "105px",
-    "--cro-img-h-h": "124px",
-    "--cro-card-title-fs": "var(--cro-fs-md)",
-    "--cro-card-price-fs": "var(--cro-fs-md)",
-    "--cro-qty-size": "27px",
-    "--cro-change-pad": "10px"
-  },
-  large: {
-    "--cro-card-pad": "8px",
-    "--cro-card-body-pad": "14px",
-    "--cro-card-body-gap": "16px",
-    "--cro-card-min-w": "240px",
-    "--cro-slide-card-w": "300px",
-    "--cro-img-h-w": "128px",
-    "--cro-img-h-h": "152px",
-    "--cro-card-title-fs": "var(--cro-fs-base)",
-    "--cro-card-price-fs": "var(--cro-fs-base)",
-    "--cro-qty-size": "32px",
-    "--cro-change-pad": "12px"
-  }
-});
-const BUTTON_SIZE = Object.freeze({
-  small: {
-    "--cro-cta-pad": "13px",
-    "--cro-cta-fs": "calc(var(--cro-fs-base) * 0.9375)",
-    "--cro-cta-gap": "6px",
-    "--cro-cta-min-h": "44px",
-    "--cro-spinner-size": "13px",
-    "--cro-chevron-size": "20px",
-    "--cro-chevron-icon": "12px",
-    "--cro-arrow-size": "26px",
-    "--cro-arrow-offset": "-2px"
-  },
-  medium: {
-    "--cro-cta-pad": "19px",
-    "--cro-cta-fs": "var(--cro-fs-lg)",
-    "--cro-cta-gap": "8px",
-    "--cro-cta-min-h": "52px",
-    "--cro-spinner-size": "15px",
-    "--cro-chevron-size": "24px",
-    "--cro-chevron-icon": "14px",
-    "--cro-arrow-size": "30px",
-    "--cro-arrow-offset": "-4px"
-  },
-  large: {
-    "--cro-cta-pad": "24px",
-    "--cro-cta-fs": "var(--cro-fs-xl)",
-    "--cro-cta-gap": "10px",
-    "--cro-cta-min-h": "60px",
-    "--cro-spinner-size": "17px",
-    "--cro-chevron-size": "28px",
-    "--cro-chevron-icon": "16px",
-    "--cro-arrow-size": "36px",
-    "--cro-arrow-offset": "-6px"
-  }
-});
-const BADGE_SIZE = Object.freeze({
-  small: {
-    "--cro-badge-fs": "calc(var(--cro-fs-base) * 0.5625)",
-    "--cro-badge-pad": "2px 6px",
-    "--cro-badge-radius": "4px",
-    "--cro-badge-tracking": "0.04em"
-  },
-  medium: {
-    "--cro-badge-fs": "var(--cro-fs-xs)",
-    "--cro-badge-pad": "3px 8px",
-    "--cro-badge-radius": "5px",
-    "--cro-badge-tracking": "0.04em"
-  },
-  large: {
-    "--cro-badge-fs": "var(--cro-fs-sm)",
-    "--cro-badge-pad": "4px 10px",
-    "--cro-badge-radius": "6px",
-    "--cro-badge-tracking": "0.03em"
-  }
-});
-const PICKER_CONTROL_SIZE = Object.freeze({
-  small: {
-    "--cro-control-h": "34px",
-    "--cro-control-pad": "6px 8px",
-    "--cro-radio-dot": "13px",
-    "--cro-control-fs": "var(--cro-fs-sm)",
-    "--cro-option-min-w": "80px",
-    "--cro-sheet-pad": "12px"
-  },
-  medium: {
-    "--cro-control-h": "40px",
-    "--cro-control-pad": "8px 10px",
-    "--cro-radio-dot": "15px",
-    "--cro-control-fs": "var(--cro-fs-sm)",
-    "--cro-option-min-w": "92px",
-    "--cro-sheet-pad": "14px"
-  },
-  large: {
-    "--cro-control-h": "46px",
-    "--cro-control-pad": "10px 12px",
-    "--cro-radio-dot": "17px",
-    "--cro-control-fs": "calc(var(--cro-fs-base) * 0.8125)",
-    "--cro-option-min-w": "104px",
-    "--cro-sheet-pad": "16px"
-  }
-});
-const IMAGE_RATIO = Object.freeze({
-  square: "1 / 1",
-  portrait: "3 / 4",
-  landscape: "4 / 3"
-});
-const FONT_FAMILIES = Object.freeze({
-  system: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-  sans: 'Inter, "Helvetica Neue", Helvetica, Arial, sans-serif',
-  serif: 'Georgia, "Times New Roman", Times, serif',
-  rounded: '"SF Pro Rounded", Nunito, "Segoe UI", system-ui, sans-serif'
-});
-const TEXT_SIZE = Object.freeze({
-  small: "15px",
-  medium: "16px",
-  large: "18px"
-});
-const CONTAINER_BORDER = Object.freeze({
-  none: "0px",
-  thin: "1px",
-  default: "2px",
-  thick: "3px"
-});
-const HEADER_ALIGN = Object.freeze({ start: "left", center: "center", end: "right" });
-const DEFAULT_PRESETS = Object.freeze({
-  density: "comfortable",
-  corner_style: "rounded",
-  card_size: "medium",
-  button_size: "medium",
-  badge_size: "medium",
-  picker_control_size: "medium",
-  text_size: "medium",
-  container_border: "default"
-});
-const COLOR_TOKEN_DEFAULTS = Object.freeze({
-  "fb-bg": "#ffffff",
-  "fb-surface": "#f6f7f8",
-  "fb-text": "#17191c",
-  "fb-muted": "#71767c",
-  "fb-border": "#00000033",
-  "fb-accent": "#17191c",
-  "fb-accent-on": "#ffffff",
-  "fb-save": "#BB0606"
-});
-const isFilled = (value) => typeof value === "string" && value.trim() !== "";
-const preset = (table, value, fallbackKey) => table[String(value ?? "").trim()] || table[fallbackKey];
-const length = (value) => {
-  if (typeof value === "number") return Number.isFinite(value) ? `${value}px` : null;
-  if (isFilled(value)) {
-    const s = value.trim();
-    return /^-?\d*\.?\d+$/.test(s) ? `${s}px` : s;
-  }
-  if (value && typeof value === "object") {
-    const sides = ["top", "right", "bottom", "left"].map((side) => length(value[side]));
-    if (sides.every((side) => side === null)) return null;
-    return sides.map((side) => side || "0px").join(" ");
-  }
-  return null;
-};
-const backgroundColor = (value) => {
-  if (isFilled(value)) return value.trim();
-  const classic = value?.classic?.["background-color"];
-  return isFilled(classic) ? classic.trim() : null;
-};
-const colorVars = (tokens) => {
-  const byId = { ...COLOR_TOKEN_DEFAULTS };
-  for (const token of Array.isArray(tokens) ? tokens : []) {
-    if (token && isFilled(token.color) && token.id in byId) byId[token.id] = token.color.trim();
-  }
-  return {
-    "--cro-bg": byId["fb-bg"],
-    "--cro-surface": byId["fb-surface"],
-    "--cro-fg": byId["fb-text"],
-    "--cro-muted": byId["fb-muted"],
-    "--cro-line-2": byId["fb-border"],
-    "--cro-border-subtle": byId["fb-border"],
-    "--cro-sel": byId["fb-accent"],
-    "--cro-sel-fg": byId["fb-accent-on"],
-    "--cro-cta-bg": byId["fb-accent"],
-    "--cro-cta-fg": byId["fb-accent-on"],
-    "--cro-badge-bg": byId["fb-accent"],
-    "--cro-badge-fg": byId["fb-accent-on"],
-    "--cro-header-bg": byId["fb-surface"],
-    "--cro-save-color": byId["fb-save"]
-  };
-};
-const resolveFixedBundleTokens = (styles = {}) => {
-  const vars = colorVars(styles.color_tokens);
-  const assign = (source) => {
-    for (const [name, value] of Object.entries(source)) {
-      if (value !== null && value !== void 0 && value !== "") vars[name] = value;
-    }
-  };
-  assign(preset(DENSITY, styles.density, DEFAULT_PRESETS.density));
-  assign(preset(CORNER_STYLE, styles.corner_style, DEFAULT_PRESETS.corner_style));
-  assign(preset(CARD_SIZE, styles.card_size, DEFAULT_PRESETS.card_size));
-  assign(preset(BUTTON_SIZE, styles.button_size, DEFAULT_PRESETS.button_size));
-  assign(preset(BADGE_SIZE, styles.badge_size, DEFAULT_PRESETS.badge_size));
-  assign(preset(PICKER_CONTROL_SIZE, styles.picker_control_size, DEFAULT_PRESETS.picker_control_size));
-  const ratio = IMAGE_RATIO[String(styles.image_ratio ?? "").trim()];
-  if (ratio) {
-    const [w, h] = ratio.split("/").map((part) => part.trim());
-    assign({
-      "--cro-img-ratio": ratio,
-      "--cro-img-h-h": `calc(var(--cro-img-h-w) * ${h} / ${w})`
-    });
-  }
-  assign({
-    "--cro-font": FONT_FAMILIES[String(styles.font_family ?? "").trim()],
-    "--cro-fs-base": preset(TEXT_SIZE, styles.text_size, DEFAULT_PRESETS.text_size),
-    "--cro-container-border-w": preset(CONTAINER_BORDER, styles.container_border, DEFAULT_PRESETS.container_border),
-    "--cro-bg": backgroundColor(styles.container_background),
-    "--cro-container-margin": length(styles.container_margin),
-    "--cro-header-bg": backgroundColor(styles.header_background),
-    "--cro-header-fg": isFilled(styles.header_text_color) ? styles.header_text_color : null,
-    "--cro-header-align": HEADER_ALIGN[String(styles.header_alignment ?? "").trim()],
-    "--cro-badge-bg": isFilled(styles.badge_background_color) ? styles.badge_background_color : null,
-    "--cro-badge-fg": isFilled(styles.badge_text_color) ? styles.badge_text_color : null
-  });
-  return vars;
-};
-const TYPOGRAPHY_TARGETS = Object.freeze([
-  ["header_typography", ".cro-fbw__header-text"],
-  ["bundle_title_typography", ".cro-fbw__bundle-title"],
-  ["bundle_price_typography", ".cro-fbw__price-now"],
-  ["product_title_typography", ".cro-fbw__name"],
-  ["product_price_typography", ".cro-fbw__card-price"],
-  ["picker_label_typography", ".cro-fbw__opt-label"],
-  ["button_typography", ".cro-fbw__cta"]
-]);
-const fixedBundleStyleBlock = (styles = {}, typographyCss) => {
-  const vars = resolveFixedBundleTokens(styles);
-  const declarations = Object.entries(vars).map(([name, value]) => `${name}: ${value};`).join("\n    ");
-  const rules = TYPOGRAPHY_TARGETS.map(([field, selector]) => {
-    const css = typographyCss?.(styles[field]) || "";
-    return css ? `.cro-fbw ${selector} { ${css} }` : "";
-  }).filter(Boolean);
-  return `.cro-fbw {
-    ${declarations}
-}
-${rules.join("\n")}`;
-};
+const fixedBundleStyles = '*,\n*::before,\n*::after {\n    box-sizing: border-box;\n    margin: 0;\n    padding: 0;\n}\n\n:host {\n    display: block;\n    width: 100%;\n}\n\n:host([data-editing]) {\n    position: relative;\n    z-index: 2147483000;\n}\n\nbutton,\nselect,\ninput {\n    font: inherit;\n    color: inherit;\n}\n\n.cro-fbw {\n\n    --cro-fg: #17191c;\n    --cro-muted: #71767c;\n    --cro-bg: #ffffff;\n    --cro-surface: #f6f7f8;\n    --cro-line-2: #cfd2d5;\n    --cro-faint: color-mix(in srgb, var(--cro-fg) 45%, var(--cro-bg));\n    --cro-line: color-mix(in srgb, var(--cro-border-subtle) 45%, transparent);\n    --cro-sel: #17191c;\n    --cro-sel-fg: #ffffff;\n    --cro-cta-bg: #17191c;\n    --cro-cta-fg: #ffffff;\n    --cro-arrow-bg: #ffffff;\n    --cro-arrow-fg: #17191c;\n    --cro-save-color: #BB0606;\n    --cro-border-subtle: #00000033;\n    --cro-header-bg: var(--cro-surface);\n    --cro-header-fg: var(--cro-muted);\n    --cro-note: #000000;\n    --cro-badge-bg: var(--cro-sel);\n    --cro-badge-fg: var(--cro-sel-fg);\n\n    --cro-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n    --cro-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;\n    --cro-fs-base: 16px;\n    --cro-fs-xl: calc(var(--cro-fs-base) * 1.25);\n    --cro-fs-lg: calc(var(--cro-fs-base) * 1.125);\n    --cro-fs-md: calc(var(--cro-fs-base) * 0.875);\n    --cro-fs-sm: calc(var(--cro-fs-base) * 0.75);\n    --cro-fs-xs: calc(var(--cro-fs-base) * 0.625);\n\n    --cro-fw-medium: 500;\n    --cro-fw-semibold: 600;\n    --cro-fw-bold: 700;\n\n    --cro-lh-base: 1;\n    --cro-lh-text: 1.35;\n    --cro-ls-flat: 0;\n\n    --cro-card-title-fs: var(--cro-fs-md);\n    --cro-card-price-fs: var(--cro-fs-md);\n    --cro-cta-fs: var(--cro-fs-lg);\n    --cro-control-fs: var(--cro-fs-sm);\n    --cro-badge-fs: var(--cro-fs-xs);\n    --cro-badge-tracking: .04em;\n    --cro-badge-case: uppercase;\n    --cro-header-align: center;\n\n    --cro-radius: 10px;\n    --cro-radius-sm: 4px;\n    --cro-radius-md: 8px;\n    --cro-radius-full: 50%;\n    --cro-card-radius: 12px;\n    --cro-image-radius: var(--cro-radius-sm);\n    --cro-badge-radius: 5px;\n    --cro-btn-radius: var(--cro-radius-md);\n    --cro-control-radius: 7px;\n    --cro-container-border-w: 2px;\n    --cro-inner-radius: max(0px, calc(var(--cro-radius) - var(--cro-container-border-w)));\n    --cro-card-border-w: 1px;\n    --cro-divider-w: 1px;\n\n    --cro-space: 8px;\n    --cro-container-margin: 0px;\n    --cro-content-padding: 20px;\n    --cro-header-pad: 16px;\n    --cro-row-pad: 18px;\n    --cro-grid-gap: 12px;\n    --cro-slide-gap: 10px;\n    --cro-card-pad: 5px;\n    --cro-card-body-pad: 10px;\n    --cro-card-body-gap: 12px;\n    --cro-foot-gap: 12px;\n    --cro-foot-pad: 12px 20px;\n    --cro-cta-pad: 19px;\n    --cro-cta-gap: 8px;\n    --cro-cta-min-h: 52px;\n    --cro-badge-pad: 3px 8px;\n    --cro-control-pad: 8px 10px;\n    --cro-sheet-pad: 14px;\n    --cro-change-pad: 10px;\n\n    --cro-card-min-w: 200px;\n    --cro-slide-card-w: 262px;\n    --cro-img-ratio: 200 / 180;\n    --cro-img-h-w: 105px;\n    --cro-img-h-h: 124px;\n    --cro-qty-size: 27px;\n    --cro-thumb-size: 31px;\n    --cro-chevron-size: 24px;\n    --cro-chevron-icon: 14px;\n    --cro-arrow-size: 30px;\n    --cro-arrow-offset: 0;\n    --cro-arrow-shadow: 0 1px 3px rgba(0, 0, 0, .12);\n    --cro-control-h: 40px;\n    --cro-radio-dot: 15px;\n    --cro-option-min-w: 92px;\n    --cro-spinner-size: 15px;\n\n    position: relative;\n    container-type: inline-size;\n    width: 100%;\n    min-width: min(100%, 320px);\n    margin: var(--cro-container-margin);\n    background-color: var(--cro-bg);\n    color: var(--cro-fg);\n    border-radius: var(--cro-radius);\n    border: var(--cro-container-border-w) solid var(--cro-border-subtle);\n    font-family: var(--cro-font);\n    line-height: var(--cro-lh-base);\n}\n\n.cro-fbw__header {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    gap: 19px;\n    padding: var(--cro-header-pad);\n    background: var(--cro-header-bg);\n    border-radius: var(--cro-inner-radius) var(--cro-inner-radius) 0 0;\n}\n\n.cro-fbw__header::before,\n.cro-fbw__header::after {\n    content: "";\n    flex: none;\n    width: 37px;\n    height: 1px;\n    background: var(--cro-header-fg);\n}\n\n.cro-fbw__header-text {\n    text-align: center;\n    color: var(--cro-header-fg);\n    font-size: var(--cro-fs-xl);\n    font-weight: var(--cro-fw-semibold);\n    letter-spacing: .04em;\n    text-transform: uppercase;\n}\n\n.cro-fbw__list {\n    display: flex;\n    flex-direction: column;\n}\n\n.cro-fbw__bundle+.cro-fbw__bundle::before {\n    content: "";\n    display: block;\n    border-top: var(--cro-divider-w) solid var(--cro-border-subtle);\n    margin-inline: var(--cro-content-padding);\n}\n\n.cro-fbw__head {\n    width: 100%;\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    background: none;\n    border: 0;\n    text-align: left;\n    cursor: pointer;\n    color: inherit;\n    padding: var(--cro-row-pad) var(--cro-content-padding);\n    margin-bottom: 13px;\n}\n\n.cro-fbw__head--static {\n    cursor: default;\n}\n\n.cro-fbw__chevron-wrap {\n    width: var(--cro-chevron-size);\n    height: var(--cro-chevron-size);\n    border-radius: var(--cro-radius-full);\n    display: grid;\n    place-items: center;\n    flex: none;\n    text-decoration: none;\n    transition: background .15s ease, border-color .15s ease;\n}\n\n.cro-fbw__bundle--open .cro-fbw__chevron-wrap {\n    background: var(--cro-cta-bg);\n    border: 1.5px solid var(--cro-cta-bg);\n}\n\n.cro-fbw__chevron {\n    width: var(--cro-chevron-icon);\n    height: var(--cro-chevron-icon);\n    flex: none;\n    color: var(--cro-muted);\n    transform: rotate(-90deg);\n    transition: transform .2s ease;\n}\n\n.cro-fbw__bundle--open .cro-fbw__chevron {\n    color: var(--cro-cta-fg);\n    transform: rotate(0deg);\n}\n\n.cro-fbw__head-copy {\n    flex: 1;\n    min-width: 0;\n    display: flex;\n    flex-direction: column;\n    gap: 9px;\n}\n\n.cro-fbw__bundle-title-wrapper {\n    display: flex;\n    align-items: center;\n    gap: 9px;\n    flex-wrap: wrap;\n}\n\n.cro-fbw__bundle-title {\n    font-size: var(--cro-fs-lg);\n    font-weight: var(--cro-fw-medium);\n    letter-spacing: -.02em;\n    overflow-wrap: anywhere;\n}\n\na.cro-fbw__bundle-title {\n    color: inherit;\n    text-decoration: none;\n    cursor: pointer;\n}\n\na.cro-fbw__bundle-title:hover {\n    text-decoration: underline;\n}\n\n.cro-fbw__flag {\n    font-size: var(--cro-badge-fs);\n    font-weight: var(--cro-fw-bold);\n    text-transform: var(--cro-badge-case);\n    letter-spacing: var(--cro-badge-tracking);\n    color: var(--cro-badge-fg);\n    background: var(--cro-badge-bg);\n    border-radius: var(--cro-badge-radius);\n    padding: var(--cro-badge-pad);\n}\n\n.cro-fbw__thumbs {\n    display: flex;\n    align-items: center;\n}\n\n.cro-fbw__head:not(.cro-fbw__head--static) .cro-fbw__thumbs {\n    padding-left: 33px;\n}\n\n.cro-fbw__thumb {\n    width: var(--cro-thumb-size);\n    height: var(--cro-thumb-size);\n    border-radius: var(--cro-radius-full);\n    overflow: hidden;\n    border: 1px solid var(--cro-border-subtle);\n    margin-right: calc(var(--cro-thumb-size) * -.5);\n}\n\n.cro-fbw__thumb img {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    display: block;\n}\n\n.cro-fbw__thumb-more {\n    font-size: var(--cro-fs-md);\n    color: var(--cro-fg);\n    font-weight: var(--cro-fw-medium);\n    margin-left: 20px;\n}\n\n.cro-fbw__price {\n    text-align: right;\n    flex: none;\n    display: flex;\n    flex-direction: column;\n    align-items: flex-end;\n    gap: 11px;\n}\n\n.cro-fbw__price-now {\n    font-size: var(--cro-fs-lg);\n    font-weight: var(--cro-fw-medium);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n.cro-fbw__price-was {\n    font-size: var(--cro-fs-md);\n    color: var(--cro-muted);\n    text-decoration: line-through;\n    font-weight: var(--cro-fw-medium);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n.cro-fbw__save {\n    font-size: var(--cro-fs-sm);\n    color: var(--cro-save-color);\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__bundle--unavailable .cro-fbw__bundle-title,\n.cro-fbw__bundle--unavailable .cro-fbw__price {\n    opacity: .5;\n}\n\n.cro-fbw__panel[hidden] {\n    display: none;\n}\n\n.cro-fbw__panel {\n    padding: 0 var(--cro-content-padding);\n}\n\n.cro-fbw__bundle--products .cro-fbw__panel {\n    padding-bottom: var(--cro-content-padding);\n}\n\n.cro-fbw__cards--grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(var(--cro-card-min-w), 1fr));\n    gap: var(--cro-grid-gap);\n}\n\n.cro-fbw__cards--grid:has(.cro-fbw__card--h) {\n    grid-template-columns: repeat(auto-fill, minmax(calc(var(--cro-card-min-w) + 80px), 1fr));\n}\n\n.cro-fbw__slider {\n    position: relative;\n}\n\n.cro-fbw__cards--slide {\n    display: flex;\n    gap: var(--cro-slide-gap);\n    overflow-x: auto;\n    scroll-snap-type: x mandatory;\n    padding-bottom: 2px;\n    scrollbar-width: none;\n    -ms-overflow-style: none;\n}\n\n.cro-fbw__cards--slide::-webkit-scrollbar {\n    display: none;\n}\n\n.cro-fbw__cards--slide .cro-fbw__card {\n    flex: 0 0 auto;\n    scroll-snap-align: start;\n    width: var(--cro-slide-card-w);\n}\n\n.cro-fbw__arrow {\n    position: absolute;\n    top: calc(50% - var(--cro-arrow-size) * 0.8);\n    width: var(--cro-arrow-size);\n    height: var(--cro-arrow-size);\n    border-radius: var(--cro-radius-full);\n    border: 1px solid var(--cro-border-subtle);\n    background: var(--cro-arrow-bg);\n    cursor: pointer;\n    display: grid;\n    place-items: center;\n    color: var(--cro-arrow-fg);\n    font-size: calc(var(--cro-arrow-size) * .6);\n    line-height: 1;\n    z-index: 4;\n    box-shadow: var(--cro-arrow-shadow);\n}\n\n.cro-fbw__arrow svg {\n    display: block;\n}\n\n.cro-fbw__arrow--prev {\n    left: var(--cro-arrow-offset);\n    transform: translateX(-50%);\n}\n\n.cro-fbw__arrow--next {\n    right: var(--cro-arrow-offset);\n    transform: translateX(50%);\n}\n\n.cro-fbw__arrow--prev svg {\n    transform: rotate(180deg);\n}\n\n.cro-fbw__arrow[disabled] {\n    opacity: 0;\n    pointer-events: none;\n}\n\n.cro-fbw__card {\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-card-radius);\n    padding: var(--cro-card-pad);\n    display: flex;\n    overflow: hidden;\n}\n\n.cro-fbw__card--v {\n    flex-direction: column;\n}\n\n.cro-fbw__card--h {\n    flex-direction: row;\n    gap: var(--cro-card-body-gap);\n    align-items: stretch;\n}\n\n.cro-fbw__card--unavailable {\n    opacity: .7;\n}\n\n.cro-fbw__media {\n    position: relative;\n    border-radius: var(--cro-image-radius);\n    overflow: hidden;\n    background: var(--cro-surface);\n    border: 1px solid var(--cro-line);\n}\n\n.cro-fbw__card--v .cro-fbw__media {\n    width: 100%;\n    aspect-ratio: var(--cro-img-ratio);\n}\n\n.cro-fbw__card--h .cro-fbw__media {\n    flex: none;\n    width: var(--cro-img-h-w);\n    height: var(--cro-img-h-h);\n}\n\n.cro-fbw__img {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    display: block;\n}\n\n.cro-fbw__img--ph {\n    background: var(--cro-surface);\n}\n\n.cro-fbw__qty {\n    position: absolute;\n    top: 8px;\n    right: 8px;\n    min-width: var(--cro-qty-size);\n    height: var(--cro-qty-size);\n    padding: 9px;\n    border-radius: var(--cro-radius-sm);\n    background: var(--cro-fg);\n    color: var(--cro-bg);\n    font-size: var(--cro-fs-sm);\n    font-weight: var(--cro-fw-semibold);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.cro-fbw__card-body {\n    min-width: 0;\n    display: flex;\n    flex-direction: column;\n    gap: var(--cro-card-body-gap);\n    padding: var(--cro-card-body-pad);\n}\n\n.cro-fbw__card--h .cro-fbw__card-body {\n    flex: 1;\n    padding: 0;\n    gap: calc(var(--cro-card-body-gap) * .7);\n    justify-content: center;\n}\n\n.cro-fbw__card--h .cro-fbw__name,\n.cro-fbw__card--h .cro-fbw__variant {\n    -webkit-line-clamp: 1;\n}\n\n.cro-fbw__name {\n    font-size: var(--cro-card-title-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-text);\n    display: -webkit-box;\n    -webkit-line-clamp: 2;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    color: var(--cro-fg);\n}\n\na.cro-fbw__name {\n    text-decoration: none;\n}\n\na.cro-fbw__name:hover {\n    text-decoration: underline;\n}\n\n.cro-fbw__card-price {\n    font-size: var(--cro-card-price-fs);\n    line-height: var(--cro-lh-base);\n}\n\n.cro-fbw__card-was {\n    color: var(--cro-muted);\n    text-decoration: line-through;\n    margin-right: 6px;\n    font-size: var(--cro-card-price-fs);\n}\n\n.cro-fbw__card-now {\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__variant {\n    font-size: var(--cro-fs-sm);\n    color: var(--cro-muted);\n    line-height: var(--cro-lh-text);\n    display: -webkit-box;\n    -webkit-line-clamp: 2;\n    -webkit-box-orient: vertical;\n    font-weight: 400;\n    overflow: hidden;\n}\n\n.cro-fbw__change {\n    width: 100%;\n    background: var(--cro-bg);\n    border: 1px solid var(--cro-border-subtle);\n    border-radius: var(--cro-control-radius);\n    padding: var(--cro-change-pad);\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    gap: 6px;\n\n    font-size: var(--cro-fs-md);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-base);\n}\n\n.cro-fbw__card--v .cro-fbw__change {\n    margin-top: auto;\n}\n\n.cro-fbw__card--h .cro-fbw__qty {\n    top: 6px;\n    right: 6px;\n    min-width: calc(var(--cro-qty-size) * .8);\n    height: calc(var(--cro-qty-size) * .8);\n    padding: 0 6px;\n    font-size: var(--cro-fs-xs);\n}\n\n.cro-fbw__card--h .cro-fbw__change {\n    padding: calc(var(--cro-change-pad) * .8) calc(var(--cro-change-pad) * 1.4);\n}\n\n.cro-fbw__change:hover {\n    border-color: var(--cro-faint);\n}\n\n.cro-fbw__ico {\n    width: 14px;\n    height: 14px;\n}\n\n.cro-fbw__oos {\n    margin-top: 8px;\n    font-family: var(--cro-mono);\n    font-size: var(--cro-fs-sm);\n    font-weight: var(--cro-fw-bold);\n    color: var(--cro-muted);\n}\n\n.cro-fbw__foot {\n    display: flex;\n    flex-direction: column;\n    gap: var(--cro-foot-gap);\n    padding-block: var(--cro-foot-pad);\n}\n\n.cro-fbw__cta {\n    width: 100%;\n    min-height: var(--cro-cta-min-h);\n    border: 0;\n    border-radius: var(--cro-btn-radius);\n    padding: var(--cro-cta-pad);\n\n    background: var(--cro-cta-bg);\n    color: var(--cro-cta-fg);\n    font-size: var(--cro-cta-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-base);\n    letter-spacing: var(--cro-ls-flat);\n\n    cursor: pointer;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    gap: var(--cro-cta-gap);\n}\n\n.cro-fbw__cta:not([disabled]):hover,\n.cro-fbw__sheet-done:hover {\n    opacity: .90;\n}\n\n.cro-fbw__sheet-close:hover {\n    background: var(--cro-line-2);\n}\n\n.cro-fbw__cta[disabled] {\n    cursor: not-allowed;\n}\n\n.cro-fbw__cta--unavailable {\n    opacity: .5;\n}\n\n.cro-fbw__cta--loading {\n    opacity: .8;\n}\n\n.cro-fbw__cta--success {\n    background: var(--cro-bg);\n    color: var(--cro-fg);\n    border: 1.5px solid var(--cro-sel);\n}\n\n.cro-fbw__spinner {\n    width: var(--cro-spinner-size);\n    height: var(--cro-spinner-size);\n    border: 2px solid color-mix(in srgb, var(--cro-cta-fg) 35%, transparent);\n    border-top-color: var(--cro-cta-fg);\n    border-radius: var(--cro-radius-full);\n    animation: cro-fbw-spin .7s linear infinite;\n}\n\n@keyframes cro-fbw-spin {\n    to {\n        transform: rotate(360deg);\n    }\n}\n\n.cro-fbw__note {\n    font-size: var(--cro-fs-md);\n    text-align: center;\n    color: var(--cro-note);\n    line-height: var(--cro-lh-base);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n.cro-fbw__note-save {\n    color: var(--cro-save-color);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-base);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n.cro-fbw__editor {\n    position: absolute;\n    inset: 0;\n    z-index: 30;\n}\n\n.cro-fbw__editor[hidden] {\n    display: none;\n}\n\n.cro-fbw__backdrop {\n    position: absolute;\n    inset: 0;\n    background: transparent;\n    border-radius: var(--cro-inner-radius);\n}\n\n.cro-fbw__sheet {\n    position: absolute;\n    left: var(--cro-pop-left, 16px);\n    top: var(--cro-pop-top, 60px);\n    width: var(--cro-pop-w, 288px);\n    max-height: 74%;\n    display: flex;\n    flex-direction: column;\n    overflow: hidden;\n    background: var(--cro-bg);\n    border: 1px solid var(--cro-line-2);\n    border-radius: var(--cro-radius);\n    padding: var(--cro-sheet-pad);\n    box-shadow: 0 12px 34px rgba(0, 0, 0, .22);\n}\n\n.cro-fbw__sheet-head {\n    flex: none;\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 10px;\n    margin-bottom: 8px;\n}\n\n.cro-fbw__sheet-body {\n    flex: 1 1 auto;\n    min-height: 0;\n    overflow: auto;\n}\n\n.cro-fbw__sheet-title {\n    margin: 0;\n    font-size: var(--cro-fs-md);\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__sheet-close {\n    border: 0;\n    background: var(--cro-surface);\n    width: 30px;\n    height: 30px;\n    border-radius: var(--cro-radius-md);\n    cursor: pointer;\n    font-size: 16px;\n    color: var(--cro-fg);\n    flex: none;\n}\n\n.cro-fbw__sheet-done {\n    flex: none;\n    width: 100%;\n    margin-top: 12px;\n    border: 0;\n    border-radius: var(--cro-btn-radius);\n    background: var(--cro-cta-bg);\n    color: var(--cro-cta-fg);\n    font-weight: var(--cro-fw-bold);\n    padding: calc(var(--cro-cta-pad) * .6);\n    min-height: 44px;\n    cursor: pointer;\n}\n\n.cro-fbw__opt {\n    margin-top: 10px;\n    border: 0;\n    padding: 0;\n}\n\n.cro-fbw__opt-label {\n    position: sticky;\n    top: 0;\n    z-index: 1;\n    background: var(--cro-bg);\n    font-size: var(--cro-fs-sm);\n    font-weight: var(--cro-fw-bold);\n    color: var(--cro-muted);\n    text-transform: uppercase;\n    letter-spacing: .04em;\n    padding-bottom: 6px;\n    display: block;\n}\n\n.cro-fbw__radios {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(var(--cro-option-min-w), 1fr));\n    gap: 6px;\n}\n\n.cro-fbw__radio {\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    border: 1px solid var(--cro-line-2);\n    border-radius: var(--cro-control-radius);\n    padding: var(--cro-control-pad);\n    min-height: var(--cro-control-h);\n    cursor: pointer;\n    background: var(--cro-bg);\n    font-size: var(--cro-control-fs);\n}\n\n.cro-fbw__radio:hover {\n    border-color: var(--cro-faint);\n}\n\n.cro-fbw__radio-input {\n    position: absolute;\n    opacity: 0;\n    width: 0;\n    height: 0;\n}\n\n.cro-fbw__radio-dot {\n    width: var(--cro-radio-dot);\n    height: var(--cro-radio-dot);\n    border-radius: var(--cro-radius-full);\n    box-shadow: inset 0 0 0 1.5px var(--cro-line-2);\n    flex: none;\n    display: grid;\n    place-items: center;\n}\n\n.cro-fbw__radio:has(.cro-fbw__radio-input:checked) {\n    border-color: var(--cro-sel);\n    background: var(--cro-surface);\n}\n\n.cro-fbw__radio:has(.cro-fbw__radio-input:checked) .cro-fbw__radio-dot {\n    box-shadow: inset 0 0 0 1.5px var(--cro-sel);\n    background: radial-gradient(circle at center,\n            var(--cro-sel) 0 calc(var(--cro-radio-dot) * .235),\n            transparent calc(var(--cro-radio-dot) * .235));\n}\n\n.cro-fbw__radio:has(.cro-fbw__radio-input:checked) .cro-fbw__radio-text {\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__radio--sold {\n    opacity: .4;\n    cursor: not-allowed;\n}\n\n.cro-fbw__radio--sold .cro-fbw__radio-text {\n    text-decoration: line-through;\n}\n\n.cro-fbw__head:focus-visible,\n.cro-fbw__change:focus-visible,\n.cro-fbw__cta:focus-visible,\n.cro-fbw__arrow:focus-visible,\n.cro-fbw__radio:has(:focus-visible),\n.cro-fbw__sheet-close:focus-visible,\n.cro-fbw__sheet-done:focus-visible {\n    outline: 2px solid var(--cro-fg);\n    outline-offset: 2px;\n}\n\n@container (max-width:430px) {\n    .cro-fbw__radios {\n        grid-template-columns: 1fr 1fr;\n    }\n}\n\n@media (prefers-reduced-motion:reduce) {\n\n    *,\n    *::before,\n    *::after {\n        transition: none !important;\n        animation: none !important;\n        scroll-behavior: auto !important;\n    }\n}\n\n.cro-fbw__sk {\n    display: inline-block;\n    border-radius: 6px;\n    vertical-align: middle;\n    opacity: .85;\n    background: linear-gradient(90deg, #e9eaed 25%, #f3f4f6 37%, #e9eaed 63%);\n    background-size: 400% 100%;\n    animation: cro-fbw-sk 1.2s ease infinite\n}\n\n@keyframes cro-fbw-sk {\n    0% {\n        background-position: 100% 0\n    }\n\n    100% {\n        background-position: 0 0\n    }\n}\n\n.cro-fbw__sheet,\n.cro-fbw__sheet-body {\n    scrollbar-width: thin;\n    scrollbar-color: rgba(0, 0, 0, .28) transparent\n}\n\n.cro-fbw__sheet::-webkit-scrollbar,\n.cro-fbw__sheet-body::-webkit-scrollbar {\n    width: 3px;\n    height: 3px\n}\n\n.cro-fbw__sheet::-webkit-scrollbar-thumb,\n.cro-fbw__sheet-body::-webkit-scrollbar-thumb {\n    background: rgba(0, 0, 0, .28);\n    border-radius: 9px\n}\n\n.cro-fbw__sheet::-webkit-scrollbar-track,\n.cro-fbw__sheet-body::-webkit-scrollbar-track {\n    background: transparent\n}\n\n.cro-fbw__head-copy {\n    min-width: 0\n}\n\n.cro-fbw__bundle-title-wrapper {\n    display: flex;\n    align-items: center;\n    flex-wrap: nowrap;\n    min-width: 0\n}\n\n.cro-fbw__bundle-title-wrapper .cro-fbw__chevron-wrap,\n.cro-fbw__bundle-title-wrapper .cro-fbw__flag {\n    flex-shrink: 0\n}\n\n.cro-fbw__bundle-title {\n    min-width: 0;\n    display: -webkit-box;\n    -webkit-box-orient: vertical;\n    -webkit-line-clamp: 2;\n    line-clamp: 2;\n    overflow: hidden;\n    line-height: var(--cro-lh-text);\n}';
 const PIXEL_BASE_URL = "https://pixel-dev.ecomposer.app";
 const CLIENT_ID_STORAGE_KEY = "_cro_client_id";
 const TRAFFIC_SOURCE_STORAGE_KEY = "_cro_first_touch_source";
@@ -868,22 +532,39 @@ const getCurrencyContext = (shopCurrency) => {
     toBase: (presentmentAmount) => (Number(presentmentAmount) || 0) / exchangeRate
   };
 };
-const pushCroCartAttributes = ({ source, device, storeId, shopCurrency }) => {
-  const root = window.Shopify?.routes?.root || "/";
-  const { baseCurrency, exchangeRate } = getCurrencyContext(shopCurrency);
-  const attributes = {
-    _cro_src: source,
-    _cro_device: device,
-    _cro_store: storeId,
-    _cro_base_currency: baseCurrency,
-    _cro_rate: String(exchangeRate)
+const SHOPIFY_ANALYTICS_POLL_MS = 100;
+const SHOPIFY_ANALYTICS_POLL_LIMIT = 200;
+const publishCroContext = (shopCurrency) => {
+  const { baseCurrency, activeCurrency, exchangeRate } = getCurrencyContext(shopCurrency);
+  const payload = {
+    base_currency: baseCurrency,
+    active_currency: activeCurrency,
+    exchange_rate: exchangeRate,
+    client_id: getClientId()
   };
-  return fetch(`${root}cart/update.js`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ attributes }),
-    keepalive: true
-  }).catch((err) => console.error("[pixel-client] failed to push cart attributes", err));
+  const publish = () => {
+    try {
+      window.Shopify.analytics.publish("cro_context", payload);
+      return true;
+    } catch (err) {
+      console.error("[pixel-client] failed to publish cro_context", err);
+      return true;
+    }
+  };
+  if (window.Shopify?.analytics?.publish) {
+    publish();
+    return;
+  }
+  let attempts = 0;
+  const timer = window.setInterval(() => {
+    attempts += 1;
+    if (window.Shopify?.analytics?.publish) {
+      publish();
+      window.clearInterval(timer);
+      return;
+    }
+    if (attempts >= SHOPIFY_ANALYTICS_POLL_LIMIT) window.clearInterval(timer);
+  }, SHOPIFY_ANALYTICS_POLL_MS);
 };
 const EXTENSION_TYPE = "cro_fixed_bundle";
 const DEFAULT_TEXT = Object.freeze({
@@ -893,30 +574,96 @@ const DEFAULT_TEXT = Object.freeze({
   change_variant_text: "Change",
   picker_title_text: "{{product_title}}",
   picker_done_text: "Done",
-  single_variant_text: "One size",
   add_to_cart_text: "Add bundle to cart • {{price}}",
   summary_text: "({{items}} items) you save {{saved}}",
   adding_text: "Adding…",
   added_text: "Added to cart",
   retry_text: "Couldn’t add — try again",
   unavailable_text: "Currently unavailable",
-  out_of_stock_text: "Out of stock",
-  sold_out_option_text: "Sold out"
+  out_of_stock_text: "Out of stock"
 });
 const DEFAULT_TITLE_RE = /^default\s*title$/i;
 const SUCCESS_RESET_MS = 1601;
-const CRO_FBW_EXTRA_CSS = `
-.cro-fbw__sk{display:inline-block;border-radius:6px;vertical-align:middle;opacity:.85;background:linear-gradient(90deg,#e9eaed 25%,#f3f4f6 37%,#e9eaed 63%);background-size:400% 100%;animation:cro-fbw-sk 1.2s ease infinite}
-@keyframes cro-fbw-sk{0%{background-position:100% 0}100%{background-position:0 0}}
-.cro-fbw__sheet,.cro-fbw__sheet-body{scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.28) transparent}
-.cro-fbw__sheet::-webkit-scrollbar,.cro-fbw__sheet-body::-webkit-scrollbar{width:3px;height:3px}
-.cro-fbw__sheet::-webkit-scrollbar-thumb,.cro-fbw__sheet-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.28);border-radius:9px}
-.cro-fbw__sheet::-webkit-scrollbar-track,.cro-fbw__sheet-body::-webkit-scrollbar-track{background:transparent}
-.cro-fbw__head-copy{min-width:0}
-.cro-fbw__bundle-title-wrapper{display:flex;align-items:center;flex-wrap:nowrap;min-width:0}
-.cro-fbw__bundle-title-wrapper .cro-fbw__chevron-wrap,.cro-fbw__bundle-title-wrapper .cro-fbw__flag{flex-shrink:0}
-.cro-fbw__bundle-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-`;
+const STYLE_TOKENS = [
+  ["space", "--cro-space", "6px"],
+  ["content_padding", "--cro-content-padding", "14px"],
+  ["row_padding", "--cro-row-pad", "12px"],
+  ["header_padding", "--cro-header-pad", "12px"],
+  ["grid_gap", "--cro-grid-gap", "8px"],
+  ["slide_gap", "--cro-slide-gap", "8px"],
+  ["foot_gap", "--cro-foot-gap", "8px"],
+  ["foot_padding", "--cro-foot-pad", "8px 14px"],
+  ["radius", "--cro-radius", "10px"],
+  ["radius_sm", "--cro-radius-sm", "4px"],
+  ["radius_md", "--cro-radius-md", "8px"],
+  ["card_radius", "--cro-card-radius", "12px"],
+  ["image_radius", "--cro-image-radius", "4px"],
+  ["badge_radius", "--cro-badge-radius", "5px"],
+  ["button_radius", "--cro-btn-radius", "8px"],
+  ["control_radius", "--cro-control-radius", "7px"],
+  ["card_padding", "--cro-card-pad", "5px"],
+  ["card_body_padding", "--cro-card-body-pad", "10px"],
+  ["card_body_gap", "--cro-card-body-gap", "12px"],
+  ["card_min_width", "--cro-card-min-w", "200px"],
+  ["slide_card_width", "--cro-slide-card-w", "262px"],
+  ["card_image_width", "--cro-img-h-w", "105px"],
+  ["card_image_height", "--cro-img-h-h", "124px"],
+  ["card_title_font_size", "--cro-card-title-fs", "var(--cro-fs-md)"],
+  ["card_price_font_size", "--cro-card-price-fs", "var(--cro-fs-md)"],
+  ["quantity_badge_size", "--cro-qty-size", "27px"],
+  ["change_button_padding", "--cro-change-pad", "10px"],
+  ["cta_padding", "--cro-cta-pad", "13px"],
+  ["cta_font_size", "--cro-cta-fs", "calc(var(--cro-fs-base) * 0.9375)"],
+  ["cta_gap", "--cro-cta-gap", "6px"],
+  ["cta_min_height", "--cro-cta-min-h", "44px"],
+  ["spinner_size", "--cro-spinner-size", "13px"],
+  ["chevron_size", "--cro-chevron-size", "20px"],
+  ["chevron_icon_size", "--cro-chevron-icon", "12px"],
+  ["arrow_size", "--cro-arrow-size", "26px"],
+  ["arrow_offset", "--cro-arrow-offset", "-2px"],
+  ["badge_font_size", "--cro-badge-fs", "var(--cro-fs-xs)"],
+  ["badge_padding", "--cro-badge-pad", "3px 8px"],
+  ["badge_tracking", "--cro-badge-tracking", "0.04em"],
+  ["control_height", "--cro-control-h", "40px"],
+  ["control_padding", "--cro-control-pad", "8px 10px"],
+  ["radio_dot_size", "--cro-radio-dot", "15px"],
+  ["control_font_size", "--cro-control-fs", "var(--cro-fs-sm)"],
+  ["option_min_width", "--cro-option-min-w", "92px"],
+  ["sheet_padding", "--cro-sheet-pad", "14px"],
+  ["base_font_size", "--cro-fs-base", "16px"],
+  ["container_border_width", "--cro-container-border-w", "2px"],
+  ["image_ratio", "--cro-img-ratio", "200 / 180"],
+  ["font_family", "--cro-font", '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'],
+  ["container_margin", "--cro-container-margin", "0px"],
+  ["color_background", "--cro-bg", "#ffffff"],
+  ["color_surface", "--cro-surface", "#f6f7f8"],
+  ["color_text", "--cro-fg", "#17191c"],
+  ["color_muted", "--cro-muted", "#71767c"],
+  ["color_line2", "--cro-line-2", "#00000033"],
+  ["color_border", "--cro-border-subtle", "#00000033"],
+  ["color_accent", "--cro-sel", "#17191c"],
+  ["color_accent_on", "--cro-sel-fg", "#ffffff"],
+  ["cta_background", "--cro-cta-bg", "#17191c"],
+  ["cta_foreground", "--cro-cta-fg", "#ffffff"],
+  ["badge_background", "--cro-badge-bg", "#17191c"],
+  ["badge_foreground", "--cro-badge-fg", "#ffffff"],
+  ["arrow_background", "--cro-arrow-bg", "#ffffff"],
+  ["arrow_foreground", "--cro-arrow-fg", "#17191c"],
+  ["header_background", "--cro-header-bg", "#f6f7f8"],
+  ["header_foreground", "--cro-header-fg", "var(--cro-muted)"],
+  ["note", "--cro-note", "#000000"],
+  ["color_save", "--cro-save-color", "#BB0606"]
+];
+const TYPOGRAPHY_TARGETS = [
+  ["header_typography", ".cro-fbw__header-text"],
+  ["bundle_title_typography", ".cro-fbw__bundle-title"],
+  ["bundle_price_typography", ".cro-fbw__price-now"],
+  ["product_title_typography", ".cro-fbw__name"],
+  ["product_price_typography", ".cro-fbw__card-price"],
+  ["picker_label_typography", ".cro-fbw__opt-label"],
+  ["button_typography", ".cro-fbw__cta"]
+];
+const ARROW_ICON = `<svg width="5" height="8" viewBox="0 0 5 8" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M0.753715 8L5 4L0.753715 1.34975e-07L-4.54269e-07 0.71L3.49257 4L-2.45114e-07 7.29L0.753715 8Z" fill="currentColor" /> </svg>`;
 class FixedBundleWidget extends BaseWidget {
   constructor() {
     super();
@@ -932,7 +679,11 @@ class FixedBundleWidget extends BaseWidget {
     this._editor = null;
     this._addState = "idle";
     this._addBundleId = null;
+    this._nativeCartItems = null;
+    this._nativeCroSigns = {};
+    this._nativeForms = /* @__PURE__ */ new Set();
     this._onReposition = this._onReposition.bind(this);
+    this._onNativeAddToCartClick = this._onNativeAddToCartClick.bind(this);
   }
   static get observedAttributes() {
     return [...super.observedAttributes, "widget-data", "widgetdata"];
@@ -951,6 +702,8 @@ class FixedBundleWidget extends BaseWidget {
     if (typeof window !== "undefined") window.removeEventListener("resize", this._onReposition);
     this._impressionObserver?.disconnect();
     this._nativeFormObserver?.disconnect();
+    document.removeEventListener("click", this._onNativeAddToCartClick, true);
+    this._nativeAddToCartClickAttached = false;
   }
   set widgetData(value) {
     const val = typeof value === "object" ? JSON.stringify(value) : value;
@@ -1005,9 +758,8 @@ class FixedBundleWidget extends BaseWidget {
   _bundleProductOf(bundle) {
     return this.embeddedData?.bundleProducts?.[bundle.bundleHandle] || null;
   }
-  /** A product Shopify capped to 250 inlined variants — its full variant set
-   * can't be resolved from the embedded data and needs a section render. */
   _isHighVariant(product) {
+    if (this.isBuilderMode) return false;
     return Number(product?.variantsCount) > 250;
   }
   _orderedComponents(bundle) {
@@ -1018,10 +770,6 @@ class FixedBundleWidget extends BaseWidget {
     if (index <= 0) return components;
     return [components[index], ...components.slice(0, index), ...components.slice(index + 1)];
   }
-  /** Host seam: when the EComposer Ajax Cart extension is on, our own
-   * `/cart/add.js` fetch bypasses EComposer's form-submit interception, so open
-   * its drawer explicitly. Returns true when it handled the post-add UI, so the
-   * caller can fall back to the default `cro:cart-mutated` path otherwise. */
   _openEcomposerAjaxCart(addedItem) {
     const ec = typeof window !== "undefined" ? window.EComposer : null;
     if (!ec?.configs?.ajax_cart?.enable || typeof ec.ajaxCartSuccess !== "function") return false;
@@ -1032,18 +780,6 @@ class FixedBundleWidget extends BaseWidget {
       console.error("[cro-fixed-bundle] EComposer ajax cart open failed:", error);
       return false;
     }
-  }
-  /** Notify the theme's cart UI that the cart changed. Horizon (and themes that
-   * follow Shopify's standard events) listen on `cart:update` and read
-   * `event.detail.data.sections?.[sectionId]` — `data` must exist or the handler
-   * throws; when the section isn't supplied they re-render it themselves. */
-  _notifyThemeCartUpdated(body) {
-    document.dispatchEvent(
-      new CustomEvent("cart:update", {
-        detail: { itemCount: body?.item_count, data: { sections: body?.sections ?? {}, cart: body }, source: "cro-fixed-bundle" },
-        bubbles: true
-      })
-    );
   }
   _bundleDesired(bundle, selection = this._selection[bundle.id] || {}) {
     const desired = {};
@@ -1120,6 +856,14 @@ class FixedBundleWidget extends BaseWidget {
   async _hydrate() {
     if (this._hydrating || this._hydrated) return;
     this._hydrating = true;
+    if (this.isBuilderMode) {
+      const products2 = this.embeddedData?.products || [];
+      this._productMap = new Map(products2.map((product) => [product.id, product]));
+      this._hydrated = true;
+      this._hydrating = false;
+      this.render();
+      return;
+    }
     const handles = [...new Set(
       (this.embeddedData?.bundles || []).flatMap((bundle) => (bundle.components || []).map((component) => component.handle)).filter(Boolean)
     )];
@@ -1203,46 +947,34 @@ class FixedBundleWidget extends BaseWidget {
     this._addBundleId = bundle.id;
     this.render();
     try {
+      const properties = { _cro_ext: EXTENSION_TYPE, _cro_campaign: String(bundle.id) };
+      const cartItems = await this._fetchCartItems();
+      const croSign = this._croSignFromCart(cartItems || [], bundle.id, id);
+      if (croSign !== null) properties._cro_sign = croSign;
       const response = await fetch(`${root}cart/add.js`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
-          items: [{
-            id,
-            quantity: 1,
-            // Flat properties (not packed into `_cro_data`): Fixed
-            // Bundle adds a single cart line with no cart-transform
-            // input budget to economize on, so the checkout Web Pixel
-            // sandbox can read attribution straight off `line.properties`.
-            properties: {
-              _cro_ext: EXTENSION_TYPE,
-              _cro_campaign: String(bundle.id)
-            }
-          }],
-          sections: "cart-icon-bubble"
+          id,
+          quantity: 1,
+          properties
         })
       });
-      if (!response.ok) throw new Error(`Cart add failed: ${response.status}`);
-      const body = await response.json().catch(() => null);
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(`Cart add failed: ${response.status} ${errorBody?.description || ""}`.trim());
+      }
+      const lineItem = await response.json().catch(() => null);
+      const body = lineItem ? { items: [lineItem] } : null;
       document.dispatchEvent(new CustomEvent("cro:cart-mutated", { detail: body }));
-      try {
-        this._notifyThemeCartUpdated(body);
-      } catch (error) {
-        console.error("[cro-fixed-bundle] theme cart notify failed:", error);
-      }
-      if (!this._openEcomposerAjaxCart(body?.items?.[0])) {
-        try {
-          await window.Shopify?.actions?.openCart?.();
-        } catch (error) {
-          console.error("[cro-fixed-bundle] open cart drawer failed:", error);
-        }
-      }
       this.dispatchEvent(new CustomEvent("bundle:add", {
         detail: { bundle, variantId: id },
         bubbles: true,
         composed: true
       }));
-      await Shopify?.actions?.openCart?.();
+      if (!this._openEcomposerAjaxCart(body?.items?.[0])) {
+        window.location.href = `${root}cart`;
+      }
       const addedItems = Array.isArray(body?.items) ? body.items : [];
       const presentmentUpsellValue = addedItems.reduce((sum, item) => sum + (Number(item.line_price) || 0), 0) / 100;
       const upsellQuantity = addedItems.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
@@ -1265,12 +997,6 @@ class FixedBundleWidget extends BaseWidget {
   _bundleRuleName(bundle) {
     return this.embeddedData?.bundleProducts?.[bundle.bundleHandle]?.title || void 0;
   }
-  /** `ext_offer_accepted` — fired right after a successful add to cart, from
-   * either `_addBundleToCart` (widget's own button, real `/cart/add.js`
-   * response) or `_attachNativeFormSubmitListener` (theme's native
-   * add-to-cart form, optimistic value computed before submit since a
-   * plain form submit can navigate away before any response comes back).
-   * Same contract as Mix & Match's `_fireOfferAccepted` (CroMixMatchBundleWidget.js). */
   _fireOfferAccepted(bundle, { presentmentUpsellValue, upsellQuantity }) {
     const money = getCurrencyContext(this.getAttribute("shop-currency"));
     const source = getTrafficSource();
@@ -1279,9 +1005,6 @@ class FixedBundleWidget extends BaseWidget {
       name: "ext_offer_accepted",
       storeId: this.getAttribute("store-id"),
       extensionType: EXTENSION_TYPE,
-      // Same string form the cart line property and the checkout pixel
-      // module send, so every event for this bundle groups under one
-      // `rule_id` on the read side.
       ruleId: String(bundle.id),
       ruleName: this._bundleRuleName(bundle),
       pageId: "product-main",
@@ -1297,29 +1020,60 @@ class FixedBundleWidget extends BaseWidget {
         device
       }
     });
-    pushCroCartAttributes({ source, device, storeId: this.getAttribute("store-id"), shopCurrency: this.getAttribute("shop-currency") });
   }
-  /** When the widget renders directly on the bundle product's own page, the
-   * theme still shows its own default add-to-cart form for that product —
-   * app blocks add to a template, they don't replace what's already there.
-   * A shopper who uses that native button instead of our card bypasses
-   * `_addBundleToCart` entirely, so the resulting cart line carries none of
-   * `_cro_ext`/`_cro_campaign` and the checkout Web Pixel can't attribute it
-   * (see fixed-bundle-pixel.ts `parseCroAttribution`). Tagging every native
-   * form for this product with the same hidden properties means either
-   * button produces an identically-attributed cart line. */
   _tagNativeAddToCartForms(bundle) {
     this._nativeFormBundle = bundle;
+    this._loadNativeCartSnapshot();
     this._applyNativeFormTags(bundle);
     this._observeNativeAddToCartForms();
-    if (this._nativeCartAttributesPushed) return;
-    this._nativeCartAttributesPushed = true;
-    pushCroCartAttributes({
-      source: getTrafficSource(),
-      device: getDevice(),
-      storeId: this.getAttribute("store-id"),
-      shopCurrency: this.getAttribute("shop-currency")
+    this._observeNativeAddToCartButtonClicks();
+    publishCroContext(this.getAttribute("shop-currency"));
+  }
+  /**
+   * Form native do theme tự submit và chỉ đọc hidden input đồng bộ, nên không
+   * thể đọc giỏ ngay lúc bấm. Đọc một lần khi gắn tag rồi giữ sign cố định cho
+   * từng variant suốt vòng đời trang: lần add đầu tạo dòng mang sign đó, các
+   * lần sau gửi lại đúng sign nên Shopify gộp vào cùng dòng. Checkout xong là
+   * rời trang, lần tải sau đọc lại giỏ đã trống và sinh sign mới.
+   */
+  _loadNativeCartSnapshot() {
+    if (this._nativeCartRequest || this.isBuilderMode) return;
+    this._nativeCartRequest = this._fetchCartItems().then((items) => {
+      this._nativeCartItems = items || [];
+      if (this._nativeFormBundle) this._applyNativeFormTags(this._nativeFormBundle);
     });
+  }
+  /** `undefined` khi giỏ chưa đọc xong — form tạm chưa có sign, gắn lại khi đọc xong. */
+  _nativeCroSign(bundleId, variantId) {
+    const key = `${bundleId}:${variantId}`;
+    if (key in this._nativeCroSigns) return this._nativeCroSigns[key];
+    if (!this._nativeCartItems) return void 0;
+    this._nativeCroSigns[key] = this._croSignFromCart(this._nativeCartItems, bundleId, variantId);
+    return this._nativeCroSigns[key];
+  }
+  /**
+   * Giỏ đã có dòng cùng variant + cùng `_cro_campaign` thì dùng lại đúng
+   * `_cro_sign` của nó để properties khớp và Shopify gộp dòng thay vì tách
+   * line item mới; dòng đó không có sign (thêm từ build cũ) thì trả `null`
+   * để lần add này cũng bỏ property. Không có dòng nào mới sinh sign mới.
+   */
+  _croSignFromCart(items, bundleId, variantId) {
+    const existing = items.find(
+      (item) => String(item.variant_id) === String(variantId) && String(item.properties?._cro_campaign) === String(bundleId)
+    );
+    if (!existing) return String(Date.now());
+    return existing.properties._cro_sign || null;
+  }
+  async _fetchCartItems() {
+    try {
+      const root = window.Shopify?.routes?.root || "/";
+      const response = await fetch(`${root}cart.js`, { headers: { Accept: "application/json" } });
+      if (!response.ok) return null;
+      const cart = await response.json();
+      return Array.isArray(cart?.items) ? cart.items : null;
+    } catch {
+      return null;
+    }
   }
   _applyNativeFormTags(bundle) {
     const bundleProduct = this.embeddedData?.bundleProducts?.[bundle.bundleHandle];
@@ -1331,30 +1085,99 @@ class FixedBundleWidget extends BaseWidget {
       if (!idInput || !variantIds.has(String(idInput.value))) continue;
       this._setHiddenFormInput(form, "properties[_cro_ext]", EXTENSION_TYPE);
       this._setHiddenFormInput(form, "properties[_cro_campaign]", String(bundle.id));
+      const croSign = this._nativeCroSign(bundle.id, idInput.value);
+      if (croSign === null) form.querySelector('input[name="properties[_cro_sign]"]')?.remove();
+      else if (croSign !== void 0) this._setHiddenFormInput(form, "properties[_cro_sign]", croSign);
+      this._nativeForms.add(form);
       this._attachNativeFormSubmitListener(form, bundle, bundleProduct);
     }
   }
-  /** Shopify's `product_added_to_cart` pixel event carries no cart line
-   * `properties`/`attributes` (only `cost`/`quantity`/`merchandise`), so the
-   * checkout Web Pixel is the only place that can read `_cro_ext`/
-   * `_cro_campaign` back — and only once the shopper reaches checkout.
-   * `ext_offer_accepted` has to fire from here, at the moment of add, the
-   * same way `_addBundleToCart` fires it for the widget's own button. A
-   * plain form submit can navigate the page away before any `/cart/add.js`
-   * response arrives, so the value is computed from the already-known
-   * variant price instead of waiting for one. */
   _attachNativeFormSubmitListener(form, bundle, bundleProduct) {
     if (form.dataset.croOfferListenerAttached) return;
     form.dataset.croOfferListenerAttached = "true";
-    form.addEventListener("submit", () => {
-      const idInput = form.querySelector('[name="id"]');
-      const variant = bundleProduct?.variants?.find((v) => String(v.id) === String(idInput?.value));
-      if (!variant) return;
-      const qtyInput = form.querySelector('[name="quantity"]');
-      const quantity = Math.max(1, Number(qtyInput?.value) || 1);
-      const presentmentUpsellValue = (Number(variant.price) || 0) / 100 * quantity;
-      this._fireOfferAccepted(bundle, { presentmentUpsellValue, upsellQuantity: quantity });
-    });
+    form.addEventListener("submit", () => this._reportNativeFormOffer(form, bundle, bundleProduct));
+  }
+  /** Shared by the form's own `submit` event and the click path below —
+   * both resolve to the same variant/quantity read and the same pixel
+   * event. A theme page-builder can intercept the button's `click` and add
+   * to cart via its own `fetch` without ever calling `form.submit()` /
+   * `requestSubmit()`, so a real native submit is not guaranteed even for a
+   * `type="submit"` button sitting inside the form. When a native submit DOES
+   * follow the click, `_nativeOfferReported` stops it from reporting the same
+   * add-to-cart twice — cleared on a macrotask (not a microtask), same as
+   * Volume Discount's `runPassthroughSync`, because the browser dispatches
+   * that `submit` after the click handler's microtask checkpoint. */
+  _reportNativeFormOffer(form, bundle, bundleProduct) {
+    if (this._nativeOfferReported) return;
+    this._nativeOfferReported = true;
+    setTimeout(() => {
+      this._nativeOfferReported = false;
+    }, 0);
+    const idInput = form.querySelector('[name="id"]');
+    const variant = bundleProduct?.variants?.find((v) => String(v.id) === String(idInput?.value));
+    if (!variant) return;
+    const qtyInput = form.querySelector('[name="quantity"]');
+    const quantity = Math.max(1, Number(qtyInput?.value) || 1);
+    const presentmentUpsellValue = (Number(variant.price) || 0) / 100 * quantity;
+    this._fireOfferAccepted(bundle, { presentmentUpsellValue, upsellQuantity: quantity });
+  }
+  /**
+   * A custom add-to-cart control — a theme's sticky/floating bar outside
+   * the product `<form>`, or a page-builder button that sits inside the
+   * form but intercepts the click itself and adds to cart via its own
+   * `fetch` — never reliably produces the form's `submit` event, so
+   * `_attachNativeFormSubmitListener` alone silently drops
+   * `ext_offer_accepted` for it. Mirrors Volume Discount's
+   * `resolveAddToCartGesture`/`ownsFormElement` in VolumeDiscountWidget.js:
+   * listen for clicks on the document (capture, so a theme's own handler
+   * further down can't stop it first) and match the same broad
+   * add-to-cart-button selector, in-form or not — `_reportNativeFormOffer`'s
+   * own guard is what keeps an in-form click that DOES also submit natively
+   * from double-counting.
+   */
+  _observeNativeAddToCartButtonClicks() {
+    if (this._nativeAddToCartClickAttached) return;
+    this._nativeAddToCartClickAttached = true;
+    document.addEventListener("click", this._onNativeAddToCartClick, true);
+  }
+  _onNativeAddToCartClick(event) {
+    if (!this._nativeFormBundle || !this._nativeForms.size) return;
+    const trigger = event.target.closest?.(
+      '[type="submit"], [name="add"], :is(button, a, [role="button"]):is([class*="add-to-cart" i], [class*="add_to_cart" i])'
+    );
+    if (!trigger || trigger.disabled) return;
+    const bundleProduct = this.embeddedData?.bundleProducts?.[this._nativeFormBundle.bundleHandle];
+    const triggerVariantId = trigger.getAttribute("data-variant-id");
+    if (triggerVariantId && !bundleProduct?.variants?.some((v) => String(v.id) === triggerVariantId)) return;
+    const form = this._matchNativeFormForTrigger(trigger);
+    if (!form) return;
+    this._reportNativeFormOffer(form, this._nativeFormBundle, bundleProduct);
+  }
+  /**
+   * A button nested inside a form belongs to that form — and counts only if
+   * it's one we tagged. A button with no form at all (sticky/floating bar)
+   * is matched to the product form on the page, except inside a product
+   * card / quick-add wrapper, where a formless add-to-cart button belongs to
+   * some other product (upsell apps, related-product carousels).
+   *
+   * Several tagged forms is the normal case, not an edge case: Dawn and its
+   * derivatives render a Shop Pay installment form that is also
+   * `action="/cart/add"` with the same `name="id"`, and a theme re-render
+   * leaves the old, detached form in `_nativeForms`. So stale forms are
+   * dropped, then the one with a real submit button wins — the installment
+   * form has none.
+   */
+  _matchNativeFormForTrigger(trigger) {
+    const ownForm = trigger.closest("form");
+    if (ownForm) return this._nativeForms.has(ownForm) ? ownForm : null;
+    const QUICK_ADD_WRAPPER = ".card, .card-wrapper, .product-card, .quick-add, quick-add-modal, [data-quick-add]";
+    if (trigger.closest(QUICK_ADD_WRAPPER)) return null;
+    for (const form of this._nativeForms) {
+      if (!form.isConnected) this._nativeForms.delete(form);
+    }
+    const connectedForms = [...this._nativeForms];
+    if (connectedForms.length <= 1) return connectedForms[0] || null;
+    return connectedForms.find((form) => form.querySelector('[type="submit"], [name="add"]')) || connectedForms[0];
   }
   _setHiddenFormInput(form, name, value) {
     let input = form.querySelector(`input[name="${CSS.escape(name)}"]`);
@@ -1366,15 +1189,6 @@ class FixedBundleWidget extends BaseWidget {
     }
     input.value = value;
   }
-  /** AJAX themes routinely replace the whole product form's markup — a
-   * `?section_id=` re-render on variant change, a lazy-loaded "buy box",
-   * a quick-add modal opened after this widget's first render — any of
-   * which wipes the hidden inputs `_applyNativeFormTags` just added. Watch
-   * the page for that and re-tag rather than tagging once and hoping the
-   * form node never changes underneath us. Re-running the tag function is
-   * cheap and idempotent (it no-ops on forms that already have the hidden
-   * inputs), so a debounced "re-scan everything" on every mutation batch is
-   * simpler and safer than trying to diff which nodes actually changed. */
   _observeNativeAddToCartForms() {
     if (this._nativeFormObserver || typeof MutationObserver === "undefined") return;
     this._nativeFormObserver = new MutationObserver(() => {
@@ -1388,9 +1202,6 @@ class FixedBundleWidget extends BaseWidget {
     });
     this._nativeFormObserver.observe(document.body, { childList: true, subtree: true });
   }
-  /** `ext_impression` — fired once per bundle card that scrolls into view.
-   * Dedupe is scoped to `window`, not storage: "once per bundle per page load"
-   * must reset on a real reload but survive an in-page re-render. */
   _syncImpressionObserver() {
     if (typeof IntersectionObserver === "undefined" || this.isBuilderMode) return;
     if (this.getAttribute("design-mode") === "true") return;
@@ -1410,6 +1221,7 @@ class FixedBundleWidget extends BaseWidget {
     roots.forEach((root) => this._impressionObserver.observe(root));
   }
   _fireImpression(bundleId) {
+    publishCroContext(this.getAttribute("shop-currency"));
     if (window.__croFixedBundleFired.has(bundleId)) return;
     window.__croFixedBundleFired.add(bundleId);
     this._impressionAtByBundle[bundleId] = Date.now();
@@ -1495,22 +1307,12 @@ class FixedBundleWidget extends BaseWidget {
     return this._matchVariant(product, this._componentDesired(bundleId, component));
   }
   _valueAvailable(bundleId, component, product, optionName, value) {
-    const bundle = (this.embeddedData?.bundles || []).find((item) => String(item.id) === String(bundleId));
-    if (this._isHighVariant(product) || this._isHighVariant(bundle && this._bundleProductOf(bundle))) return true;
+    if (this._isHighVariant(product)) return true;
     const desired = { ...this._componentDesired(bundleId, component), [optionName]: value };
-    const componentAvailable = (product?.variants || []).some((v) => v.available !== false && Object.entries(desired).every(([name, val]) => {
+    return (product?.variants || []).some((v) => v.available !== false && Object.entries(desired).every(([name, val]) => {
       const idx = this._optionIndex(product, name);
       return idx < 0 ? true : v.values?.[idx] === val;
     }));
-    if (!componentAvailable) return false;
-    if (!bundle) return true;
-    const selection = Object.fromEntries(
-      Object.entries(this._selection[bundleId] || {}).map(([id, values]) => [id, { ...values }])
-    );
-    selection[component.productId] ||= {};
-    selection[component.productId][optionName] = value;
-    const bundleVariant = this._resolveBundleVariant(bundle, selection);
-    return Boolean(bundleVariant) && bundleVariant.available !== false;
   }
   _defaultValue(product, optionName, values) {
     const idx = this._optionIndex(product, optionName);
@@ -1646,7 +1448,7 @@ class FixedBundleWidget extends BaseWidget {
       if (/^title$/i.test(String(name))) return;
       parts.push(String(v));
     });
-    return parts.join(" · ") || product.option_note || "";
+    return parts.join(" ⦁ ") || product.option_note || "";
   }
   _icoChevron() {
     return `<svg class="cro-fbw__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>`;
@@ -1661,8 +1463,7 @@ class FixedBundleWidget extends BaseWidget {
     const layout = this.pickerLayout;
     if (layout === "none") return "";
     const pickerOpts = this._pickerOptions(component, product);
-    if (!pickerOpts.length) return `<p class="cro-fbw__noopt">${this.escapeHtml(this._text("single_variant_text"))}</p>`;
-    const soldOut = this._text("sold_out_option_text");
+    if (!pickerOpts.length) return "";
     const sel = this._selection[bundle.id]?.[component.productId] || {};
     return pickerOpts.map((opt) => {
       const attrs = `data-bundle-id="${this.escapeHtml(bundle.id)}" data-product-id="${this.escapeHtml(component.productId)}" data-option="${this.escapeHtml(opt.name)}"`;
@@ -1672,7 +1473,7 @@ class FixedBundleWidget extends BaseWidget {
         return `<label class="cro-fbw__radio${!available ? " cro-fbw__radio--sold" : ""}">
                     <input type="radio" class="cro-fbw__radio-input" name="${this.escapeHtml(`${bundle.id}:${component.productId}:${opt.name}`)}" value="${this.escapeHtml(val)}" ${selected ? "checked" : ""} ${!available ? "disabled" : ""} data-action="pick" ${attrs} data-value="${this.escapeHtml(val)}">
                     <span class="cro-fbw__radio-dot" aria-hidden="true"></span>
-                    <span class="cro-fbw__radio-text">${this.escapeHtml(val)}${!available ? `<span class="cro-fbw__radio-sub">${this.escapeHtml(soldOut)}</span>` : ""}</span>
+                    <span class="cro-fbw__radio-text">${this.escapeHtml(val)}</span>
                 </label>`;
       }).join("");
       return `<fieldset class="cro-fbw__opt">
@@ -1684,6 +1485,7 @@ class FixedBundleWidget extends BaseWidget {
   _renderCard(bundle, component, product, readOnly = false) {
     const variant = this._resolveComponentVariant(bundle.id, component, product);
     const title = product?.title || this._formatHandle(product?.handle || component.handle);
+    const linkHandle = product?.handle || component.handle || "";
     const img = this._safeImg(variant?.imageUrl || product?.imageUrl);
     const qty = component.quantity ?? 1;
     const price = variant?.price ?? product?.price ?? 0;
@@ -1694,12 +1496,11 @@ class FixedBundleWidget extends BaseWidget {
     const hasPicker = this.pickerLayout !== "none" && product && this._pickerOptions(component, product).length > 0;
     const unavailable = variant ? variant.available === false : false;
     const settings = this.settings;
-    const showPrice = settings.show_product_price !== false;
+    const showPrice = settings.show_product_price !== false && !!product;
     const showCompare = showPrice && settings.show_product_compare_price !== false && hasCompare;
     const showSummary = !readOnly && settings.show_product_variant_summary !== false && summary;
     const showQty = settings.show_product_quantity !== false;
     const media = img ? `<img class="cro-fbw__img" src="${this.escapeHtml(img)}" alt="${this.escapeHtml(title)}" loading="lazy">` : `<span class="cro-fbw__img cro-fbw__img--ph" role="img" aria-label="${this.escapeHtml(title)}"></span>`;
-    const nameHtml = readOnly && product?.handle ? `<a class="cro-fbw__name" href="/products/${this.escapeHtml(product.handle)}">${this.escapeHtml(title)}</a>` : `<span class="cro-fbw__name">${this.escapeHtml(title)}</span>`;
     const oosLabel = `<span class="cro-fbw__oos">${this.escapeHtml(this._text("out_of_stock_text"))}</span>`;
     const changeBtn = `<button type="button" class="cro-fbw__change" data-action="edit" data-bundle-id="${this.escapeHtml(bundle.id)}" data-product-id="${this.escapeHtml(component.productId)}">${this._icoPencil()}<span>${this.escapeHtml(this._text("change_variant_text"))}</span></button>`;
     const action = !readOnly && hasPicker ? unavailable ? `${oosLabel}${changeBtn}` : changeBtn : unavailable ? oosLabel : "";
@@ -1709,7 +1510,7 @@ class FixedBundleWidget extends BaseWidget {
             ${showQty ? `<span class="cro-fbw__qty">${this.escapeHtml(String(qty))}</span>` : ""}</div>
 
             <div class="cro-fbw__card-body">
-                ${nameHtml}
+                ${linkHandle ? `<a class="cro-fbw__name" href="/products/${this.escapeHtml(linkHandle)}">${this.escapeHtml(title)}</a>` : `<span class="cro-fbw__name">${this.escapeHtml(title)}</span>`}
                 ${showPrice ? `<span class="cro-fbw__card-price">
                     ${showCompare ? `<span class="cro-fbw__card-was">${this.escapeHtml(this.formatMoney(compare))}</span>` : ""}
                     <span class="cro-fbw__card-now">${this.escapeHtml(this.formatMoney(price))}</span>
@@ -1744,9 +1545,9 @@ class FixedBundleWidget extends BaseWidget {
             </span>`;
     const cards = components.map((c) => this._renderCard(bundle, c, this._productMap.get(c.productId))).join("");
     const list = this.settings.product_layout === "slider" ? `<div class="cro-fbw__slider">
-                    <button type="button" class="cro-fbw__arrow cro-fbw__arrow--prev" data-action="slide" data-dir="-1" aria-label="Previous" disabled>‹</button>
+                    <button type="button" class="cro-fbw__arrow cro-fbw__arrow--prev" data-action="slide" data-dir="-1" aria-label="Previous" disabled>${ARROW_ICON}</button>
                     <div class="cro-fbw__cards cro-fbw__cards--slide">${cards}</div>
-                    <button type="button" class="cro-fbw__arrow cro-fbw__arrow--next" data-action="slide" data-dir="1" aria-label="More">›</button>
+                    <button type="button" class="cro-fbw__arrow cro-fbw__arrow--next" data-action="slide" data-dir="1" aria-label="More">${ARROW_ICON}</button>
                </div>` : `<div class="cro-fbw__cards cro-fbw__cards--grid">${cards}</div>`;
     const panel = isOpen ? `<div class="cro-fbw__panel" id="${id}-panel" role="region" aria-labelledby="${id}">
             ${list}
@@ -1758,7 +1559,7 @@ class FixedBundleWidget extends BaseWidget {
             <span class="cro-fbw__head-copy">
                 <div class="cro-fbw__bundle-title-wrapper">
                     ${allowCollapse ? `<span class="cro-fbw__chevron-wrap">${this._icoChevron()}</span>` : ""}
-                    <span class="cro-fbw__bundle-title">${this.escapeHtml(this.embeddedData?.bundleProducts?.[bundle.bundleHandle]?.title || "")}</span>
+                    <a class="cro-fbw__bundle-title" href="/products/${this.escapeHtml(bundle.bundleHandle)}">${this.escapeHtml(this.embeddedData?.bundleProducts?.[bundle.bundleHandle]?.title || "")}</a>
                     ${badge}
                 </div>
                 ${thumbs ? `<span class="cro-fbw__thumbs">${thumbs}</span>` : ""}
@@ -1772,7 +1573,7 @@ class FixedBundleWidget extends BaseWidget {
   _renderCta(bundle, totals, count, addable, pending) {
     const state = pending ? "resolving" : !addable ? "unavailable" : this._addBundleId === bundle.id ? this._addState : "idle";
     const discount = `${totals.pct || 0}%`;
-    const savedHtml = `<span class="cro-fbw__note-save">${this.escapeHtml(this.formatMoney(totals.saved))} (${discount})</span>`;
+    const savedHtml = `<span class="cro-fbw__note-save">${this.escapeHtml(this.formatMoney(totals.saved))}</span>`;
     const summary = totals.saved > 0 ? this._textHtml("summary_text", { items: count, saved: savedHtml, discount }) : "";
     const label = this._text("add_to_cart_text", { price: this.formatMoney(totals.now), items: count });
     let button, note = summary;
@@ -1782,7 +1583,7 @@ class FixedBundleWidget extends BaseWidget {
         note = `<span class="cro-fbw__sk" style="width:70%;height:0.85em"></span>`;
         break;
       case "unavailable":
-        button = `<button type="button" class="cro-fbw__cta" disabled>${this.escapeHtml(this._text("unavailable_text"))}</button>`;
+        button = `<button type="button" class="cro-fbw__cta cro-fbw__cta--unavailable" disabled>${this.escapeHtml(this._text("unavailable_text"))}</button>`;
         note = "";
         break;
       case "adding":
@@ -1822,14 +1623,13 @@ class FixedBundleWidget extends BaseWidget {
   _renderCurrentBundleView(bundle) {
     const components = this._orderedComponents(bundle);
     this._ensureSelection(bundle);
-    const { totals } = this._resolveTotals(bundle, components);
     const cards = components.map((c) => this._renderCard(bundle, c, this._productMap.get(c.productId), true)).join("");
     const list = this.settings.product_layout === "slider" ? `<div class="cro-fbw__slider">
-                    <button type="button" class="cro-fbw__arrow cro-fbw__arrow--prev" data-action="slide" data-dir="-1" aria-label="Previous" disabled>‹</button>
+                    <button type="button" class="cro-fbw__arrow cro-fbw__arrow--prev" data-action="slide" data-dir="-1" aria-label="Previous" disabled>${ARROW_ICON}</button>
                     <div class="cro-fbw__cards cro-fbw__cards--slide">${cards}</div>
-                    <button type="button" class="cro-fbw__arrow cro-fbw__arrow--next" data-action="slide" data-dir="1" aria-label="More">›</button>
+                    <button type="button" class="cro-fbw__arrow cro-fbw__arrow--next" data-action="slide" data-dir="1" aria-label="More">${ARROW_ICON}</button>
                </div>` : `<div class="cro-fbw__cards cro-fbw__cards--grid">${cards}</div>`;
-    const badge = totals.saved > 0 ? `<span class="cro-fbw__flag">${this.escapeHtml(this._text("save_price_text", { amount: this.formatMoney(totals.saved), discount: `${totals.pct || 0}%` }))}</span>` : "";
+    const badge = bundle.badge ? `<span class="cro-fbw__flag">${this.escapeHtml(bundle.badge)}</span>` : "";
     const head = `<div class="cro-fbw__head cro-fbw__head--static cro-fbw__head--products">
             <span class="cro-fbw__head-copy">
                 <div class="cro-fbw__bundle-title-wrapper">
@@ -1874,7 +1674,7 @@ class FixedBundleWidget extends BaseWidget {
     this._pendingScroll = this._captureScroll();
     const { bundles, isCurrentProductBundle } = this.embeddedData || {};
     if (!bundles?.length) {
-      this.shadowRoot.innerHTML = this.isBuilderMode ? `<div class="cro-fbw"><p style="padding:16px;color:#9ca3af;margin:0">No bundle data available.</p></div>` : "";
+      this.shadowRoot.innerHTML = "";
       return;
     }
     if (!this._hydrated) {
@@ -1936,8 +1736,8 @@ class FixedBundleWidget extends BaseWidget {
     if (!root || !sheet || !card) return;
     const W = 288, rr = root.getBoundingClientRect(), cr = card.getBoundingClientRect();
     const left = Math.max(8, Math.min(cr.left - rr.left, root.clientWidth - W - 8));
-    sheet.style.setProperty("--cro-pop-left", left + "px");
-    sheet.style.setProperty("--cro-pop-top", cr.bottom - rr.top + 6 + "px");
+    sheet.style.setProperty("--cro-pop-left", Math.round(left) + "px");
+    sheet.style.setProperty("--cro-pop-top", Math.round(cr.bottom - rr.top + 6) + "px");
     sheet.style.setProperty("--cro-pop-w", W + "px");
   }
   _syncSlider() {
@@ -2004,14 +1804,24 @@ class FixedBundleWidget extends BaseWidget {
     });
   }
   get styles() {
-    const overrides = fixedBundleStyleBlock(
-      this.styleSettings,
-      (value) => this._typographyCss(value)
-    );
-    const customCss = String(this.styleSettings.custom_css || "").replace(/<\/style/gi, "");
+    const styleSettings = this.styleSettings || {};
+    const tokens = styleSettings.tokens || {};
+    const declarations = STYLE_TOKENS.map(([token, cssVar, fallback]) => {
+      const value = tokens[token];
+      const resolved = value !== void 0 && value !== null && value !== "" ? value : fallback;
+      return `${cssVar}: ${resolved};`;
+    }).join("\n    ");
+    const typographyRules = TYPOGRAPHY_TARGETS.map(([field, selector]) => {
+      const css = this._typographyCss(styleSettings[field]);
+      return css ? `.cro-fbw ${selector} { ${css} }` : "";
+    }).filter(Boolean).join("\n");
+    const overrides = `.cro-fbw {
+    ${declarations}
+}
+${typographyRules}`;
+    const customCss = String(styleSettings.custom_css || "").replace(/<\/style/gi, "");
     return `<style>${fixedBundleStyles}
-${overrides}
-${CRO_FBW_EXTRA_CSS}</style>${customCss ? `<style>${customCss}</style>` : ""}`;
+${overrides}</style>${customCss ? `<style>${customCss}</style>` : ""}`;
   }
 }
 if (typeof customElements !== "undefined" && !customElements.get("cro-fixed-bundle-widget")) {

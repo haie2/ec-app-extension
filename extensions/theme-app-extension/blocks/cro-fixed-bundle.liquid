@@ -2,10 +2,6 @@
   .shopify-block:has(> cro-fixed-bundle-widget) {
     width: 100%;
   }
-  .shopify-section:has(cro-fixed-bundle-widget) {
-    z-index: 9999 !important;
-    position: relative !important;
-  }
 </style>
 
 {%- assign fixed_bundles = shop.metafields.cro_hub.fixed_bundles.value -%}
@@ -44,6 +40,7 @@
       {%- unless is_match -%}{%- continue -%}{%- endunless -%}
 
       {%- assign product_bundle = all_products[bundle.bundleHandle] -%}
+      {%- if product_bundle.id == blank -%}{%- continue -%}{%- endif -%}
 
       {%- if bundle.hideIfUnavailable -%}
         {%- unless product_bundle.available -%}{%- continue -%}{%- endunless -%}
@@ -68,7 +65,7 @@
     {%- assign bp_sep = '' -%}
     {%- for bundle_handle in bundle_handles -%}
       {%- assign bundle_product = all_products[bundle_handle] -%}
-      {%- unless bundle_product.id -%}{%- continue -%}{%- endunless -%}
+      {%- if bundle_product.id == blank -%}{%- continue -%}{%- endif -%}
       {{ bp_sep }}{{ bundle_handle | json }}: {
         "id": {{ bundle_product.id | json }},
         "title": {{ bundle_product.title | json }},
@@ -124,11 +121,6 @@
   }
 </script>
 
-{%- comment -%}
-  Resolved variant of the URL's product. Read back after a
-  `/products/{handle}?section_id=…&option_values=…` section render to resolve a
-  high-variant (>250) bundle or component variant without inlining every variant.
-{%- endcomment -%}
 <script type="application/json" data-cro-current="{{ block.id }}">
   {%- if product.selected_or_first_available_variant -%}
     {
@@ -141,7 +133,6 @@
     }
   {%- else -%}null{%- endif -%}
 </script>
-
 
 {%- unless EComBuilderMode -%}
   <script>

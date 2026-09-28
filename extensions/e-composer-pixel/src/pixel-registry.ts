@@ -1,13 +1,9 @@
+import { subscribeCroContext, type PixelApi } from "./core";
 import { registerFixedBundlePixel } from "./fixed-bundle-pixel";
 import { registerMixMatchPixel } from "./mix-match-pixel";
+import { registerVolumeDiscountPixel } from "./volume-discount-pixel";
 
-type PixelApi = {
-    settings: Record<string, unknown>;
-    analytics: { subscribe: (event: string, callback: (event: any) => void) => void };
-    browser: { localStorage: { getItem: (key: string) => Promise<string | null>; setItem: (key: string, value: string) => Promise<void> } };
-};
-
-const registerFns = [registerFixedBundlePixel, registerMixMatchPixel];
+const registerFns = [registerFixedBundlePixel, registerMixMatchPixel, registerVolumeDiscountPixel];
 
 /**
  * Entry point the parent app's Web Pixel Extension (`e-composer-pixel/src/index.ts`)
@@ -17,6 +13,15 @@ const registerFns = [registerFixedBundlePixel, registerMixMatchPixel];
  * from registering.
  */
 export function registerCroPixels(api: PixelApi) {
+    // Subscribed once for the whole bundle, before the modules: it feeds every
+    // module's currency conversion and visitor id, and is not tied to any one
+    // extension.
+    try {
+        subscribeCroContext(api);
+    } catch (error) {
+        console.error("[cro-pixels] failed to subscribe cro context", error);
+    }
+
     for (const register of registerFns) {
         try {
             register(api);
