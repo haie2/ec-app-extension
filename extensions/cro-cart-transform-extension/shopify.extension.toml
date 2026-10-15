@@ -1,0 +1,25 @@
+api_version = "2026-07"
+uid = "cc21975c-8cfa-adb6-1fdf-a4a7ab5fe3ace49ccf25"
+
+[[extensions]]
+name = "t:name"
+handle = "cro-cart-transform-extension"
+type = "function"
+description = "t:description"
+
+  [[extensions.targeting]]
+  target = "cart.transform.run"
+  input_query = "src/cart_transform_run.graphql"
+  export = "cart-transform-run"
+
+  # Same metafield mixMatchRules is written by MMB_FUNCTION_METAFIELD in
+  # mix-match-bundle.server.ts — its top-level `collectionIds`/`tags`/
+  # `customerTags` keys are read here and fed into the input query as
+  # `$collectionIds`/`$tags`/`$customerTags`.
+  [extensions.input.variables]
+  namespace = "$app:cro-bundle"
+  key = "mixMatchRules"
+
+  [extensions.build]
+  command = ""
+  path = "dist/function.wasm"

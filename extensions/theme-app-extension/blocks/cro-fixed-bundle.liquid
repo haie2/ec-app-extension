@@ -4,9 +4,12 @@
   }
 </style>
 
+{%- render "cro-localization" -%}
+
 {%- assign fixed_bundles = shop.metafields.cro_hub.fixed_bundles.value -%}
 {%- assign fixed_widget = shop.metafields.cro_hub.fixed_bundle_widget.value -%}
 {%- assign fixed_store_id = shop.metafields.cro_hub.store_id.value.storeId -%}
+{%- assign fixed_analytics_enabled = shop.metafields.cro_hub.store_id.value.analyticsEnabled -%}
 
 <cro-fixed-bundle-widget
   is-builder-mode="{{ EComBuilderMode | json }}"
@@ -14,10 +17,11 @@
   widget-id="{{ block.id }}"
   section-id="{{ section.id }}"
   store-id="{{ fixed_store_id }}"
+  analytics-enabled="{{ fixed_analytics_enabled }}"
   shop-currency="{{ shop.currency }}"
 ></cro-fixed-bundle-widget>
 
-{%- assign max_fixed_bundles_to_show = fixed_widget.settings.max_bundles_display | default: 3 -%}
+{%- assign max_fixed_bundles_to_show = fixed_widget.settings.max_bundles_display | default: 3 | at_most: 5 -%}
 {%- assign bundle_handles = '' | split: ',' -%}
 {%- assign matched_count = 0 -%}
 {%- assign current_fixed_bundle = fixed_bundles | where: "bundleHandle", product.handle | first -%}
@@ -104,7 +108,19 @@
             }
             {%- assign bv_sep = ',' -%}
           {%- endfor -%}
-        ]
+        ],
+        "defaultVariant": {%- if bundle_product.selected_or_first_available_variant -%}
+          {
+            "id": {{ bundle_product.selected_or_first_available_variant.id | json }},
+            "values": [
+              {%- assign dval_sep = '' -%}
+              {%- for val in bundle_product.selected_or_first_available_variant.options -%}{{ dval_sep }}{{ val | json }}{%- assign dval_sep = ',' -%}{%- endfor -%}
+            ],
+            "price": {{ bundle_product.selected_or_first_available_variant.price | json }},
+            "compareAtPrice": {{ bundle_product.selected_or_first_available_variant.compare_at_price | json }},
+            "available": {{ bundle_product.selected_or_first_available_variant.available | json }}
+          }
+        {%- else -%}null{%- endif -%}
       }
       {%- assign bp_sep = ',' -%}
     {%- endfor -%}
@@ -154,6 +170,7 @@
 {
   "name": "CRO Product Fixed Bundle",
   "target": "section",
-  "javascript": "cro-helper.js"
+  "javascript": "cro-helper.js",
+  "templates": ["product"]
 }
 {% endschema %}

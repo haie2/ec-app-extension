@@ -1,0 +1,69 @@
+{%- assign bxgy_offers = shop.metafields.cro_hub.bxgy_campaigns.value -%}
+{%- assign bxgy_widgets = shop.metafields.cro_hub.bxgy_widgets.value -%}
+{%- assign has_matched_offer = false -%}
+
+{%- if product and bxgy_offers -%}
+  {%- assign now_ts = 'now' | date: '%s' | plus: 0 -%}
+
+  {%- for offer in bxgy_offers -%}
+    {%- unless offer.parentProduct.variantId -%}{%- continue -%}{%- endunless -%}
+
+    {%- if offer.schedule.enabled -%}
+      {%- if offer.schedule.startTs -%}
+        {%- assign start_ts = offer.schedule.startTs | plus: 0 -%}
+        {%- if now_ts < start_ts -%}{%- continue -%}{%- endif -%}
+      {%- endif -%}
+      {%- if offer.schedule.endTs -%}
+        {%- assign end_ts = offer.schedule.endTs | plus: 0 -%}
+        {%- if now_ts > end_ts -%}{%- continue -%}{%- endif -%}
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- for trigger_item in offer.trigger.items -%}
+      {%- if trigger_item.id == product.id -%}
+        {%- assign matched_offer = offer -%}
+        {%- assign has_matched_offer = true -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if has_matched_offer -%}{%- break -%}{%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+<cro-bxgy-bundle-widget
+  is-builder-mode="{{ EComBuilderMode | json }}"
+  widget-id="{{ block.id }}"
+></cro-bxgy-bundle-widget>
+
+<script type="application/json" data-id="{{ block.id }}">
+  {%- assign widget_config = bxgy_widgets[matched_offer.id] -%}
+  {
+    "widgetId": {{ block.id | json }},
+    "productId": {{ product.id | json }},
+    "moneyFormat": {{ shop.money_format | json }},
+    "settings": {%- if widget_config.settings -%}{{ widget_config.settings | json }}{%- else -%}{}{%- endif -%},
+    "styles": {%- if widget_config.styles -%}{{ widget_config.styles | json }}{%- else -%}{}{%- endif -%},
+    "campaign": {%- if has_matched_offer -%}{{ matched_offer | json }}{%- else -%}null{%- endif -%}
+  }
+</script>
+
+{%- unless EComBuilderMode -%}
+  <script>
+    if (!window.CRO_BXGY_WIDGET_LOADED) {
+      window.CRO_BXGY_WIDGET_LOADED = true;
+      const script = document.createElement('script');
+      script.src = "{{ 'CroBxgyBundleWidget.js' | asset_url }}";
+      script.type = 'module';
+      document.head.appendChild(script);
+    }
+  </script>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "CRO BXGY / Gift",
+  "target": "section",
+  "templates": ["product"]
+}
+{% endschema %}

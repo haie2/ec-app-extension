@@ -13,20 +13,8 @@ automatically_update_urls_on_dev = true
 api_version = "2024-10"
 
   [[webhooks.subscriptions]]
-  topics = [ "app/uninstalled" ]
-  uri = "/webhook/app-uninstalled"
-
-  [[webhooks.subscriptions]]
-  topics = [ "markets/update" ]
-  uri = "/webhook/markets-update"
-
-  [[webhooks.subscriptions]]
-  topics = [ "themes/publish" ]
-  uri = "/webhook/themes-publish"
-
-  [[webhooks.subscriptions]]
-  topics = [ "markets/delete" ]
-  uri = "/webhook/markets-delete"
+  topics = [ "shop/update" ]
+  uri = "/webhook/shop-update"
 
   [[webhooks.subscriptions]]
   uri = "/webhook/customer-redact"
@@ -41,8 +29,16 @@ api_version = "2024-10"
   uri = "/webhook/themes-delete"
 
   [[webhooks.subscriptions]]
-  topics = [ "shop/update" ]
-  uri = "/webhook/shop-update"
+  topics = [ "app/uninstalled" ]
+  uri = "/webhook/app-uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "themes/publish" ]
+  uri = "/webhook/themes-publish"
+
+  [[webhooks.subscriptions]]
+  topics = [ "markets/delete" ]
+  uri = "/webhook/markets-delete"
 
   [[webhooks.subscriptions]]
   topics = [ "markets/create" ]
@@ -51,6 +47,10 @@ api_version = "2024-10"
   [[webhooks.subscriptions]]
   topics = [ "locales/update" ]
   uri = "/webhook/locales-update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "markets/update" ]
+  uri = "/webhook/markets-update"
 
 [access.admin]
 direct_api_mode = "online"

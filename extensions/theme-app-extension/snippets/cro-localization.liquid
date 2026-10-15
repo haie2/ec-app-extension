@@ -1,0 +1,10 @@
+{%- liquid
+  assign primary_locale = 'en'
+  assign available_locales = shop.published_locales | map: 'iso_code'
+  for published_locale in shop.published_locales
+    if published_locale.primary
+      assign primary_locale = published_locale.iso_code
+    endif
+  endfor
+-%}
+<script>window.CRO_LOCALIZATION=window.CRO_LOCALIZATION||{currentLocale:window.Shopify&&window.Shopify.locale||"en",primaryLocale:{{ primary_locale | json }},availableLocales:{{ available_locales | json }}}</script>
