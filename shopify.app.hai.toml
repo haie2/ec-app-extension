@@ -1,0 +1,95 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "d11576dffc58d84a7949be6df2773ece"
+name = "EComposer Hai"
+application_url = "https://haitihong.ecomposer.app"
+embedded = true
+handle = "ecomposer-hai"
+
+[build]
+automatically_update_urls_on_dev = true
+
+[webhooks]
+api_version = "2024-10"
+
+  [[webhooks.subscriptions]]
+  topics = [ "themes/publish" ]
+  uri = "/webhook/themes-publish"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhook/app-uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "shop/update" ]
+  uri = "/webhook/shop-update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "markets/create" ]
+  uri = "/webhook/markets-create"
+
+  [[webhooks.subscriptions]]
+  topics = [ "themes/delete" ]
+  uri = "/webhook/themes-delete"
+
+  [[webhooks.subscriptions]]
+  uri = "/webhook/customer-redact"
+  compliance_topics = [ "customers/data_request", "customers/redact" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhook/shop-redact"
+  compliance_topics = [ "shop/redact" ]
+
+  [[webhooks.subscriptions]]
+  topics = [ "markets/delete" ]
+  uri = "/webhook/markets-delete"
+
+  [[webhooks.subscriptions]]
+  topics = [ "locales/update" ]
+  uri = "/webhook/locales-update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "markets/update" ]
+  uri = "/webhook/markets-update"
+
+[access.admin]
+direct_api_mode = "online"
+embedded_app_direct_api_access = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_content,read_files,read_locales,read_markets,read_products,read_reports,read_themes,write_app_proxy,write_content,write_discounts,write_files,write_products,write_themes"
+optional_scopes = [
+  "read_metaobjects",
+  "read_analytics",
+  "write_metaobjects",
+  "read_markets_home",
+  "read_translations",
+  "write_metaobject_definitions",
+  "write_translations",
+  "read_online_store_navigation",
+  "write_online_store_navigation",
+  "read_orders",
+  "read_customers",
+  "write_customers",
+  "write_pixels",
+  "read_customer_events",
+  "read_publications",
+  "write_publications",
+  "unauthenticated_read_product_listings",
+  "unauthenticated_write_checkouts",
+  "unauthenticated_read_product_inventory",
+  "write_cart_transforms"
+]
+use_legacy_install_flow = false
+
+[auth]
+redirect_urls = [ "https://haitihong.ecomposer.app/auth/authenticate" ]
+
+[app_proxy]
+url = "https://haitihong.ecomposer.app/proxy"
+subpath = "ecomposer-hai"
+prefix = "apps"
+
+[pos]
+embedded = false

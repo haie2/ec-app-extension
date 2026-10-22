@@ -1,6 +1,19 @@
+<style>
+  .shopify-block:has(> cro-bxgy-bundle-widget) {
+    width: 100%;
+  }
+</style>
+
 {%- assign bxgy_offers = shop.metafields.cro_hub.bxgy_campaigns.value -%}
 {%- assign bxgy_widgets = shop.metafields.cro_hub.bxgy_widgets.value -%}
-{%- assign has_matched_offer = false -%}
+{%- assign storefront_access = shop.metafields.cro_hub.storefront_token.value -%}
+{%- assign storefront_token = null -%}
+{%- if storefront_access.token and storefront_access.scopes contains 'unauthenticated_read_product_inventory' -%}
+  {%- assign storefront_token = storefront_access.token -%}
+{%- endif -%}
+{%- assign max_candidates = 3 -%}
+{%- assign candidate_count = 0 -%}
+{%- assign candidate_ids = '' -%}
 
 {%- if product and bxgy_offers -%}
   {%- assign now_ts = 'now' | date: '%s' | plus: 0 -%}
@@ -21,15 +34,17 @@
 
     {%- for trigger_item in offer.trigger.items -%}
       {%- if trigger_item.id == product.id -%}
-        {%- assign matched_offer = offer -%}
-        {%- assign has_matched_offer = true -%}
+        {%- assign candidate_count = candidate_count | plus: 1 -%}
+        {%- assign candidate_ids = candidate_ids | append: offer.id | append: ',' -%}
         {%- break -%}
       {%- endif -%}
     {%- endfor -%}
 
-    {%- if has_matched_offer -%}{%- break -%}{%- endif -%}
+    {%- if candidate_count >= max_candidates -%}{%- break -%}{%- endif -%}
   {%- endfor -%}
 {%- endif -%}
+
+{%- assign candidate_id_list = candidate_ids | split: ',' -%}
 
 <cro-bxgy-bundle-widget
   is-builder-mode="{{ EComBuilderMode | json }}"
@@ -37,25 +52,47 @@
 ></cro-bxgy-bundle-widget>
 
 <script type="application/json" data-id="{{ block.id }}">
-  {%- assign widget_config = bxgy_widgets[matched_offer.id] -%}
   {
     "widgetId": {{ block.id | json }},
     "productId": {{ product.id | json }},
     "moneyFormat": {{ shop.money_format | json }},
-    "settings": {%- if widget_config.settings -%}{{ widget_config.settings | json }}{%- else -%}{}{%- endif -%},
-    "styles": {%- if widget_config.styles -%}{{ widget_config.styles | json }}{%- else -%}{}{%- endif -%},
-    "campaign": {%- if has_matched_offer -%}{{ matched_offer | json }}{%- else -%}null{%- endif -%}
+    "designMode": {{ request.design_mode | json }},
+    "storefrontToken": {{ storefront_token | json }},
+    "candidates": [
+      {%- for candidate_id in candidate_id_list -%}
+        {%- for offer in bxgy_offers -%}
+          {%- if offer.id == candidate_id -%}
+            {%- assign widget_config = bxgy_widgets[offer.id] -%}
+            {%- assign variant_map_key = 'bxgy_variants_' | append: offer.id -%}
+            {%- assign variant_map = shop.metafields.cro_hub[variant_map_key].value -%}
+            {
+              "campaign": {{ offer | json }},
+              "settings": {%- if widget_config.settings -%}{{ widget_config.settings | json }}{%- else -%}{}{%- endif -%},
+              "styles": {%- if widget_config.styles -%}{{ widget_config.styles | json }}{%- else -%}{}{%- endif -%},
+              "variantMap": {%- if variant_map -%}{{ variant_map | json }}{%- else -%}null{%- endif -%}
+            }
+            {%- break -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
   }
 </script>
 
 {%- unless EComBuilderMode -%}
+  {%- render 'cro-localization' -%}
   <script>
     if (!window.CRO_BXGY_WIDGET_LOADED) {
       window.CRO_BXGY_WIDGET_LOADED = true;
-      const script = document.createElement('script');
-      script.src = "{{ 'CroBxgyBundleWidget.js' | asset_url }}";
-      script.type = 'module';
-      document.head.appendChild(script);
+      var loadWidget = function () {
+        var script = document.createElement('script');
+        script.src = "{{ 'CroBxgyBundleWidget.js' | asset_url }}";
+        script.type = 'module';
+        document.head.appendChild(script);
+      };
+      if (window.CRO_HUB || document.readyState !== 'loading') loadWidget();
+      else document.addEventListener('DOMContentLoaded', loadWidget, { once: true });
     }
   </script>
 {%- endunless -%}
@@ -64,6 +101,7 @@
 {
   "name": "CRO BXGY / Gift",
   "target": "section",
+  "javascript": "cro-helper.js",
   "templates": ["product"]
 }
 {% endschema %}

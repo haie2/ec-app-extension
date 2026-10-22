@@ -78,15 +78,15 @@ query CartTransformRunInput($collectionIds: [ID!], $tags: [String!], $customerTa
         localTime {
             date
         }
-        bxgy: metafield(namespace: "cro_hub", key: "bxgy_campaigns") {
-            value
-        }
     }
 
     # Owned by cartTransform, not shop — see APP_CART_TRANSFORM_NAMESPACE on
     # the server.
     cartTransform {
         mixMatch: metafield(namespace: "$app:cro-bundle", key: "mixMatchRules") {
+            jsonValue
+        }
+        bxgy: metafield(namespace: "$app:cro-bundle", key: "bxgyRules") {
             jsonValue
         }
     }

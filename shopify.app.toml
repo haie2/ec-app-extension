@@ -6,15 +6,28 @@ application_url = "https://haitihong.ecomposer.app"
 embedded = true
 handle = "ecomposer-hai"
 
-[build]
-automatically_update_urls_on_dev = true
-
 [webhooks]
 api_version = "2024-10"
 
   [[webhooks.subscriptions]]
+  topics = [ "themes/publish" ]
+  uri = "/webhook/themes-publish"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhook/app-uninstalled"
+
+  [[webhooks.subscriptions]]
   topics = [ "shop/update" ]
   uri = "/webhook/shop-update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "markets/create" ]
+  uri = "/webhook/markets-create"
+
+  [[webhooks.subscriptions]]
+  topics = [ "themes/delete" ]
+  uri = "/webhook/themes-delete"
 
   [[webhooks.subscriptions]]
   uri = "/webhook/customer-redact"
@@ -25,24 +38,8 @@ api_version = "2024-10"
   compliance_topics = [ "shop/redact" ]
 
   [[webhooks.subscriptions]]
-  topics = [ "themes/delete" ]
-  uri = "/webhook/themes-delete"
-
-  [[webhooks.subscriptions]]
-  topics = [ "app/uninstalled" ]
-  uri = "/webhook/app-uninstalled"
-
-  [[webhooks.subscriptions]]
-  topics = [ "themes/publish" ]
-  uri = "/webhook/themes-publish"
-
-  [[webhooks.subscriptions]]
   topics = [ "markets/delete" ]
   uri = "/webhook/markets-delete"
-
-  [[webhooks.subscriptions]]
-  topics = [ "markets/create" ]
-  uri = "/webhook/markets-create"
 
   [[webhooks.subscriptions]]
   topics = [ "locales/update" ]
@@ -58,7 +55,7 @@ embedded_app_direct_api_access = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_content,read_files,read_locales,read_markets,read_products,read_reports,read_themes,write_app_proxy,write_cart_transforms,write_content,write_discounts,write_files,write_products,write_themes"
+scopes = "read_content,read_files,read_locales,read_markets,read_products,read_reports,read_themes,write_app_proxy,write_content,write_discounts,write_files,write_products,write_themes"
 optional_scopes = [
   "read_metaobjects",
   "read_analytics",
@@ -77,7 +74,9 @@ optional_scopes = [
   "read_publications",
   "write_publications",
   "unauthenticated_read_product_listings",
-  "unauthenticated_write_checkouts"
+  "unauthenticated_write_checkouts",
+  "unauthenticated_read_product_inventory",
+  "write_cart_transforms"
 ]
 use_legacy_install_flow = false
 
