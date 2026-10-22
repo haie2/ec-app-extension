@@ -4,8 +4,6 @@
   }
 </style>
 
-{%- render "cro-localization" -%}
-
 {%- assign fixed_bundles = shop.metafields.cro_hub.fixed_bundles.value -%}
 {%- assign fixed_widget = shop.metafields.cro_hub.fixed_bundle_widget.value -%}
 {%- assign fixed_store_id = shop.metafields.cro_hub.store_id.value.storeId -%}
@@ -151,6 +149,7 @@
 </script>
 
 {%- unless EComBuilderMode -%}
+  {%- render 'cro-localization' -%}
   <script>
     if (!window.CRO_FIXED_BUNDLE_WIDGET_LOADED) {
       window.CRO_FIXED_BUNDLE_WIDGET_LOADED = true;
@@ -168,7 +167,7 @@
 
 {% schema %}
 {
-  "name": "CRO Product Fixed Bundle",
+  "name": "Fixed Bundle",
   "target": "section",
   "javascript": "cro-helper.js",
   "templates": ["product"]
