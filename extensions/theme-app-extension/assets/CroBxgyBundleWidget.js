@@ -570,6 +570,7 @@ const narrowBxgyProducts = (products, items) => {
 const CRO_DATA_PROPERTY = "_cro_data";
 const BXGY_LINE_TYPE = "bxgy";
 const CART_ICON_SECTION = "cart-icon-bubble";
+const BXGY_MAX_BUNDLE_LINES = 25;
 const newBundleInstanceId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 const toVariantNumber = (value) => {
   const id = Number(String(value ?? "").split("/").pop());
@@ -977,6 +978,19 @@ const closeEditor = (widget) => {
 const stepDraftQuantity = (widget, role, index, delta) => {
   widget.store.draftQuantity.set(selectionKey(role, index), draftUnits(widget, role, index) + delta);
 };
+const selectionLineCount = (widget) => {
+  let count = 0;
+  for (const role of ["trigger", "reward"]) {
+    const mode = selectionModeOf(role, widget.campaign[role]?.type);
+    const items = roleItems(widget, role);
+    for (let index = 0; index < items.length; index += 1) {
+      if (mode === "fixed") count += 1;
+      else if (mode === "mixMatch") count += pickLines(widget, role, index).length;
+    }
+  }
+  return count;
+};
+const isAtBundleLineLimit = (widget) => selectionLineCount(widget) >= BXGY_MAX_BUNDLE_LINES;
 const addItems = (widget, role, index) => {
   const { store } = widget;
   const item = roleItems(widget, role)[index];
@@ -988,6 +1002,7 @@ const addItems = (widget, role, index) => {
   const variantId = String(resolved.variant.id);
   const lines = pickLines(widget, role, index).map((line) => ({ ...line }));
   const existingLine = lines.find((line) => line.variantId === variantId);
+  if (!existingLine && isAtBundleLineLimit(widget)) return null;
   if (existingLine) existingLine.quantity += quantity;
   else lines.push({ variantId, quantity });
   store.pickedLines.set(key, lines);
@@ -1554,6 +1569,7 @@ const DEFAULT_TEXT = Object.freeze({
   addToCartErrorText: "We couldn't add this offer to your cart. Please try again.",
   chooseOptionsErrorText: "Please choose an option for every item.",
   repeatLimitErrorText: "You've reached the limit for this offer in your cart.",
+  lineLimitErrorText: "This offer can include up to {{max}} different items.",
   rewardLockedText: "Locked",
   itemAddText: "Add items",
   itemAddMoreText: "Add {{remaining}} More",
@@ -1833,6 +1849,8 @@ class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
           item: lineItemLabel(this, role, Number(index), addedLine.variantId)
         }));
         focusSelectors.push(`[data-action="add-items"]${cardSelector}`, `[data-action="remove-line"][data-variant-id="${addedLine.variantId}"]${cardSelector}`);
+      } else if (isAtBundleLineLimit(this)) {
+        this._setSubmitState("error", this._text("lineLimitErrorText", { max: BXGY_MAX_BUNDLE_LINES }));
       }
     } else if (action === "submit-offer") {
       this._submitOffer();
@@ -1875,6 +1893,10 @@ class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
     const lines = selections ? buildBxgyCartLines(selections, { campaignId: campaign.id, bundleId: newBundleInstanceId() }) : null;
     if (!lines?.length) {
       this._setSubmitState("error", this._text("chooseOptionsErrorText"));
+      return;
+    }
+    if (lines.length > BXGY_MAX_BUNDLE_LINES) {
+      this._setSubmitState("error", this._text("lineLimitErrorText", { max: BXGY_MAX_BUNDLE_LINES }));
       return;
     }
     this._setSubmitState("adding");

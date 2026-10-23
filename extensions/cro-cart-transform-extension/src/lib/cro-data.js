@@ -8,7 +8,7 @@
  * Returns null for anything not readable — no field here has a safe
  * default, so a null leaves the line untouched by any handler.
  */
-export const readCroData = (line) => {
+const parseCroData = (line) => {
     const raw = line.croData?.value;
     if (typeof raw !== "string" || !raw) return null;
 
@@ -18,4 +18,11 @@ export const readCroData = (line) => {
     } catch {
         return null;
     }
+};
+
+const croDataByLine = new WeakMap();
+
+export const readCroData = (line) => {
+    if (!croDataByLine.has(line)) croDataByLine.set(line, parseCroData(line));
+    return croDataByLine.get(line);
 };
