@@ -15,7 +15,8 @@ description = "t:description"
   # Same metafield mixMatchRules is written by MMB_FUNCTION_METAFIELD in
   # mix-match-bundle.server.ts — its top-level `collectionIds`/`tags`/
   # `customerTags` keys are read here and fed into the input query as
-  # `$collectionIds`/`$tags`/`$customerTags`.
+  # `$collectionIds`/`$tags`/`$customerTags`; the input query also reads the
+  # whole value for the bundle list (10 kB cap).
   [extensions.input.variables]
   namespace = "$app:cro-bundle"
   key = "mixMatchRules"

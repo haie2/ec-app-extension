@@ -22,6 +22,7 @@ const writeBuilderMode = (element, value) => {
     element.setAttribute("is-builder-mode", String(value));
   }
 };
+const readEcBuilder = (element) => element.getAttribute("is-ec-builder") === "true" || element.getAttribute("isecbuilder") !== null;
 const readWidgetId = (element) => element.getAttribute("widget-id") || element.getAttribute("widgetId");
 const guardBuilderNavigation = (element) => {
   if (!readBuilderMode(element) || element._navGuardAttached || !element.shadowRoot) return;
@@ -39,8 +40,20 @@ const HTML_ESCAPES = {
   "'": "&#39;"
 };
 const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (ch) => HTML_ESCAPES[ch]);
+const formatWithEcomposer = (cents) => {
+  try {
+    return window.EComposer.formatMoney(cents);
+  } catch (error) {
+    console.error("[cro-hub] EComposer.formatMoney failed", error);
+    return null;
+  }
+};
 const formatMoney = (element, cents) => {
   if (typeof window?.CRO_HUB?.formatMoney === "function") return window.CRO_HUB.formatMoney(cents);
+  if (readEcBuilder(element) && typeof window?.EComposer?.formatMoney === "function") {
+    const formatted = formatWithEcomposer(cents);
+    if (formatted != null) return formatted;
+  }
   const amount = Number(cents) / 100;
   const currency = element.getAttribute("currency");
   if (currency) {
@@ -83,7 +96,7 @@ const fillTextTemplate = (template, replacements = {}) => String(template).repla
   (match, key) => Object.prototype.hasOwnProperty.call(replacements, key) ? String(replacements[key] ?? "") : match
 );
 const resolveTextTemplate = (value, replacements = {}, fallback = "") => fillTextTemplate(resolveLocaleValue(value, fallback), replacements);
-const bxgyStyles = '*,\n*::before,\n*::after {\n    box-sizing: border-box;\n    margin: 0;\n    padding: 0;\n}\n\n:host {\n    display: block;\n}\n\n.cro-bxgy {\n    --cro-fg: #000000;\n    --cro-bg: #ffffff;\n    --cro-border-subtle: #00000033;\n\n    --cro-font: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n    --cro-fw-medium: 500;\n    --cro-fw-semibold: 600;\n    --cro-lh-heading: 1.2;\n\n    --cro-header-title-fs: 20px;\n    --cro-header-subtitle-fs: 14px;\n    --cro-header-gap: 6px;\n    --cro-header-divider-w: 157px;\n    --cro-header-divider-h: 2px;\n    --cro-header-divider-mt: 13px;\n    --cro-header-mb: 25px;\n\n    --cro-trigger-gap: 13px;\n    --cro-trigger-card-min-w: 280px;\n    --cro-trigger-card-max-w: 324px;\n    --cro-card-radius: 8px;\n    --cro-card-border-w: 1px;\n    --cro-card-pad: 5px;\n    --cro-card-gap: 12px;\n    --cro-card-body-pt: 9px;\n    --cro-card-body-gap: 7px;\n    --cro-card-title-fs: 14px;\n    --cro-card-title-lines: 2;\n    --cro-card-price-fs: 14px;\n    --cro-price-gap: 7px;\n    --cro-price-row-gap: 2px;\n    --cro-price-was-opacity: 0.6;\n    --cro-img-w: 105px;\n    --cro-img-h: 124px;\n    --cro-image-radius: 4px;\n    --cro-qty-size: 20px;\n    --cro-qty-fs: 10px;\n    --cro-qty-top: 4.5px;\n    --cro-qty-right: 6.5px;\n    --cro-qty-radius: 2px;\n    --cro-qty-bg: var(--cro-fg);\n    --cro-qty-fg: var(--cro-bg);\n    --cro-control-w: 99px;\n    --cro-control-h: 28px;\n    --cro-control-fs: 12px;\n    --cro-control-radius: 4px;\n    --cro-control-pad-left: 10px;\n    --cro-control-pad-right: 28px;\n    --cro-caret-w: 10px;\n    --cro-caret-right: 12px;\n    --cro-fw-regular: 400;\n    --cro-fw-bold: 600;\n\n    --cro-body-gap: 22px;\n    --cro-reward-gap: 25px;\n    --cro-reward-head-gap: 14px;\n    --cro-reward-count-color: color-mix(in srgb, var(--cro-fg) 60%, transparent);\n    --cro-reward-count-fs: 13px;\n    --cro-reward-label-fs: 14px;\n    --cro-reward-label-case: uppercase;\n    --cro-reward-bg: color-mix(in srgb, var(--cro-fg) 4%, transparent);\n    --cro-reward-border: var(--cro-fg);\n    --cro-reward-border-w: 2px;\n    --cro-reward-radius: 12px;\n    --cro-reward-pad: 12px;\n    --cro-reward-list-gap: 13px;\n    --cro-reward-card-min-w: 240px;\n    --cro-reward-card-max-w: 312px;\n    --cro-reward-card-border: color-mix(in srgb, var(--cro-fg) 10%, transparent);\n    --cro-reward-card-pad-y: 9px;\n    --cro-reward-card-pad-x: 10px;\n    --cro-reward-card-gap: 13px;\n    --cro-reward-body-gap: 9px;\n    --cro-reward-info-gap: 2px;\n    --cro-reward-img-w: 52px;\n    --cro-reward-img-h: 61px;\n    --cro-reward-img-radius: 2px;\n    --cro-gift-bg: #d9fa74;\n    --cro-gift-fg: #000000;\n    --cro-gift-h: 20px;\n    --cro-gift-pad-x: 10px;\n    --cro-gift-fs: 10px;\n    --cro-gift-radius: 4px;\n\n    --cro-footer-mt: 11px;\n    --cro-footer-gap: 7px;\n    --cro-total-gap: 9px;\n    --cro-total-label-fs: 14px;\n    --cro-total-price-fs: 20px;\n    --cro-savings-fs: 12px;\n    --cro-savings-color: #b30000;\n    --cro-cta-mt: 13px;\n    --cro-cta-bg: var(--cro-fg);\n    --cro-cta-fg: var(--cro-bg);\n    --cro-cta-border: color-mix(in srgb, var(--cro-fg) 8%, transparent);\n    --cro-cta-h: 52px;\n    --cro-cta-fs: 18px;\n    --cro-cta-pad: 10px;\n    --cro-cta-radius: 8px;\n    --cro-notice-mt: 8px;\n    --cro-notice-color: #b42318;\n    --cro-notice-fs: 13px;\n\n    --cro-progress-max-w: 461px;\n    --cro-progress-gap: 5px;\n    --cro-progress-mb: 30px;\n    --cro-progress-fs: 12px;\n    --cro-progress-color: #1c9622;\n    --cro-track-h: 7px;\n    --cro-track-bg: color-mix(in srgb, var(--cro-fg) 8%, transparent);\n    --cro-stepper-w: 68px;\n    --cro-step-icon: 8px;\n    --cro-step-disabled-opacity: 0.3;\n    --cro-controls-gap: 6px;\n\n    --cro-reward-list-row-gap: 12px;\n    --cro-reward-qty-top: 3px;\n    --cro-reward-qty-right: 3px;\n    --cro-reward-pick-img-w: 95px;\n    --cro-reward-pick-img-h: 113px;\n    --cro-reward-pick-img-radius: 4px;\n    --cro-reward-pick-gap: 15px;\n    --cro-reward-pick-pad: 5px;\n    --cro-reward-pick-body-pt: 8px;\n    --cro-reward-pick-body-pb: 4px;\n    --cro-reward-pick-qty-top: 5px;\n    --cro-reward-pick-qty-right: 5px;\n    --cro-reward-controls-mt: 3px;\n    --cro-reward-controls-gap: 7px;\n    --cro-reward-title-gap: 9px;\n    --cro-reward-locked-opacity: 0.4;\n    --cro-lock-badge-h: 22px;\n    --cro-lock-badge-pad-x: 7px;\n    --cro-lock-badge-gap: 5px;\n    --cro-lock-badge-bg: color-mix(in srgb, var(--cro-fg) 8%, transparent);\n    --cro-lock-badge-fs: 10px;\n    --cro-lock-icon-w: 8px;\n    --cro-lock-icon-h: 10px;\n    --cro-cta-disabled-bg: color-mix(in srgb, var(--cro-fg) 20%, transparent);\n\n    --cro-radius: 10px;\n    --cro-container-border-w: 2px;\n    --cro-container-max-w: 705px;\n    --cro-container-margin: 0px;\n    --cro-container-pad-x: 22px;\n    --cro-container-pad-y: 27px;\n\n    position: relative;\n    width: 100%;\n    max-width: var(--cro-container-max-w);\n    padding: var(--cro-container-pad-y) var(--cro-container-pad-x);\n    background-color: var(--cro-bg);\n    border: var(--cro-container-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-radius);\n    color: var(--cro-fg);\n    font-family: var(--cro-font);\n}\n\n.cro-bxgy__header {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    gap: var(--cro-header-gap);\n    margin-bottom: var(--cro-header-mb);\n    text-align: center;\n}\n\n.cro-bxgy__title {\n    font-size: var(--cro-header-title-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__subtitle {\n    font-size: var(--cro-header-subtitle-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__header-divider {\n    width: var(--cro-header-divider-w);\n    max-width: 100%;\n    height: var(--cro-header-divider-h);\n    margin-top: var(--cro-header-divider-mt);\n    border: 0;\n    background-color: var(--cro-border-subtle);\n}\n\n.cro-bxgy__trigger {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--cro-trigger-card-min-w)), 1fr));\n    gap: var(--cro-trigger-gap);\n}\n\n.cro-bxgy__card {\n    display: flex;\n    justify-self: start;\n    width: 100%;\n    max-width: var(--cro-trigger-card-max-w);\n    gap: var(--cro-card-gap);\n    min-width: 0;\n    padding: calc(var(--cro-card-pad) - var(--cro-card-border-w));\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-card-radius);\n}\n\n.cro-bxgy__media {\n    position: relative;\n    flex: none;\n    width: var(--cro-img-w);\n    height: var(--cro-img-h);\n}\n\n.cro-bxgy__img {\n    display: block;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    border-radius: var(--cro-image-radius);\n}\n\n.cro-bxgy__img--placeholder {\n    background-color: var(--cro-border-subtle);\n}\n\n.cro-bxgy__qty {\n    position: absolute;\n    top: var(--cro-qty-top);\n    right: var(--cro-qty-right);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    min-width: var(--cro-qty-size);\n    height: var(--cro-qty-size);\n    padding: 0 3px;\n    background-color: var(--cro-qty-bg);\n    border-radius: var(--cro-qty-radius);\n    color: var(--cro-qty-fg);\n    font-size: var(--cro-qty-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: 1;\n}\n\n.cro-bxgy__card-body {\n    display: flex;\n    flex: 1;\n    flex-direction: column;\n    align-items: flex-start;\n    gap: var(--cro-card-body-gap);\n    min-width: 0;\n    padding-top: var(--cro-card-body-pt);\n}\n\n.cro-bxgy__name {\n    display: -webkit-box;\n    max-width: 100%;\n    overflow: hidden;\n    overflow-wrap: anywhere;\n    -webkit-line-clamp: var(--cro-card-title-lines);\n    -webkit-box-orient: vertical;\n    font-size: var(--cro-card-title-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__name--link {\n    color: inherit;\n    text-decoration: none;\n}\n\n.cro-bxgy__name--link:hover {\n    text-decoration: underline;\n}\n\n.cro-bxgy__name--link:focus-visible {\n    outline: 2px solid currentColor;\n    outline-offset: 2px;\n}\n\n.cro-bxgy__price {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: baseline;\n    gap: var(--cro-price-row-gap) var(--cro-price-gap);\n    max-width: 100%;\n    font-size: var(--cro-card-price-fs);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__price-was,\n.cro-bxgy__price-now {\n    white-space: nowrap;\n}\n\n.cro-bxgy__price-was {\n    font-weight: var(--cro-fw-regular);\n    opacity: var(--cro-price-was-opacity);\n}\n\n.cro-bxgy__price-now {\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-bxgy__select {\n    position: relative;\n    width: var(--cro-control-w);\n    max-width: 100%;\n    height: var(--cro-control-h);\n}\n\n.cro-bxgy__select-input {\n    width: 100%;\n    height: 100%;\n    padding: 0 var(--cro-control-pad-right) 0 var(--cro-control-pad-left);\n    overflow: hidden;\n    appearance: none;\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-control-radius);\n    color: inherit;\n    cursor: pointer;\n    font: inherit;\n    font-size: var(--cro-control-fs);\n    font-weight: var(--cro-fw-regular);\n    text-overflow: ellipsis;\n}\n\n.cro-bxgy__select-caret {\n    position: absolute;\n    top: 50%;\n    right: var(--cro-caret-right);\n    width: var(--cro-caret-w);\n    transform: translateY(-50%);\n    pointer-events: none;\n}\n\n.cro-bxgy__body {\n    display: grid;\n    gap: var(--cro-body-gap);\n}\n\n.cro-bxgy__reward {\n    display: grid;\n    gap: var(--cro-reward-gap);\n}\n\n.cro-bxgy__reward-head {\n    display: grid;\n    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);\n    align-items: center;\n    gap: var(--cro-reward-head-gap);\n}\n\n.cro-bxgy__reward-head::before,\n.cro-bxgy__reward-head::after {\n    content: "";\n    height: var(--cro-card-border-w);\n    background-color: var(--cro-border-subtle);\n}\n\n.cro-bxgy__reward-title {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: center;\n    justify-content: center;\n    gap: var(--cro-price-row-gap) var(--cro-reward-title-gap);\n}\n\n.cro-bxgy__reward-count {\n    color: var(--cro-reward-count-color);\n    font-size: var(--cro-reward-count-fs);\n}\n\n.cro-bxgy__lock-badge {\n    display: inline-flex;\n    align-items: center;\n    gap: var(--cro-lock-badge-gap);\n    height: var(--cro-lock-badge-h);\n    padding: 0 var(--cro-lock-badge-pad-x);\n    background-color: var(--cro-lock-badge-bg);\n    border-radius: var(--cro-gift-radius);\n    font-size: var(--cro-lock-badge-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: 1;\n    text-transform: uppercase;\n}\n\n.cro-bxgy__lock-icon {\n    width: var(--cro-lock-icon-w);\n    height: var(--cro-lock-icon-h);\n}\n\n.cro-bxgy__reward--locked .cro-bxgy__reward-list {\n    opacity: var(--cro-reward-locked-opacity);\n}\n\n.cro-bxgy__reward-label {\n    font-size: var(--cro-reward-label-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-heading);\n    text-align: center;\n    text-transform: var(--cro-reward-label-case);\n}\n\n.cro-bxgy__reward-list {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--cro-reward-card-min-w)), 1fr));\n    gap: var(--cro-reward-list-gap);\n    padding: calc(var(--cro-reward-pad) - var(--cro-reward-border-w));\n    background-color: var(--cro-reward-bg);\n    border: var(--cro-reward-border-w) solid var(--cro-reward-border);\n    border-radius: var(--cro-reward-radius);\n}\n\n.cro-bxgy__reward-card {\n    display: flex;\n    justify-self: start;\n    gap: var(--cro-reward-card-gap);\n    width: 100%;\n    max-width: var(--cro-reward-card-max-w);\n    min-width: 0;\n    padding: var(--cro-reward-card-pad-y) var(--cro-reward-card-pad-x);\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-reward-card-border);\n    border-radius: var(--cro-card-radius);\n}\n\n.cro-bxgy__reward-media {\n    --cro-image-radius: var(--cro-reward-img-radius);\n    position: relative;\n    flex: none;\n    width: var(--cro-reward-img-w);\n    height: var(--cro-reward-img-h);\n}\n\n.cro-bxgy__reward-media .cro-bxgy__qty {\n    top: var(--cro-reward-qty-top);\n    right: var(--cro-reward-qty-right);\n}\n\n.cro-bxgy__reward-body {\n    display: flex;\n    flex: 1;\n    flex-direction: column;\n    align-items: flex-start;\n    gap: var(--cro-reward-body-gap);\n    min-width: 0;\n}\n\n.cro-bxgy__gift-tag {\n    display: inline-flex;\n    align-items: center;\n    height: var(--cro-gift-h);\n    padding: 0 var(--cro-gift-pad-x);\n    background-color: var(--cro-gift-bg);\n    border-radius: var(--cro-gift-radius);\n    color: var(--cro-gift-fg);\n    font-size: var(--cro-gift-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: 1;\n}\n\n.cro-bxgy__reward-info {\n    display: flex;\n    flex-direction: column;\n    gap: var(--cro-reward-info-gap);\n    max-width: 100%;\n    min-width: 0;\n}\n\n.cro-bxgy__footer {\n    display: grid;\n    justify-items: center;\n    gap: var(--cro-footer-gap);\n    margin-top: var(--cro-footer-mt);\n}\n\n.cro-bxgy__total {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: baseline;\n    justify-content: center;\n    gap: var(--cro-price-row-gap) var(--cro-total-gap);\n    text-align: center;\n}\n\n.cro-bxgy__total-label {\n    font-size: var(--cro-total-label-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__total-price {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: baseline;\n    justify-content: center;\n    gap: var(--cro-price-row-gap) var(--cro-total-gap);\n    white-space: nowrap;\n}\n\n.cro-bxgy__total-was {\n    font-size: var(--cro-total-label-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-heading);\n    opacity: var(--cro-price-was-opacity);\n}\n\n.cro-bxgy__total-now {\n    font-size: var(--cro-total-price-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__savings {\n    font-size: var(--cro-savings-fs);\n    font-weight: var(--cro-fw-regular);\n    line-height: var(--cro-lh-heading);\n    text-align: center;\n}\n\n.cro-bxgy__savings-value {\n    color: var(--cro-savings-color);\n    font-weight: var(--cro-fw-semibold);\n}\n\n.cro-bxgy__cta {\n    width: 100%;\n    min-height: var(--cro-cta-h);\n    margin-top: var(--cro-cta-mt);\n    padding: var(--cro-cta-pad);\n    background-color: var(--cro-cta-bg);\n    border: var(--cro-card-border-w) solid var(--cro-cta-border);\n    border-radius: var(--cro-cta-radius);\n    color: var(--cro-cta-fg);\n    cursor: pointer;\n    font: inherit;\n    font-size: var(--cro-cta-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__notice {\n    margin: var(--cro-notice-mt) 0 0;\n    color: var(--cro-notice-color);\n    font-size: var(--cro-notice-fs);\n    line-height: var(--cro-lh-heading);\n    text-align: center;\n}\n\n.cro-bxgy__progress {\n    display: grid;\n    gap: var(--cro-progress-gap);\n    width: 100%;\n    max-width: var(--cro-progress-max-w);\n    margin: 0 auto var(--cro-progress-mb);\n}\n\n.cro-bxgy__progress-labels {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: baseline;\n    justify-content: space-between;\n    gap: var(--cro-price-row-gap) var(--cro-total-gap);\n    font-size: var(--cro-progress-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__progress-count {\n    margin-left: auto;\n    color: var(--cro-progress-color);\n}\n\n.cro-bxgy__progress-track {\n    height: var(--cro-track-h);\n    overflow: hidden;\n    background-color: var(--cro-track-bg);\n    border-radius: 100px;\n}\n\n.cro-bxgy__progress-fill {\n    height: 100%;\n    background-color: var(--cro-progress-color);\n    border-radius: 100px;\n}\n\n.cro-bxgy__variant-row {\n    width: 100%;\n}\n\n.cro-bxgy__variant-row .cro-bxgy__select {\n    display: block;\n    width: 100%;\n}\n\n.cro-bxgy__action-row {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: center;\n    gap: var(--cro-controls-gap);\n    width: 100%;\n}\n\n.cro-bxgy__action-row .cro-bxgy__stepper {\n    flex: none;\n}\n\n.cro-bxgy__action-row .cro-bxgy__add {\n    flex: 1 1 auto;\n    min-width: 96px;\n    width: auto;\n}\n\n.cro-bxgy__stepper {\n    display: grid;\n    grid-template-columns: 1fr auto 1fr;\n    align-items: center;\n    width: var(--cro-stepper-w);\n    height: var(--cro-control-h);\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-control-radius);\n    font-size: var(--cro-card-price-fs);\n    font-weight: var(--cro-fw-semibold);\n}\n\n.cro-bxgy__step {\n    display: grid;\n    place-items: center;\n    height: 100%;\n    padding: 0;\n    background: none;\n    border: 0;\n    color: inherit;\n    cursor: pointer;\n}\n\n.cro-bxgy__step:disabled {\n    cursor: not-allowed;\n    opacity: var(--cro-step-disabled-opacity);\n}\n\n.cro-bxgy__step-value {\n    text-align: center;\n}\n\n.cro-bxgy__step-icon {\n    width: var(--cro-step-icon);\n    height: var(--cro-step-icon);\n}\n\n.cro-bxgy__add {\n    display: grid;\n    grid-template-columns: minmax(0, 1fr) auto;\n    align-items: center;\n    gap: var(--cro-controls-gap);\n    width: var(--cro-control-w);\n    max-width: 100%;\n    height: var(--cro-control-h);\n    padding: 0 var(--cro-caret-right) 0 var(--cro-control-pad-left);\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-control-radius);\n    color: inherit;\n    cursor: pointer;\n    font: inherit;\n    font-size: var(--cro-control-fs);\n    font-weight: var(--cro-fw-semibold);\n    text-align: left;\n}\n\n.cro-bxgy__add-label {\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.cro-bxgy__cta:disabled {\n    background-color: var(--cro-cta-disabled-bg);\n    cursor: not-allowed;\n}\n\n.cro-bxgy__reward-list:has(.cro-bxgy__reward-card--mixMatch) {\n    row-gap: var(--cro-reward-list-row-gap);\n}\n\n.cro-bxgy__reward-card--mixMatch {\n    gap: var(--cro-reward-pick-gap);\n    padding: calc(var(--cro-reward-pick-pad) - var(--cro-card-border-w));\n}\n\n.cro-bxgy__reward-card--mixMatch .cro-bxgy__reward-media {\n    --cro-image-radius: var(--cro-reward-pick-img-radius);\n    width: var(--cro-reward-pick-img-w);\n    height: var(--cro-reward-pick-img-h);\n}\n\n.cro-bxgy__reward-card--mixMatch .cro-bxgy__qty {\n    top: var(--cro-reward-pick-qty-top);\n    right: var(--cro-reward-pick-qty-right);\n}\n\n.cro-bxgy__reward-card--mixMatch .cro-bxgy__reward-body {\n    padding: var(--cro-reward-pick-body-pt) 0 var(--cro-reward-pick-body-pb);\n}\n\n.cro-bxgy__reward-controls {\n    display: grid;\n    justify-items: start;\n    gap: var(--cro-reward-controls-gap);\n    max-width: 100%;\n    margin-top: var(--cro-reward-controls-mt);\n}\n\n.cro-bxgy__add:disabled {\n    cursor: not-allowed;\n    opacity: var(--cro-step-disabled-opacity);\n}\n\n.cro-bxgy__sk {\n    display: block;\n    background-color: var(--cro-border-subtle);\n    border-radius: var(--cro-image-radius);\n    animation: cro-bxgy-pulse 1.4s ease-in-out infinite;\n}\n\n.cro-bxgy__sk--title {\n    width: 80%;\n    height: var(--cro-card-title-fs);\n}\n\n.cro-bxgy__sk--price {\n    width: 40%;\n    height: var(--cro-card-price-fs);\n}\n\n.cro-bxgy__unavailable {\n    font-size: var(--cro-card-price-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-heading);\n    opacity: var(--cro-price-was-opacity);\n}\n\n@keyframes cro-bxgy-pulse {\n\n    0%,\n    100% {\n        opacity: 1;\n    }\n\n    50% {\n        opacity: 0.5;\n    }\n}\n\n@media (prefers-reduced-motion: reduce) {\n    .cro-bxgy__sk {\n        animation: none;\n    }\n}\n\n.cro-bxgy__picked {\n    display: flex;\n    flex-wrap: wrap;\n    justify-self: stretch;\n    gap: 4px;\n    width: 100%;\n    padding-top: 4px;\n    list-style: none;\n}\n\n.cro-bxgy__picked-line {\n    display: inline-flex;\n    align-items: center;\n    gap: 0;\n    max-width: 100%;\n    min-width: 0;\n    padding: 0 1px 0 6px;\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: 999px;\n    font-size: 10px;\n    line-height: 1.2;\n}\n\n.cro-bxgy__picked-label {\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.cro-bxgy__picked-remove {\n    display: grid;\n    flex: none;\n    place-items: center;\n    width: 18px;\n    height: 18px;\n    padding: 0;\n    background: none;\n    border: 0;\n    border-radius: 999px;\n    color: inherit;\n    cursor: pointer;\n    opacity: var(--cro-price-was-opacity);\n}\n\n.cro-bxgy__picked-remove:hover,\n.cro-bxgy__picked-remove:focus-visible {\n    opacity: 1;\n}\n\n.cro-bxgy__picked-remove:focus-visible {\n    outline: 2px solid currentColor;\n    outline-offset: -2px;\n}\n\n.cro-bxgy__picked-remove-icon {\n    width: 6px;\n    height: 6px;\n}\n\n.cro-bxgy__backdrop {\n    position: fixed;\n    inset: 0;\n    z-index: 20;\n}\n\n.cro-bxgy__popover {\n    position: absolute;\n    top: calc(100% + 6px);\n    left: 0;\n    z-index: 21;\n    width: min(260px, 80vw);\n    max-height: 320px;\n    display: flex;\n    flex-direction: column;\n    transform: translateX(var(--cro-pop-shift, 0px));\n    padding: 10px;\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-card-radius);\n    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22);\n}\n\n.cro-bxgy__popover-head {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 8px;\n    margin-bottom: 6px;\n}\n\n.cro-bxgy__popover-title {\n    overflow: hidden;\n    font-size: var(--cro-control-fs);\n    font-weight: var(--cro-fw-bold);\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.cro-bxgy__popover-close {\n    flex: none;\n    width: 28px;\n    height: 28px;\n    background: none;\n    border: 0;\n    border-radius: var(--cro-control-radius);\n    color: inherit;\n    cursor: pointer;\n    font-size: 18px;\n    line-height: 1;\n}\n\n.cro-bxgy__popover-body {\n    min-height: 0;\n    overflow: auto;\n}\n\n.cro-bxgy__fieldset {\n    min-width: 0;\n    margin: 0 0 8px;\n    padding: 0;\n    border: 0;\n}\n\n.cro-bxgy__legend {\n    margin-bottom: 4px;\n    font-size: var(--cro-control-fs);\n    font-weight: var(--cro-fw-semibold);\n    opacity: var(--cro-price-was-opacity);\n}\n\n.cro-bxgy__radios {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 6px;\n}\n\n.cro-bxgy__radio {\n    position: relative;\n}\n\n.cro-bxgy__radio-input {\n    position: absolute;\n    inset: 0;\n    margin: 0;\n    opacity: 0;\n    cursor: pointer;\n}\n\n.cro-bxgy__radio-label {\n    display: inline-flex;\n    align-items: center;\n    min-height: 28px;\n    padding: 0 10px;\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-control-radius);\n    font-size: var(--cro-control-fs);\n}\n\n.cro-bxgy__radio-input:checked+.cro-bxgy__radio-label {\n    border-color: var(--cro-fg);\n    box-shadow: inset 0 0 0 1px var(--cro-fg);\n    font-weight: var(--cro-fw-semibold);\n}\n\n.cro-bxgy__radio-input:focus-visible+.cro-bxgy__radio-label {\n    outline: 2px solid currentColor;\n    outline-offset: 2px;\n}\n\n.cro-bxgy__radio--sold-out .cro-bxgy__radio-label {\n    opacity: 0.45;\n    text-decoration: line-through;\n}\n\n.cro-bxgy__radio--sold-out .cro-bxgy__radio-input {\n    cursor: not-allowed;\n}\n\n.cro-bxgy__sr {\n    position: absolute;\n    width: 1px;\n    height: 1px;\n    overflow: hidden;\n    clip-path: inset(50%);\n    white-space: nowrap;\n}\n\n.cro-bxgy__select-input[data-popover-trigger] {\n    cursor: pointer;\n}\n\n.cro-bxgy__popover-apply {\n    flex: none;\n    width: 100%;\n    height: var(--cro-control-h);\n    margin-top: 6px;\n    background-color: var(--cro-cta-bg);\n    border: 0;\n    border-radius: var(--cro-control-radius);\n    color: var(--cro-cta-fg);\n    cursor: pointer;\n    font: inherit;\n    font-size: var(--cro-control-fs);\n    font-weight: var(--cro-fw-semibold);\n}\n\n.cro-bxgy__popover-apply:disabled {\n    background-color: var(--cro-cta-disabled-bg);\n    cursor: not-allowed;\n}\n\n.cro-bxgy__popover-apply:focus-visible {\n    outline: 2px solid currentColor;\n    outline-offset: 2px;\n}';
+const bxgyStyles = '*,\n*::before,\n*::after {\n    box-sizing: border-box;\n    margin: 0;\n    padding: 0;\n}\n\n:host {\n    display: block;\n}\n\n.cro-bxgy {\n    --cro-fg: #000000;\n    --cro-bg: #ffffff;\n    --cro-border-subtle: #00000033;\n\n    --cro-font: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n    --cro-fw-medium: 500;\n    --cro-fw-semibold: 600;\n    --cro-lh-heading: 1.2;\n\n    --cro-header-title-fs: 20px;\n    --cro-header-subtitle-fs: 14px;\n    --cro-header-gap: 6px;\n    --cro-header-divider-w: 157px;\n    --cro-header-divider-h: 2px;\n    --cro-header-divider-mt: 13px;\n    --cro-header-mb: 25px;\n\n    --cro-trigger-gap: 13px;\n    --cro-trigger-card-min-w: 250px;\n    --cro-card-radius: 8px;\n    --cro-card-border-w: 1px;\n    --cro-card-pad: 5px;\n    --cro-card-gap: 12px;\n    --cro-card-body-pt: 9px;\n    --cro-card-body-gap: 7px;\n    --cro-card-title-fs: 14px;\n    --cro-card-title-lines: 2;\n    --cro-card-price-fs: 14px;\n    --cro-price-gap: 7px;\n    --cro-price-row-gap: 2px;\n    --cro-price-was-opacity: 0.6;\n    --cro-img-w: 105px;\n    --cro-img-h: 124px;\n    --cro-image-radius: 4px;\n    --cro-qty-size: 20px;\n    --cro-qty-fs: 10px;\n    --cro-qty-top: 4.5px;\n    --cro-qty-right: 6.5px;\n    --cro-qty-radius: 2px;\n    --cro-qty-bg: var(--cro-fg);\n    --cro-qty-fg: var(--cro-bg);\n    --cro-control-w: 99px;\n    --cro-control-h: 28px;\n    --cro-control-fs: 12px;\n    --cro-control-radius: 4px;\n    --cro-control-pad-left: 10px;\n    --cro-control-pad-right: 28px;\n    --cro-caret-w: 10px;\n    --cro-caret-right: 12px;\n    --cro-fw-regular: 400;\n    --cro-fw-bold: 600;\n\n    --cro-body-gap: 22px;\n    --cro-reward-gap: 25px;\n    --cro-reward-head-gap: 14px;\n    --cro-reward-count-color: color-mix(in srgb, var(--cro-fg) 60%, transparent);\n    --cro-reward-count-fs: 13px;\n    --cro-reward-label-fs: 14px;\n    --cro-reward-label-case: uppercase;\n    --cro-reward-bg: color-mix(in srgb, var(--cro-fg) 4%, transparent);\n    --cro-reward-border: var(--cro-fg);\n    --cro-reward-border-w: 2px;\n    --cro-reward-radius: 12px;\n    --cro-reward-pad: 12px;\n    --cro-reward-list-gap: 13px;\n    --cro-reward-card-min-w: 240px;\n    --cro-reward-card-border: color-mix(in srgb, var(--cro-fg) 10%, transparent);\n    --cro-reward-card-pad-y: 9px;\n    --cro-reward-card-pad-x: 10px;\n    --cro-reward-card-gap: 13px;\n    --cro-reward-body-gap: 9px;\n    --cro-reward-info-gap: 2px;\n    --cro-reward-img-w: 52px;\n    --cro-reward-img-h: 61px;\n    --cro-gift-bg: #d9fa74;\n    --cro-gift-fg: #000000;\n    --cro-gift-h: 20px;\n    --cro-gift-pad-x: 10px;\n    --cro-gift-fs: 10px;\n    --cro-gift-radius: 4px;\n\n    --cro-footer-mt: 11px;\n    --cro-footer-gap: 7px;\n    --cro-total-gap: 9px;\n    --cro-total-label-fs: 14px;\n    --cro-total-price-fs: 20px;\n    --cro-savings-fs: 12px;\n    --cro-savings-color: #b30000;\n    --cro-cta-mt: 13px;\n    --cro-cta-bg: var(--cro-fg);\n    --cro-cta-fg: var(--cro-bg);\n    --cro-cta-border: color-mix(in srgb, var(--cro-fg) 8%, transparent);\n    --cro-cta-h: 52px;\n    --cro-cta-fs: 18px;\n    --cro-cta-pad: 10px;\n    --cro-cta-radius: 8px;\n    --cro-notice-mt: 8px;\n    --cro-notice-color: #b42318;\n    --cro-notice-fs: 13px;\n\n    --cro-progress-max-w: 461px;\n    --cro-progress-gap: 5px;\n    --cro-progress-mb: 30px;\n    --cro-progress-fs: 12px;\n    --cro-progress-color: #1c9622;\n    --cro-track-h: 7px;\n    --cro-track-bg: color-mix(in srgb, var(--cro-fg) 8%, transparent);\n    --cro-stepper-w: 68px;\n    --cro-step-icon: 8px;\n    --cro-step-disabled-opacity: 0.3;\n    --cro-controls-gap: 6px;\n\n    --cro-reward-list-row-gap: 12px;\n    --cro-reward-qty-top: 3px;\n    --cro-reward-qty-right: 3px;\n    --cro-reward-pick-img-w: 95px;\n    --cro-reward-pick-img-h: 113px;\n    --cro-reward-pick-gap: 15px;\n    --cro-reward-pick-pad: 5px;\n    --cro-reward-pick-body-pt: 8px;\n    --cro-reward-pick-body-pb: 4px;\n    --cro-reward-pick-qty-top: 5px;\n    --cro-reward-pick-qty-right: 5px;\n    --cro-reward-controls-mt: 3px;\n    --cro-reward-controls-gap: 7px;\n    --cro-reward-title-gap: 9px;\n    --cro-reward-locked-opacity: 0.4;\n    --cro-lock-badge-h: 22px;\n    --cro-lock-badge-pad-x: 7px;\n    --cro-lock-badge-gap: 5px;\n    --cro-lock-badge-bg: color-mix(in srgb, var(--cro-fg) 8%, transparent);\n    --cro-lock-badge-fs: 10px;\n    --cro-lock-icon-w: 8px;\n    --cro-lock-icon-h: 10px;\n    --cro-cta-disabled-bg: color-mix(in srgb, var(--cro-fg) 20%, transparent);\n\n    --cro-radius: 10px;\n    --cro-container-border-w: 2px;\n    --cro-container-max-w: 705px;\n    --cro-container-margin: 0px;\n    --cro-container-pad-x: 22px;\n    --cro-container-pad-y: 27px;\n\n    position: relative;\n    width: 100%;\n    max-width: var(--cro-container-max-w);\n    padding: var(--cro-container-pad-y) var(--cro-container-pad-x);\n    background-color: var(--cro-bg);\n    border: var(--cro-container-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-radius);\n    color: var(--cro-fg);\n    font-family: var(--cro-font);\n}\n\n.cro-bxgy__empty {\n    display: block;\n    padding: 8px;\n    border: 1px dashed #91d0ff;\n    border-radius: 8px;\n    color: #00527c;\n    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n}\n\n.cro-bxgy__empty-title {\n    display: block;\n    font-size: 13px;\n    font-weight: 650;\n    line-height: 20px;\n}\n\n.cro-bxgy__empty-description {\n    margin-top: 4px;\n    font-size: 12px;\n    font-weight: 450;\n    line-height: 16px;\n    text-align: left;\n}\n\n.cro-bxgy__header {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    gap: var(--cro-header-gap);\n    margin-bottom: var(--cro-header-mb);\n    text-align: center;\n}\n\n.cro-bxgy__title {\n    font-size: var(--cro-header-title-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__subtitle {\n    font-size: var(--cro-header-subtitle-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__countdown {\n    display: inline-flex;\n    align-items: center;\n    gap: 6px;\n    margin-top: 6px;\n    padding: 7px 14px;\n    border-radius: 999px;\n    background-color: var(--cro-cta-bg);\n    color: var(--cro-cta-fg);\n    font-size: 12px;\n    font-weight: var(--cro-fw-bold);\n    letter-spacing: 0.04em;\n    line-height: 1;\n    text-transform: uppercase;\n    font-variant-numeric: tabular-nums;\n}\n\n.cro-bxgy__countdown-icon {\n    flex: none;\n    width: 14px;\n    height: 14px;\n    margin-top: -1px;\n}\n\n.cro-bxgy__header-divider {\n    width: var(--cro-header-divider-w);\n    max-width: 100%;\n    height: var(--cro-header-divider-h);\n    margin-top: var(--cro-header-divider-mt);\n    border: 0;\n    background-color: var(--cro-border-subtle);\n}\n\n.cro-bxgy__trigger {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--cro-trigger-card-min-w)), 1fr));\n    gap: var(--cro-trigger-gap);\n}\n\n.cro-bxgy__placeholder {\n    grid-column: 1 / -1;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    min-height: var(--cro-img-h);\n    padding: 12px;\n    border: 2px dashed #dedede;\n    border-radius: var(--cro-card-radius);\n    font-weight: var(--cro-fw-bold);\n    opacity: 0.5;\n    text-align: center;\n}\n\n.cro-bxgy__card {\n    display: flex;\n    justify-self: start;\n    width: 100%;\n    gap: var(--cro-card-gap);\n    min-width: 0;\n    padding: calc(var(--cro-card-pad) - var(--cro-card-border-w));\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-card-radius);\n}\n\n.cro-bxgy__media {\n    position: relative;\n    flex: none;\n    width: var(--cro-img-w);\n    height: var(--cro-img-h);\n}\n\n.cro-bxgy__img {\n    display: block;\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    border-radius: var(--cro-image-radius);\n}\n\n.cro-bxgy__img--placeholder {\n    background-color: var(--cro-border-subtle);\n}\n\n.cro-bxgy__qty {\n    position: absolute;\n    top: var(--cro-qty-top);\n    right: var(--cro-qty-right);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    min-width: var(--cro-qty-size);\n    height: var(--cro-qty-size);\n    padding: 0 3px;\n    background-color: var(--cro-qty-bg);\n    border-radius: var(--cro-qty-radius);\n    color: var(--cro-qty-fg);\n    font-size: var(--cro-qty-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: 1;\n}\n\n.cro-bxgy__card-body {\n    display: flex;\n    flex: 1;\n    flex-direction: column;\n    align-items: flex-start;\n    gap: var(--cro-card-body-gap);\n    min-width: 0;\n    padding-top: var(--cro-card-body-pt);\n}\n\n.cro-bxgy__name {\n    display: -webkit-box;\n    max-width: 100%;\n    overflow: hidden;\n    overflow-wrap: anywhere;\n    -webkit-line-clamp: var(--cro-card-title-lines);\n    -webkit-box-orient: vertical;\n    font-size: var(--cro-card-title-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__name--link {\n    color: inherit;\n    text-decoration: none;\n}\n\n.cro-bxgy__name--link:hover {\n    text-decoration: underline;\n}\n\n.cro-bxgy__name--link:focus-visible {\n    outline: 2px solid currentColor;\n    outline-offset: 2px;\n}\n\n.cro-bxgy__price {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: baseline;\n    gap: var(--cro-price-row-gap) var(--cro-price-gap);\n    max-width: 100%;\n    font-size: var(--cro-card-price-fs);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__price-was,\n.cro-bxgy__price-now {\n    white-space: nowrap;\n}\n\n.cro-bxgy__price-was {\n    font-weight: var(--cro-fw-regular);\n    opacity: var(--cro-price-was-opacity);\n}\n\n.cro-bxgy__price-now {\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-bxgy__select {\n    position: relative;\n    width: var(--cro-control-w);\n    max-width: 100%;\n    height: var(--cro-control-h);\n}\n\n.cro-bxgy__select-input {\n    width: 100%;\n    height: 100%;\n    padding: 0 var(--cro-control-pad-right) 0 var(--cro-control-pad-left);\n    overflow: hidden;\n    appearance: none;\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-control-radius);\n    color: inherit;\n    cursor: pointer;\n    font: inherit;\n    font-size: var(--cro-control-fs);\n    font-weight: var(--cro-fw-regular);\n    text-overflow: ellipsis;\n}\n\n.cro-bxgy__select-caret {\n    position: absolute;\n    top: 50%;\n    right: var(--cro-caret-right);\n    width: var(--cro-caret-w);\n    transform: translateY(-50%);\n    pointer-events: none;\n}\n\n.cro-bxgy__body {\n    display: grid;\n    gap: var(--cro-body-gap);\n}\n\n.cro-bxgy__reward {\n    display: grid;\n    gap: var(--cro-reward-gap);\n}\n\n.cro-bxgy__reward-head {\n    display: grid;\n    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);\n    align-items: center;\n    gap: var(--cro-reward-head-gap);\n}\n\n.cro-bxgy__reward-head::before,\n.cro-bxgy__reward-head::after {\n    content: "";\n    height: var(--cro-card-border-w);\n    background-color: var(--cro-border-subtle);\n}\n\n.cro-bxgy__reward-title {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: center;\n    justify-content: center;\n    gap: var(--cro-price-row-gap) var(--cro-reward-title-gap);\n}\n\n.cro-bxgy__reward-count {\n    color: var(--cro-reward-count-color);\n    font-size: var(--cro-reward-count-fs);\n}\n\n.cro-bxgy__lock-badge {\n    display: inline-flex;\n    align-items: center;\n    gap: var(--cro-lock-badge-gap);\n    height: var(--cro-lock-badge-h);\n    padding: 0 var(--cro-lock-badge-pad-x);\n    background-color: var(--cro-lock-badge-bg);\n    border-radius: var(--cro-gift-radius);\n    font-size: var(--cro-lock-badge-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: 1;\n    text-transform: uppercase;\n}\n\n.cro-bxgy__lock-icon {\n    width: var(--cro-lock-icon-w);\n    height: var(--cro-lock-icon-h);\n}\n\n.cro-bxgy__reward--locked .cro-bxgy__reward-list {\n    opacity: var(--cro-reward-locked-opacity);\n}\n\n.cro-bxgy__reward-label {\n    font-size: var(--cro-reward-label-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-heading);\n    text-align: center;\n    text-transform: var(--cro-reward-label-case);\n}\n\n.cro-bxgy__reward-list {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--cro-reward-card-min-w)), 1fr));\n    gap: var(--cro-reward-list-gap);\n    padding: calc(var(--cro-reward-pad) - var(--cro-reward-border-w));\n    background-color: var(--cro-reward-bg);\n    border: var(--cro-reward-border-w) solid var(--cro-reward-border);\n    border-radius: var(--cro-reward-radius);\n}\n\n.cro-bxgy__reward-card {\n    display: flex;\n    justify-self: start;\n    gap: var(--cro-reward-card-gap);\n    width: 100%;\n    min-width: 0;\n    padding: var(--cro-reward-card-pad-y) var(--cro-reward-card-pad-x);\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-reward-card-border);\n    border-radius: var(--cro-card-radius);\n}\n\n.cro-bxgy__reward-media {\n    position: relative;\n    flex: none;\n    width: var(--cro-reward-img-w);\n    height: var(--cro-reward-img-h);\n}\n\n.cro-bxgy__reward-media .cro-bxgy__qty {\n    top: var(--cro-reward-qty-top);\n    right: var(--cro-reward-qty-right);\n}\n\n.cro-bxgy__reward-body {\n    display: flex;\n    flex: 1;\n    flex-direction: column;\n    align-items: flex-start;\n    gap: var(--cro-reward-body-gap);\n    min-width: 0;\n}\n\n.cro-bxgy__gift-tag {\n    display: inline-flex;\n    align-items: center;\n    height: var(--cro-gift-h);\n    padding: 0 var(--cro-gift-pad-x);\n    background-color: var(--cro-gift-bg);\n    border-radius: var(--cro-gift-radius);\n    color: var(--cro-gift-fg);\n    font-size: var(--cro-gift-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: 1;\n}\n\n.cro-bxgy__reward-info {\n    display: flex;\n    flex-direction: column;\n    gap: var(--cro-reward-info-gap);\n    max-width: 100%;\n    min-width: 0;\n}\n\n.cro-bxgy__footer {\n    display: grid;\n    justify-items: center;\n    gap: var(--cro-footer-gap);\n    margin-top: var(--cro-footer-mt);\n}\n\n.cro-bxgy__total {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: baseline;\n    justify-content: center;\n    gap: var(--cro-price-row-gap) var(--cro-total-gap);\n    text-align: center;\n}\n\n.cro-bxgy__total-label {\n    font-size: var(--cro-total-label-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__total-price {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: baseline;\n    justify-content: center;\n    gap: var(--cro-price-row-gap) var(--cro-total-gap);\n    white-space: nowrap;\n}\n\n.cro-bxgy__total-was {\n    font-size: var(--cro-total-label-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-heading);\n    opacity: var(--cro-price-was-opacity);\n}\n\n.cro-bxgy__total-now {\n    font-size: var(--cro-total-price-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__savings {\n    font-size: var(--cro-savings-fs);\n    font-weight: var(--cro-fw-regular);\n    line-height: var(--cro-lh-heading);\n    text-align: center;\n}\n\n.cro-bxgy__savings-value {\n    color: var(--cro-savings-color);\n    font-weight: var(--cro-fw-semibold);\n}\n\n.cro-bxgy__cta {\n    width: 100%;\n    min-height: var(--cro-cta-h);\n    margin-top: var(--cro-cta-mt);\n    padding: var(--cro-cta-pad);\n    background-color: var(--cro-cta-bg);\n    border: var(--cro-card-border-w) solid var(--cro-cta-border);\n    border-radius: var(--cro-cta-radius);\n    color: var(--cro-cta-fg);\n    cursor: pointer;\n    font: inherit;\n    font-size: var(--cro-cta-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__notice {\n    margin: var(--cro-notice-mt) 0 0;\n    color: var(--cro-notice-color);\n    font-size: var(--cro-notice-fs);\n    line-height: var(--cro-lh-heading);\n    text-align: center;\n}\n\n.cro-bxgy__progress {\n    display: grid;\n    gap: var(--cro-progress-gap);\n    width: 100%;\n    max-width: var(--cro-progress-max-w);\n    margin: 0 auto var(--cro-progress-mb);\n}\n\n.cro-bxgy__progress-labels {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: baseline;\n    justify-content: space-between;\n    gap: var(--cro-price-row-gap) var(--cro-total-gap);\n    font-size: var(--cro-progress-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-heading);\n}\n\n.cro-bxgy__progress-count {\n    margin-left: auto;\n    color: var(--cro-progress-color);\n}\n\n.cro-bxgy__progress-track {\n    height: var(--cro-track-h);\n    overflow: hidden;\n    background-color: var(--cro-track-bg);\n    border-radius: 100px;\n}\n\n.cro-bxgy__progress-fill {\n    height: 100%;\n    background-color: var(--cro-progress-color);\n    border-radius: 100px;\n}\n\n.cro-bxgy__variant-row {\n    width: 100%;\n}\n\n.cro-bxgy__variant-row .cro-bxgy__select {\n    display: block;\n    width: 100%;\n}\n\n.cro-bxgy__action-row {\n    display: flex;\n    flex-wrap: wrap;\n    align-items: center;\n    gap: var(--cro-controls-gap);\n    width: 100%;\n}\n\n.cro-bxgy__action-row .cro-bxgy__stepper {\n    flex: none;\n}\n\n.cro-bxgy__action-row .cro-bxgy__add {\n    flex: 1 1 auto;\n    min-width: 96px;\n    width: auto;\n}\n\n.cro-bxgy__stepper {\n    display: grid;\n    grid-template-columns: 1fr auto 1fr;\n    align-items: center;\n    width: var(--cro-stepper-w);\n    height: var(--cro-control-h);\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-control-radius);\n    font-size: var(--cro-card-price-fs);\n    font-weight: var(--cro-fw-semibold);\n}\n\n.cro-bxgy__step {\n    display: grid;\n    place-items: center;\n    height: 100%;\n    padding: 0;\n    background: none;\n    border: 0;\n    color: inherit;\n    cursor: pointer;\n}\n\n.cro-bxgy__step:disabled {\n    cursor: not-allowed;\n    opacity: var(--cro-step-disabled-opacity);\n}\n\n.cro-bxgy__step-value {\n    text-align: center;\n}\n\n.cro-bxgy__step-icon {\n    width: var(--cro-step-icon);\n    height: var(--cro-step-icon);\n}\n\n.cro-bxgy__add {\n    display: grid;\n    grid-template-columns: minmax(0, 1fr) auto;\n    align-items: center;\n    gap: var(--cro-controls-gap);\n    width: var(--cro-control-w);\n    max-width: 100%;\n    height: var(--cro-control-h);\n    padding: 0 var(--cro-caret-right) 0 var(--cro-control-pad-left);\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-control-radius);\n    color: inherit;\n    cursor: pointer;\n    font: inherit;\n    font-size: var(--cro-control-fs);\n    font-weight: var(--cro-fw-semibold);\n    text-align: left;\n}\n\n.cro-bxgy__add-label {\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.cro-bxgy__cta:disabled {\n    background-color: var(--cro-cta-disabled-bg);\n    cursor: not-allowed;\n}\n\n.cro-bxgy__reward-list:has(.cro-bxgy__reward-card--mixMatch) {\n    row-gap: var(--cro-reward-list-row-gap);\n}\n\n.cro-bxgy__reward-card--mixMatch {\n    gap: var(--cro-reward-pick-gap);\n    padding: calc(var(--cro-reward-pick-pad) - var(--cro-card-border-w));\n}\n\n.cro-bxgy__reward-card--mixMatch .cro-bxgy__reward-media {\n    width: var(--cro-reward-pick-img-w);\n    height: var(--cro-reward-pick-img-h);\n}\n\n.cro-bxgy__reward-card--mixMatch .cro-bxgy__qty {\n    top: var(--cro-reward-pick-qty-top);\n    right: var(--cro-reward-pick-qty-right);\n}\n\n.cro-bxgy__reward-card--mixMatch .cro-bxgy__reward-body {\n    padding: var(--cro-reward-pick-body-pt) 0 var(--cro-reward-pick-body-pb);\n}\n\n.cro-bxgy__reward-controls {\n    display: grid;\n    grid-template-columns: minmax(0, 1fr);\n    justify-items: start;\n    gap: var(--cro-reward-controls-gap);\n    max-width: 100%;\n    min-width: 0;\n    margin-top: var(--cro-reward-controls-mt);\n}\n\n.cro-bxgy__add:disabled {\n    cursor: not-allowed;\n    opacity: var(--cro-step-disabled-opacity);\n}\n\n.cro-bxgy__sk {\n    display: block;\n    background-color: var(--cro-border-subtle);\n    border-radius: var(--cro-image-radius);\n    animation: cro-bxgy-pulse 1.4s ease-in-out infinite;\n}\n\n.cro-bxgy__sk--title {\n    width: 80%;\n    height: var(--cro-card-title-fs);\n}\n\n.cro-bxgy__sk--price {\n    width: 40%;\n    height: var(--cro-card-price-fs);\n}\n\n.cro-bxgy__unavailable {\n    font-size: var(--cro-card-price-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-heading);\n    opacity: var(--cro-price-was-opacity);\n}\n\n@keyframes cro-bxgy-pulse {\n\n    0%,\n    100% {\n        opacity: 1;\n    }\n\n    50% {\n        opacity: 0.5;\n    }\n}\n\n@media (prefers-reduced-motion: reduce) {\n    .cro-bxgy__sk {\n        animation: none;\n    }\n}\n\n.cro-bxgy__picked {\n    display: flex;\n    flex-wrap: wrap;\n    justify-self: stretch;\n    gap: 4px;\n    width: 100%;\n    padding-top: 4px;\n    list-style: none;\n}\n\n.cro-bxgy__picked-line {\n    display: inline-flex;\n    align-items: center;\n    gap: 0;\n    max-width: 100%;\n    min-width: 0;\n    padding: 0 1px 0 6px;\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: 999px;\n    font-size: 10px;\n    line-height: 1.2;\n}\n\n.cro-bxgy__picked-label {\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.cro-bxgy__picked-qty {\n    color: var(--cro-cta-bg);\n    font-weight: var(--cro-fw-semibold);\n}\n\n.cro-bxgy__picked-remove {\n    display: grid;\n    flex: none;\n    place-items: center;\n    width: 18px;\n    height: 18px;\n    padding: 0;\n    background: none;\n    border: 0;\n    border-radius: 999px;\n    color: inherit;\n    cursor: pointer;\n    opacity: var(--cro-price-was-opacity);\n}\n\n.cro-bxgy__picked-remove:hover,\n.cro-bxgy__picked-remove:focus-visible {\n    opacity: 1;\n}\n\n.cro-bxgy__picked-remove:focus-visible {\n    outline: 2px solid currentColor;\n    outline-offset: -2px;\n}\n\n.cro-bxgy__picked-remove-icon {\n    width: 6px;\n    height: 6px;\n}\n\n.cro-bxgy__backdrop {\n    position: fixed;\n    inset: 0;\n    z-index: 20;\n}\n\n.cro-bxgy__popover {\n    position: absolute;\n    top: calc(100% + 6px);\n    left: 0;\n    z-index: 21;\n    width: min(260px, 80vw);\n    max-height: var(--cro-pop-max-h, 320px);\n    display: flex;\n    flex-direction: column;\n    transform: translateX(var(--cro-pop-shift, 0px));\n    padding: 10px;\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-card-radius);\n    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.22);\n}\n\n.cro-bxgy__popover[data-placement="top"] {\n    top: auto;\n    bottom: calc(100% + 6px);\n}\n\n.cro-bxgy__popover:focus {\n    outline: none;\n}\n\n.cro-bxgy__popover-head {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 8px;\n    margin-bottom: 6px;\n}\n\n.cro-bxgy__popover-title {\n    overflow: hidden;\n    font-size: var(--cro-control-fs);\n    font-weight: var(--cro-fw-bold);\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n\n.cro-bxgy__popover-close {\n    flex: none;\n    width: 28px;\n    height: 28px;\n    background: none;\n    border: 0;\n    border-radius: var(--cro-control-radius);\n    color: inherit;\n    cursor: pointer;\n    font-size: 18px;\n    line-height: 1;\n}\n\n.cro-bxgy__popover-body {\n    min-height: 0;\n    overflow: auto;\n}\n\n.cro-bxgy__fieldset {\n    min-width: 0;\n    margin: 0 0 8px;\n    padding: 0;\n    border: 0;\n}\n\n.cro-bxgy__legend {\n    margin-bottom: 4px;\n    font-size: var(--cro-control-fs);\n    font-weight: var(--cro-fw-semibold);\n    opacity: var(--cro-price-was-opacity);\n}\n\n.cro-bxgy__radios {\n    display: flex;\n    flex-wrap: wrap;\n    gap: 6px;\n}\n\n.cro-bxgy__radio {\n    position: relative;\n}\n\n.cro-bxgy__radio-input {\n    position: absolute;\n    inset: 0;\n    margin: 0;\n    opacity: 0;\n    cursor: pointer;\n}\n\n.cro-bxgy__radio-label {\n    display: inline-flex;\n    align-items: center;\n    min-height: 28px;\n    padding: 0 10px;\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-control-radius);\n    font-size: var(--cro-control-fs);\n}\n\n.cro-bxgy__radio-input:checked+.cro-bxgy__radio-label {\n    border-color: var(--cro-fg);\n    box-shadow: inset 0 0 0 1px var(--cro-fg);\n    font-weight: var(--cro-fw-semibold);\n}\n\n.cro-bxgy__radio-input:focus-visible+.cro-bxgy__radio-label {\n    outline: 2px solid currentColor;\n    outline-offset: 2px;\n}\n\n.cro-bxgy__radio--sold-out .cro-bxgy__radio-label {\n    opacity: 0.45;\n    text-decoration: line-through;\n}\n\n.cro-bxgy__radio--sold-out .cro-bxgy__radio-input {\n    cursor: not-allowed;\n}\n\n.cro-bxgy__sr {\n    position: absolute;\n    width: 1px;\n    height: 1px;\n    overflow: hidden;\n    clip-path: inset(50%);\n    white-space: nowrap;\n}\n\n.cro-bxgy__select-input[data-popover-trigger] {\n    cursor: pointer;\n}\n\n.cro-bxgy__popover-apply {\n    flex: none;\n    width: 100%;\n    height: var(--cro-control-h);\n    margin-top: 6px;\n    background-color: var(--cro-cta-bg);\n    border: 0;\n    border-radius: var(--cro-control-radius);\n    color: var(--cro-cta-fg);\n    cursor: pointer;\n    font: inherit;\n    font-size: var(--cro-control-fs);\n    font-weight: var(--cro-fw-semibold);\n}\n\n.cro-bxgy__popover-apply:disabled {\n    background-color: var(--cro-cta-disabled-bg);\n    cursor: not-allowed;\n}\n\n.cro-bxgy__popover-apply:focus-visible {\n    outline: 2px solid currentColor;\n    outline-offset: 2px;\n}';
 const DEFAULT_TITLE_RE$1 = /^default\s*title$/i;
 const countOptions = (variants) => Math.max(0, ...variants.map((variant) => variant.values?.length ?? 0));
 const isDefaultTitleOnly = (variants) => variants.length === 1 && (variants[0].values ?? []).every((value) => DEFAULT_TITLE_RE$1.test(String(value)));
@@ -93,7 +106,7 @@ const matchesPrefix = (variant, selection, optionIndex) => {
   }
   return true;
 };
-const listChoices = (variants, selection, optionIndex) => {
+const listChoices = (variants, selection, optionIndex, allValues = null) => {
   const choices = /* @__PURE__ */ new Map();
   for (const variant of variants) {
     if (!matchesPrefix(variant, selection, optionIndex)) continue;
@@ -101,7 +114,9 @@ const listChoices = (variants, selection, optionIndex) => {
     if (value == null) continue;
     choices.set(value, (choices.get(value) ?? false) || variant.available !== false);
   }
-  return [...choices].map(([value, available]) => ({ value, available }));
+  if (!allValues?.length) return [...choices].map(([value, available]) => ({ value, available, exists: true }));
+  const values = [.../* @__PURE__ */ new Set([...allValues, ...choices.keys()])];
+  return values.map((value) => ({ value, available: choices.get(value) ?? false, exists: choices.has(value) }));
 };
 const pickValue = (choices, preferredValue) => {
   const preferred = choices.find((choice) => choice.value === preferredValue);
@@ -181,10 +196,9 @@ const VARIANT_GID_PREFIX = "gid://shopify/ProductVariant/";
 const CONTEXT_VARIABLES = "$country: CountryCode, $language: LanguageCode";
 const IN_CONTEXT = "@inContext(country: $country, language: $language)";
 const VARIANT_FIELDS = "id availableForSale price { amount } compareAtPrice { amount } selectedOptions { name value } image { url }";
-const HEAD_FIELDS = "id handle title featuredImage { url } availableForSale requiresSellingPlan priceRange { minVariantPrice { amount } } options { id name optionValues { name } } encodedVariantAvailability";
-const HEADS_QUERY = `query BxgyHeads($subsetIds: [ID!]!, $allIds: [ID!]!, ${CONTEXT_VARIABLES}) ${IN_CONTEXT} {
-    subset: nodes(ids: $subsetIds) { ... on Product { ${HEAD_FIELDS} } }
-    all: nodes(ids: $allIds) { ... on Product { ${HEAD_FIELDS} encodedVariantExistence selectedOrFirstAvailableVariant { ${VARIANT_FIELDS} } } }
+const HEAD_FIELDS = `id handle title featuredImage { url } availableForSale requiresSellingPlan priceRange { minVariantPrice { amount } } options { id name optionValues { name } } encodedVariantAvailability encodedVariantExistence selectedOrFirstAvailableVariant { ${VARIANT_FIELDS} }`;
+const HEADS_QUERY = `query BxgyHeads($ids: [ID!]!, ${CONTEXT_VARIABLES}) ${IN_CONTEXT} {
+    nodes(ids: $ids) { ... on Product { ${HEAD_FIELDS} } }
 }`;
 const VARIANTS_QUERY = `query BxgyVariants($ids: [ID!]!, ${CONTEXT_VARIABLES}) ${IN_CONTEXT} {
     nodes(ids: $ids) { ... on ProductVariant { ${VARIANT_FIELDS} } }
@@ -209,30 +223,8 @@ const withVariants = (product, variants) => {
     variants
   };
 };
-const planBxgyRequests = (campaign) => {
-  const items = [...campaign?.trigger?.items ?? [], ...campaign?.reward?.items ?? []];
-  const variantIdsByProduct = /* @__PURE__ */ new Map();
-  for (const item of items) {
-    const productId = toNumericId(item?.id);
-    if (!productId) continue;
-    if (!item.variantIds?.length) {
-      variantIdsByProduct.set(productId, null);
-      continue;
-    }
-    const current = variantIdsByProduct.get(productId);
-    if (current === null) continue;
-    const variantIds = item.variantIds.map(toNumericId).filter(Boolean);
-    variantIdsByProduct.set(productId, /* @__PURE__ */ new Set([...current ?? [], ...variantIds]));
-  }
-  const entries = [...variantIdsByProduct];
-  return {
-    items,
-    productIds: entries.map(([productId]) => productId),
-    subsetProductIds: entries.filter(([, variantIds]) => variantIds !== null).map(([productId]) => productId),
-    allProductIds: entries.filter(([, variantIds]) => variantIds === null).map(([productId]) => productId),
-    variantIdsByProduct
-  };
-};
+const itemsOf = (campaign) => [...campaign?.trigger?.items ?? [], ...campaign?.reward?.items ?? []];
+const toBxgyProductIds = (campaigns) => [...new Set((campaigns ?? []).flatMap(itemsOf).map((item) => toNumericId(item?.id)).filter(Boolean))];
 const readStorefrontContext = () => {
   const country = String(window.Shopify?.country ?? "").toUpperCase();
   const language = String(window.Shopify?.locale ?? "").replace("-", "_").toUpperCase();
@@ -242,21 +234,28 @@ const readStorefrontContext = () => {
   };
 };
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const sendStorefrontRequest = async (query, variables, storefrontToken) => {
+const storefrontEndpoint = (remoteStorefront) => {
+  const path = `/api/${STOREFRONT_API_VERSION}/graphql.json`;
+  return remoteStorefront?.domain ? `https://${remoteStorefront.domain}${path}` : path;
+};
+const sendStorefrontRequest = async (query, variables, storefrontToken, remoteStorefront) => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const accessToken = storefrontToken ?? remoteStorefront?.token ?? null;
   try {
-    const response = await fetch(`/api/${STOREFRONT_API_VERSION}/graphql.json`, {
+    const response = await fetch(storefrontEndpoint(remoteStorefront), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        ...storefrontToken ? { "X-Shopify-Storefront-Access-Token": storefrontToken } : {}
+        ...accessToken ? { "X-Shopify-Storefront-Access-Token": accessToken } : {}
       },
       body: JSON.stringify({ query, variables: { ...readStorefrontContext(), ...variables } }),
       signal: controller.signal
     });
-    if (!response.ok) return { data: null, isRetryable: response.status === 429 || response.status >= 500 };
+    if (!response.ok) {
+      return { data: null, isRetryable: response.status === 429 || response.status >= 500 };
+    }
     const body = await response.json();
     if (body?.errors?.length) return { data: null, isRetryable: false };
     return { data: body?.data ?? null, isRetryable: false };
@@ -266,9 +265,9 @@ const sendStorefrontRequest = async (query, variables, storefrontToken) => {
     clearTimeout(timeoutId);
   }
 };
-const requestStorefront = async (query, variables, storefrontToken) => {
+const requestStorefront = async (query, variables, storefrontToken, remoteStorefront) => {
   for (let attempt = 1; attempt <= MAX_REQUEST_ATTEMPTS; attempt += 1) {
-    const { data, isRetryable } = await sendStorefrontRequest(query, variables, storefrontToken);
+    const { data, isRetryable } = await sendStorefrontRequest(query, variables, storefrontToken, remoteStorefront);
     if (data || !isRetryable) return data;
     if (attempt < MAX_REQUEST_ATTEMPTS) await wait(RETRY_BASE_DELAY_MS * 2 ** (attempt - 1));
   }
@@ -299,16 +298,8 @@ const normalizeVariantDetail = (node) => ({
   available: node.availableForSale !== false,
   imageUrl: node.image?.url ?? null
 });
-const normalizeFullVariant = (node, optionNames) => {
-  const valueByName = new Map((node.selectedOptions ?? []).map((option) => [option.name, option.value]));
-  return {
-    ...normalizeVariantDetail(node),
-    key: `variant:${toNumericId(node.id)}`,
-    values: optionNames.map((name) => valueByName.get(name) ?? null)
-  };
-};
-const fetchVariantDetails = async (variantIds) => {
-  const pages = await mapWithConcurrency(toBatches(variantIds), MAX_PARALLEL_REQUESTS, (batch) => requestStorefront(VARIANTS_QUERY, { ids: batch.map((id) => `${VARIANT_GID_PREFIX}${id}`) }));
+const fetchVariantDetails = async (variantIds, remoteStorefront) => {
+  const pages = await mapWithConcurrency(toBatches(variantIds), MAX_PARALLEL_REQUESTS, (batch) => requestStorefront(VARIANTS_QUERY, { ids: batch.map((id) => `${VARIANT_GID_PREFIX}${id}`) }, null, remoteStorefront));
   const nodesById = /* @__PURE__ */ new Map();
   for (const node of pages.flatMap((data) => data?.nodes ?? [])) {
     const id = toNumericId(node?.id);
@@ -321,10 +312,10 @@ const toStock = (node) => ({
   quantityAvailable: Number.isFinite(node?.quantityAvailable) ? node.quantityAvailable : null,
   currentlyNotInStock: node?.currentlyNotInStock === true
 });
-const fetchInventory = async (variantIds, storefrontToken) => {
+const fetchInventory = async (variantIds, storefrontToken, remoteStorefront) => {
   const stockById = /* @__PURE__ */ new Map();
   if (!storefrontToken || failedStorefrontTokens.has(storefrontToken) || !variantIds.length) return stockById;
-  const pages = await mapWithConcurrency(toBatches(variantIds), MAX_PARALLEL_REQUESTS, (batch) => requestStorefront(INVENTORY_QUERY, { ids: batch.map((id) => `${VARIANT_GID_PREFIX}${id}`) }, storefrontToken));
+  const pages = await mapWithConcurrency(toBatches(variantIds), MAX_PARALLEL_REQUESTS, (batch) => requestStorefront(INVENTORY_QUERY, { ids: batch.map((id) => `${VARIANT_GID_PREFIX}${id}`) }, storefrontToken, remoteStorefront));
   if (pages.some((data) => !data)) failedStorefrontTokens.add(storefrontToken);
   for (const node of pages.flatMap((data) => data?.nodes ?? [])) {
     const id = toNumericId(node?.id);
@@ -340,24 +331,12 @@ const hasEnoughStock = (variant, requiredQuantity) => {
   return variant.quantityAvailable >= requiredQuantity;
 };
 const requiredStockOf = (role, item) => role?.type === "fixed" ? Math.max(1, Number(item?.quantity) || 1) : 1;
-const inventoryVariantIds = (candidates) => {
+const stockVariantIds = (candidates, stubsByProduct) => {
   const ids = /* @__PURE__ */ new Set();
   for (const { campaign } of candidates) {
     for (const role of [campaign?.trigger, campaign?.reward]) {
       for (const item of role?.items ?? []) {
         if (requiredStockOf(role, item) < 2) continue;
-        for (const variantId of (item.variantIds ?? []).map(toNumericId).filter(Boolean)) ids.add(variantId);
-      }
-    }
-  }
-  return [...ids];
-};
-const allVariantDefaultIds = (candidates, stubsByProduct) => {
-  const ids = /* @__PURE__ */ new Set();
-  for (const { campaign } of candidates) {
-    for (const role of [campaign?.trigger, campaign?.reward]) {
-      for (const item of role?.items ?? []) {
-        if (requiredStockOf(role, item) < 2 || item.variantIds?.length) continue;
         const defaultStub = (stubsByProduct.get(toNumericId(item?.id)) ?? []).find((stub) => stub.id !== null);
         if (defaultStub) ids.add(String(defaultStub.id));
       }
@@ -371,27 +350,7 @@ const readLiveOptions = (head) => (head.options ?? []).map((option) => ({
   values: (option.optionValues ?? []).map((value) => value.name)
 }));
 const toAvailabilityKeys = (encoded) => new Set(decodeEncodedVariants(encoded).map((indexes) => indexes.join(":")));
-const buildSubsetStubs = (head, mapProduct) => {
-  const liveOptions = readLiveOptions(head);
-  const availableKeys = toAvailabilityKeys(head.encodedVariantAvailability);
-  const liveOptionIndexById = new Map(liveOptions.map((option, optionIndex) => [option.id, optionIndex]));
-  const storedToLive = (mapProduct.optionIds ?? []).map((optionId) => liveOptionIndexById.get(String(optionId)));
-  const isCurrent = storedToLive.length === liveOptions.length && new Set(storedToLive).size === liveOptions.length && storedToLive.every((liveOptionIndex, storedIndex) => liveOptionIndex !== void 0 && liveOptions[liveOptionIndex].values.length === mapProduct.optionValueCounts?.[storedIndex]);
-  if (!isCurrent) return null;
-  return (mapProduct.variants ?? []).map(([variantId, ...positions]) => {
-    const liveIndexes = Array.from(liveOptions, () => 0);
-    positions.forEach((position, storedIndex) => {
-      liveIndexes[storedToLive[storedIndex]] = position;
-    });
-    return {
-      key: `variant:${variantId}`,
-      id: Number(variantId),
-      values: liveIndexes.map((position, optionIndex) => liveOptions[optionIndex].values[position] ?? null),
-      available: availableKeys.has(liveIndexes.join(":"))
-    };
-  }).filter((stub) => stub.values.every((value) => value !== null));
-};
-const buildAllStubs = (head) => {
+const buildVariantStubs = (head) => {
   const liveOptions = readLiveOptions(head);
   const availableKeys = toAvailabilityKeys(head.encodedVariantAvailability);
   const productId = toNumericId(head.id);
@@ -423,62 +382,24 @@ const matchesValues = (stub, node, optionNames) => {
   const valueByName = new Map((node.selectedOptions ?? []).map((option) => [option.name, option.value]));
   return optionNames.every((name, optionIndex) => valueByName.get(name) === stub.values[optionIndex]);
 };
-const pickDefaultStub = (stubs) => stubs.find((stub) => stub.available) ?? stubs[0] ?? null;
-const defaultVariantIds = (plan, stubsByProduct) => {
-  const ids = /* @__PURE__ */ new Set();
-  for (const item of plan.items) {
-    const productId = toNumericId(item?.id);
-    const stubs = stubsByProduct.get(productId);
-    if (!stubs || !item.variantIds?.length) continue;
-    const allowedIds = new Set(item.variantIds.map(toNumericId).filter(Boolean));
-    const stub = pickDefaultStub(stubs.filter((candidate) => allowedIds.has(String(candidate.id))));
-    if (stub && !hasVariantDetail(stub)) ids.add(String(stub.id));
-  }
-  return [...ids];
-};
-const loadStubs = async (plan, variantMap) => {
-  const mapProducts = variantMap?.products ?? {};
-  const unmappedVariantIds = plan.subsetProductIds.filter((productId) => !mapProducts[productId]).flatMap((productId) => [...plan.variantIdsByProduct.get(productId)]);
-  const [data, unmappedNodes] = await Promise.all([
-    requestStorefront(HEADS_QUERY, {
-      subsetIds: plan.subsetProductIds.map((id) => `${PRODUCT_GID_PREFIX}${id}`),
-      allIds: plan.allProductIds.map((id) => `${PRODUCT_GID_PREFIX}${id}`)
-    }),
-    unmappedVariantIds.length ? fetchVariantDetails(unmappedVariantIds) : /* @__PURE__ */ new Map()
-  ]);
-  const heads = [...data?.subset ?? [], ...data?.all ?? []].filter((head) => toNumericId(head?.id));
+const loadStubs = async (productIds, remoteStorefront) => {
+  const data = await requestStorefront(HEADS_QUERY, { ids: productIds.map((id) => `${PRODUCT_GID_PREFIX}${id}`) }, null, remoteStorefront);
+  const heads = (data?.nodes ?? []).filter((head) => toNumericId(head?.id));
   const headsById = new Map(heads.map((head) => [toNumericId(head.id), head]));
   const stubsByProduct = /* @__PURE__ */ new Map();
-  const staleProductIds = [];
-  for (const productId of plan.productIds) {
+  for (const productId of productIds) {
     const head = headsById.get(productId);
     if (!head) continue;
     const optionNames = readLiveOptions(head).map((option) => option.name);
-    if (plan.variantIdsByProduct.get(productId) === null) {
-      const firstVariant = head.selectedOrFirstAvailableVariant;
-      stubsByProduct.set(productId, buildAllStubs(head).map((stub) => firstVariant && matchesValues(stub, firstVariant, optionNames) ? mergeDetail(stub, firstVariant) : stub));
-    } else if (mapProducts[productId]) {
-      const stubs = buildSubsetStubs(head, mapProducts[productId]);
-      if (stubs) stubsByProduct.set(productId, stubs);
-      else staleProductIds.push(productId);
-    } else {
-      stubsByProduct.set(productId, [...plan.variantIdsByProduct.get(productId)].map((variantId) => unmappedNodes.get(variantId)).filter(Boolean).map((node) => normalizeFullVariant(node, optionNames)));
-    }
-  }
-  if (staleProductIds.length) {
-    const staleNodes = await fetchVariantDetails(staleProductIds.flatMap((productId) => [...plan.variantIdsByProduct.get(productId)]));
-    for (const productId of staleProductIds) {
-      const optionNames = readLiveOptions(headsById.get(productId)).map((option) => option.name);
-      stubsByProduct.set(productId, [...plan.variantIdsByProduct.get(productId)].map((variantId) => staleNodes.get(variantId)).filter(Boolean).map((node) => normalizeFullVariant(node, optionNames)));
-    }
+    const firstVariant = head.selectedOrFirstAvailableVariant;
+    stubsByProduct.set(productId, buildVariantStubs(head).map((stub) => firstVariant && matchesValues(stub, firstVariant, optionNames) ? mergeDetail(stub, firstVariant) : stub));
   }
   return { headsById, stubsByProduct };
 };
 const itemHasAvailableVariant$1 = (item, productsById, requiredQuantity) => {
   const product = productsById.get(toNumericId(item?.id));
   if (!product) return false;
-  const allowedIds = new Set((item.variantIds ?? []).map(toNumericId).filter(Boolean));
-  return (product.variants ?? []).some((variant) => variant.available && hasEnoughStock(variant, requiredQuantity) && (!item.variantIds?.length || allowedIds.has(String(variant.id))));
+  return (product.variants ?? []).some((variant) => variant.available && hasEnoughStock(variant, requiredQuantity));
 };
 const isRoleFulfillable = (role, isTrigger, productsById) => {
   const items = role?.items ?? [];
@@ -495,82 +416,48 @@ const isBxgyOfferFulfillable = (campaign, products) => {
   const productsById = new Map((products ?? []).map((product) => [String(product.id), product]));
   return isRoleFulfillable(campaign?.trigger, true, productsById) && isRoleFulfillable(campaign?.reward, false, productsById);
 };
-const mergeCandidates = (candidates) => {
-  const mapProducts = {};
-  for (const candidate of candidates) {
-    for (const [productId, mapProduct] of Object.entries(candidate.variantMap?.products ?? {})) {
-      if (!mapProducts[productId]) mapProducts[productId] = mapProduct;
-    }
-  }
-  return {
-    campaign: {
-      trigger: { items: candidates.flatMap((candidate) => candidate.campaign.trigger?.items ?? []) },
-      reward: { items: candidates.flatMap((candidate) => candidate.campaign.reward?.items ?? []) }
-    },
-    variantMap: { products: mapProducts }
-  };
-};
-const loadBxgyOffer = async (candidates, storefrontToken) => {
+const loadBxgyOffer = async (candidates, storefrontToken, remoteStorefront) => {
   const validCandidates = (candidates ?? []).filter((candidate) => candidate?.campaign);
-  const merged = mergeCandidates(validCandidates);
-  const plan = planBxgyRequests(merged.campaign);
-  if (!plan.productIds.length) return { candidateIndex: -1, products: [] };
-  const [{ headsById, stubsByProduct }, subsetStockById] = await Promise.all([
-    loadStubs(plan, merged.variantMap),
-    fetchInventory(inventoryVariantIds(validCandidates), storefrontToken)
-  ]);
-  const defaultStockIds = allVariantDefaultIds(validCandidates, stubsByProduct).filter((variantId) => !subsetStockById.has(variantId));
-  const stockById = new Map([...subsetStockById, ...await fetchInventory(defaultStockIds, storefrontToken)]);
-  const productIds = plan.productIds.filter((productId) => stubsByProduct.has(productId) && headsById.get(productId)?.requiresSellingPlan !== true);
+  const candidateProductIds = toBxgyProductIds(validCandidates.map((candidate) => candidate.campaign));
+  if (!candidateProductIds.length) return { candidateIndex: -1, products: [] };
+  const { headsById, stubsByProduct } = await loadStubs(candidateProductIds, remoteStorefront);
+  const stockById = await fetchInventory(stockVariantIds(validCandidates, stubsByProduct), storefrontToken, remoteStorefront);
+  const productIds = candidateProductIds.filter((productId) => stubsByProduct.has(productId) && headsById.get(productId)?.requiresSellingPlan !== true);
   const withStock = (variant) => {
     const stock = variant.id === null ? null : stockById.get(String(variant.id));
     return stock ? { ...variant, ...stock } : variant;
   };
-  const toProducts = (detailNodes) => productIds.map((productId) => withVariants(
+  const products = productIds.map((productId) => withVariants(
     toProductShell(headsById.get(productId)),
-    stubsByProduct.get(productId).map((stub) => withStock(
-      hasVariantDetail(stub) || stub.id === null ? stub : mergeDetail(stub, detailNodes.get(String(stub.id)))
-    ))
+    stubsByProduct.get(productId).map(withStock)
   ));
-  const products = toProducts(/* @__PURE__ */ new Map());
   const candidateIndex = validCandidates.findIndex((candidate) => isBxgyOfferFulfillable(candidate.campaign, products));
-  const shownCandidate = validCandidates[Math.max(0, candidateIndex)];
-  const defaultIds = defaultVariantIds(planBxgyRequests(shownCandidate.campaign), stubsByProduct);
-  const defaultNodes = defaultIds.length ? await fetchVariantDetails(defaultIds) : /* @__PURE__ */ new Map();
-  return { candidateIndex, products: toProducts(defaultNodes) };
+  return { candidateIndex, products };
 };
-const loadVariantDetail = async (product, stub, storefrontToken) => {
+const loadVariantDetail = async (product, stub, storefrontToken, remoteStorefront) => {
   if (stub.id !== null) {
-    const node2 = (await fetchVariantDetails([String(stub.id)])).get(String(stub.id));
+    const node2 = (await fetchVariantDetails([String(stub.id)], remoteStorefront)).get(String(stub.id));
     return node2 ? normalizeVariantDetail(node2) : null;
   }
   const data = await requestStorefront(VARIANT_BY_OPTIONS_QUERY, {
     id: `${PRODUCT_GID_PREFIX}${product.id}`,
     selectedOptions: (product.optionNames ?? []).map((name, optionIndex) => ({ name, value: stub.values[optionIndex] }))
-  });
+  }, null, remoteStorefront);
   const node = data?.product?.variantBySelectedOptions;
   if (!node) return null;
   const detail = normalizeVariantDetail(node);
-  const stock = (await fetchInventory([String(detail.id)], storefrontToken)).get(String(detail.id));
+  const stock = (await fetchInventory([String(detail.id)], storefrontToken, remoteStorefront)).get(String(detail.id));
   return stock ? { ...detail, ...stock } : detail;
 };
 const narrowBxgyProducts = (products, items) => {
-  const narrowed = [];
-  for (const product of products ?? []) {
-    const itemsOfProduct = (items ?? []).filter((item) => String(item?.id) === String(product?.id));
-    if (!itemsOfProduct.length) continue;
-    const includeAllVariants = itemsOfProduct.some((item) => !item.variantIds?.length);
-    const allowedVariantIds = new Set(itemsOfProduct.flatMap((item) => item.variantIds ?? []).map(String));
-    const variants = (product.variants ?? []).filter((variant) => includeAllVariants || allowedVariantIds.has(String(variant.id)));
-    if (!variants.length) continue;
-    narrowed.push(withVariants(product, variants));
-  }
-  return narrowed;
+  const itemProductIds = new Set((items ?? []).map((item) => String(item?.id)));
+  return (products ?? []).filter((product) => itemProductIds.has(String(product?.id)) && product.variants?.length);
 };
 const CRO_DATA_PROPERTY = "_cro_data";
 const BXGY_LINE_TYPE = "bxgy";
 const CART_ICON_SECTION = "cart-icon-bubble";
 const BXGY_MAX_BUNDLE_LINES = 25;
+const BXGY_MAX_CART_LINES = 25;
 const newBundleInstanceId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 const toVariantNumber = (value) => {
   const id = Number(String(value ?? "").split("/").pop());
@@ -629,6 +516,15 @@ const countBxgyBundlesInCart = (cartItems, campaignId, parentVariantId) => {
     linesByBundle.set(croData.bundle, lines);
   }
   return [...linesByBundle.values()].reduce((total, lines) => total + setsOfBundle(lines), mergedSets);
+};
+const countBxgyLinesInCart = (cartItems) => {
+  let count = 0;
+  for (const item of cartItems ?? []) {
+    const croData = readCroData(item);
+    if (croData?.type !== BXGY_LINE_TYPE) continue;
+    count += croData.role ? 1 : Math.max(1, Math.floor(Number(croData.lines) || 0));
+  }
+  return count;
 };
 const fetchCart = async (root) => {
   try {
@@ -768,16 +664,11 @@ const markShortStock = (widget, variants, requiredQuantity) => {
     return hasEnoughStock(detailed, requiredQuantity) ? detailed : { ...detailed, available: false };
   });
 };
-const allowedVariantsOf = (widget, product, item, requiredQuantity) => {
-  const allowedIds = (item.variantIds ?? []).map(String);
-  const allowedVariants = allowedIds.length ? product.variants.filter((variant) => allowedIds.includes(String(variant.id))) : product.variants;
-  return markShortStock(widget, allowedVariants, requiredQuantity);
-};
 const resolveItem = (widget, item, storedSelection, requiredQuantity = 1) => {
   const product = productOf(widget, item);
   const quantity = Math.max(1, Number(item.quantity) || 1);
   if (!product) return { status: "missing", title: formatHandle(item.handle), quantity };
-  const variants = allowedVariantsOf(widget, product, item, requiredQuantity);
+  const variants = markShortStock(widget, product.variants, requiredQuantity);
   const selection = resolveSelection(variants, storedSelection);
   const selectedVariant = findVariant(variants, selection) ?? variants[0] ?? null;
   const variantStatus = detailStatusOf(widget, selectedVariant);
@@ -790,6 +681,7 @@ const resolveItem = (widget, item, storedSelection, requiredQuantity = 1) => {
     variant,
     selection,
     optionNames: product.optionNames ?? [],
+    optionValues: (product.options ?? []).map((option) => option?.values ?? []),
     title: product.title || formatHandle(product.handle || item.handle),
     image: safeImageUrl(variant?.imageUrl || product.imageUrl),
     url: productUrlOf(widget, product.handle || item.handle, variant),
@@ -838,7 +730,7 @@ const itemHasAvailableVariant = (widget, role, index) => {
   const item = roleItems(widget, role)[index];
   const product = productOf(widget, item);
   if (!product) return false;
-  return allowedVariantsOf(widget, product, item, requiredStockOfItem(widget, role, item)).some((variant) => variant.available !== false);
+  return markShortStock(widget, product.variants, requiredStockOfItem(widget, role, item)).some((variant) => variant.available !== false);
 };
 const isPickRoleUnreachable = (widget, role) => {
   const config = widget.campaign[role];
@@ -1043,13 +935,14 @@ const removeLine = (widget, role, index, variantId) => {
     for (const pickedKey of [...store.pickedLines.keys()]) {
       if (pickedKey.startsWith("reward:")) store.pickedLines.delete(pickedKey);
     }
+    if (store.editor?.role === "reward") store.editor = null;
   }
   return removedLine;
 };
-const buildOptionsView = (variants, optionNames, selection) => Array.from({ length: countOptions(variants) }, (_, optionIndex) => ({
+const buildOptionsView = (variants, optionNames, optionValues, selection) => Array.from({ length: countOptions(variants) }, (_, optionIndex) => ({
   name: optionNames[optionIndex] || "",
   selected: selection[optionIndex],
-  choices: listChoices(variants, selection, optionIndex)
+  choices: listChoices(variants, selection, optionIndex, optionValues?.[optionIndex])
 }));
 const buildEditorView = (widget, role, index, resolved) => {
   const { editor } = widget.store;
@@ -1057,17 +950,17 @@ const buildEditorView = (widget, role, index, resolved) => {
   const draftSelection = resolveSelection(resolved.variants, editor.draft);
   const draftVariant = findVariant(resolved.variants, draftSelection);
   return {
-    options: buildOptionsView(resolved.variants, resolved.optionNames, draftSelection),
+    options: buildOptionsView(resolved.variants, resolved.optionNames, resolved.optionValues, draftSelection),
     canApply: Boolean(draftVariant) && draftVariant.available !== false
   };
 };
 const buildPickerView = (widget, role, index, resolved) => {
-  const { variants, variant, selection, optionNames } = resolved;
+  const { variants, variant, selection, optionNames, optionValues } = resolved;
   return {
     hasChoice: variants.length >= 2 && !isDefaultTitleOnly(variants),
     optionCount: countOptions(variants),
     selectedLabel: variantLabel(variant),
-    options: buildOptionsView(variants, optionNames, selection),
+    options: buildOptionsView(variants, optionNames, optionValues, selection),
     editor: buildEditorView(widget, role, index, resolved)
   };
 };
@@ -1156,6 +1049,45 @@ const buildOfferView = (widget) => {
     }
   };
 };
+const clockIcon = `<svg class="cro-bxgy__countdown-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.25"/><polyline points="8 4.5 8 8 10.25 9.25"/></svg>`;
+const resolveCountdownEndMs = (schedule) => {
+  if (!schedule?.enabled) return null;
+  const endMs = Number.isFinite(schedule.endTs) ? schedule.endTs * 1e3 : Date.parse(schedule.end);
+  return Number.isFinite(endMs) && endMs > Date.now() ? endMs : null;
+};
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_PER_HOUR = 3600;
+const SECONDS_PER_DAY = 86400;
+const pad = (value) => String(value).padStart(2, "0");
+const formatCountdownRemaining = (remainingMs, format = "dhm") => {
+  const totalSeconds = Math.floor(remainingMs / 1e3);
+  const days = Math.floor(totalSeconds / SECONDS_PER_DAY);
+  const hours = Math.floor(totalSeconds % SECONDS_PER_DAY / SECONDS_PER_HOUR);
+  const minutes = Math.floor(totalSeconds % SECONDS_PER_HOUR / SECONDS_PER_MINUTE);
+  const seconds = totalSeconds % SECONDS_PER_MINUTE;
+  if (format === "colon") {
+    return [days && pad(days), (days || hours) && pad(hours), pad(minutes), pad(seconds)].filter(Boolean).join(":");
+  }
+  if (format === "hm") {
+    const totalHours = Math.floor(totalSeconds / SECONDS_PER_HOUR);
+    return totalHours ? `${totalHours}h ${minutes}m` : `${minutes}m`;
+  }
+  if (format === "dhms") {
+    return [days && `${days}d`, (days || hours) && `${hours}h`, (days || hours || minutes) && `${minutes}m`, `${seconds}s`].filter(Boolean).join(" ");
+  }
+  if (totalSeconds < SECONDS_PER_MINUTE) return "<1m";
+  return [days && `${days}d`, (days || hours) && `${hours}h`, `${minutes}m`].filter(Boolean).join(" ");
+};
+const countdownLabel = (ctx, endMs) => {
+  const remainingMs = endMs - Date.now();
+  return remainingMs > 0 ? ctx.text("countdownText", { countdown: formatCountdownRemaining(remainingMs, ctx.settings.countdownFormat) }) : "";
+};
+const renderCountdown = (ctx) => {
+  const endMs = ctx.countdown?.endMs;
+  const label = endMs ? countdownLabel(ctx, endMs) : "";
+  if (!label) return "";
+  return `<span class="cro-bxgy__countdown" role="timer">${clockIcon}<span class="cro-bxgy__countdown-text" data-countdown-text>${escapeHtml(label)}</span></span>`;
+};
 const SKELETON_CARDS_PER_GROUP = 3;
 const POPOVER_OPTION_COUNT = 2;
 const caretIcon = `<svg class="cro-bxgy__select-caret" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 1 5 5 9 1"/></svg>`;
@@ -1163,15 +1095,23 @@ const minusIcon = `<svg class="cro-bxgy__step-icon" viewBox="0 0 8 8" fill="none
 const plusIcon = `<svg class="cro-bxgy__step-icon" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1.33" aria-hidden="true"><line x1="0" y1="4" x2="8" y2="4"/><line x1="4" y1="0" x2="4" y2="8"/></svg>`;
 const removeIcon = `<svg class="cro-bxgy__picked-remove-icon" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1.33" stroke-linecap="round" aria-hidden="true"><line x1="1" y1="1" x2="7" y2="7"/><line x1="7" y1="1" x2="1" y2="7"/></svg>`;
 const lockIcon = `<svg class="cro-bxgy__lock-icon" viewBox="0 0 8 10" fill="currentColor" aria-hidden="true"><path d="M6.5 4V3a2.5 2.5 0 0 0-5 0v1H1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-.5ZM2.5 3a1.5 1.5 0 0 1 3 0v1h-3V3Z"/></svg>`;
-const renderEmptyState = () => `<section class="cro-bxgy"><p class="cro-bxgy__empty">No offer data available.</p></section>`;
+const renderListPlaceholder = (text) => `<div class="cro-bxgy__placeholder">${escapeHtml(text)}</div>`;
+const renderEmptyState = () => `
+        <div class="cro-bxgy__empty">
+            <span class="cro-bxgy__empty-title">Buy X Get Y</span>
+            <p class="cro-bxgy__empty-description">No offer data available.</p>
+        </div>
+    `;
 const renderHeader = (ctx, { showDivider }) => {
   const title = ctx.text("headerTitleText");
   const subtitle = ctx.text("headerSubtitleText");
-  if (!title && !subtitle && !showDivider) return "";
+  const countdown = renderCountdown(ctx);
+  if (!title && !subtitle && !countdown && !showDivider) return "";
   return `
             <div class="cro-bxgy__header">
                 ${title ? `<h2 class="cro-bxgy__title">${escapeHtml(title)}</h2>` : ""}
                 ${subtitle ? `<p class="cro-bxgy__subtitle">${escapeHtml(subtitle)}</p>` : ""}
+                ${countdown}
                 ${showDivider ? `<hr class="cro-bxgy__header-divider">` : ""}
             </div>
         `;
@@ -1202,18 +1142,22 @@ const renderRewardPrice = (ctx, { price, rewardPrice }) => {
             </span>
         `;
 };
+const choiceUnavailableText = (ctx, { exists }) => ctx.text(exists ? "itemSoldOutText" : "itemUnavailableText");
 const renderPopover = (ctx, card) => {
   const { role, index, title } = card;
   const { editor } = card.picker;
-  const soldOutText = ctx.text("itemSoldOutText");
   const fieldsets = editor.options.map((option, optionIndex) => {
     const optionName = option.name || `Option ${optionIndex + 1}`;
-    const choices = option.choices.map(({ value, available }) => `
+    const choices = option.choices.map((choice) => {
+      const { value, available } = choice;
+      const unavailableLabel = available ? "" : choiceUnavailableText(ctx, choice);
+      return `
                 <label class="cro-bxgy__radio${available ? "" : " cro-bxgy__radio--sold-out"}">
                     <input type="radio" class="cro-bxgy__radio-input" name="${role}-${index}-${optionIndex}" value="${escapeHtml(value)}" data-action="draft-variant" data-role="${role}" data-index="${index}" data-option="${optionIndex}"${value === option.selected ? " checked" : ""}${available ? "" : " disabled"}>
-                    <span class="cro-bxgy__radio-label">${escapeHtml(value)}${available || !soldOutText ? "" : `<span class="cro-bxgy__sr"> - ${escapeHtml(soldOutText)}</span>`}</span>
+                    <span class="cro-bxgy__radio-label">${escapeHtml(value)}${unavailableLabel ? `<span class="cro-bxgy__sr"> - ${escapeHtml(unavailableLabel)}</span>` : ""}</span>
                 </label>
-            `).join("");
+            `;
+    }).join("");
     return `
                 <fieldset class="cro-bxgy__fieldset">
                     <legend class="cro-bxgy__legend">${escapeHtml(optionName)}</legend>
@@ -1223,7 +1167,7 @@ const renderPopover = (ctx, card) => {
   }).join("");
   return `
             <div class="cro-bxgy__backdrop" data-action="close-editor" data-role="${role}" data-index="${index}"></div>
-            <div class="cro-bxgy__popover" role="dialog" aria-label="${escapeHtml(title)}">
+            <div class="cro-bxgy__popover" role="dialog" tabindex="-1" aria-label="${escapeHtml(title)}">
                 <div class="cro-bxgy__popover-head">
                     <h4 class="cro-bxgy__popover-title">${escapeHtml(title)}</h4>
                     <button type="button" class="cro-bxgy__popover-close" data-action="close-editor" data-role="${role}" data-index="${index}" aria-label="${escapeHtml(ctx.text("closeText"))}">×</button>
@@ -1238,9 +1182,10 @@ const renderVariantPicker = (ctx, card) => {
   if (ctx.settings.showItemVariant === false || !picker.hasChoice) return "";
   if (picker.optionCount < POPOVER_OPTION_COUNT) {
     const [firstOption] = picker.options;
-    const soldOutText = ctx.text("itemSoldOutText");
-    const choices = (firstOption?.choices ?? []).map(({ value, available }) => {
-      const label = available || !soldOutText ? value : `${value} - ${soldOutText}`;
+    const choices = (firstOption?.choices ?? []).map((choice) => {
+      const { value, available } = choice;
+      const unavailableLabel = available ? "" : choiceUnavailableText(ctx, choice);
+      const label = unavailableLabel ? `${value} - ${unavailableLabel}` : value;
       return `<option value="${escapeHtml(value)}"${value === firstOption.selected ? " selected" : ""}${available ? "" : " disabled"}>${escapeHtml(label)}</option>`;
     }).join("");
     return `
@@ -1288,11 +1233,11 @@ const renderAddItemsButton = (ctx, card) => {
 const renderPickedLines = (ctx, { role, index, lines }) => {
   if (!lines.length) return "";
   const rows = lines.map((line) => {
-    const label = line.variantLabel ? `${line.variantLabel} × ${line.quantity}` : ctx.text("pickedLineDefaultText", { quantity: line.quantity });
+    const label = line.variantLabel ? `${escapeHtml(line.variantLabel)} <span class="cro-bxgy__picked-qty">×${line.quantity}</span>` : escapeHtml(ctx.text("pickedLineDefaultText", { quantity: line.quantity }));
     const removeLabel = `${ctx.text("itemRemoveText")} ${line.itemLabel}`.trim();
     return `
                 <li class="cro-bxgy__picked-line">
-                    <span class="cro-bxgy__picked-label">${escapeHtml(label)}</span>
+                    <span class="cro-bxgy__picked-label">${label}</span>
                     <button type="button" class="cro-bxgy__picked-remove" aria-label="${escapeHtml(removeLabel)}" data-action="remove-line" data-role="${role}" data-index="${index}" data-variant-id="${escapeHtml(line.variantId)}">${removeIcon}</button>
                 </li>
             `;
@@ -1387,18 +1332,46 @@ const renderSkeletonCards = (role, itemCount) => {
         `;
   return card.repeat(cardCount);
 };
+const POPOVER_GAP = 6;
+const POPOVER_MARGIN = 8;
+const POPOVER_MIN_HEIGHT = 160;
+const scrollClipBounds = (host) => {
+  let top = 0;
+  let bottom = window.innerHeight;
+  let element = host?.parentElement;
+  while (element && element !== document.body && element !== document.documentElement) {
+    if (getComputedStyle(element).overflowY !== "visible") {
+      const rect = element.getBoundingClientRect();
+      top = Math.max(top, rect.top);
+      bottom = Math.min(bottom, rect.bottom);
+    }
+    element = element.parentElement;
+  }
+  return { top, bottom };
+};
 const positionEditor = (root) => {
   const popover = root.querySelector(".cro-bxgy__popover");
   const section = root.querySelector(".cro-bxgy");
   if (!popover || !section) return;
   popover.style.removeProperty("--cro-pop-shift");
-  const margin = 8;
+  popover.style.removeProperty("--cro-pop-max-h");
+  delete popover.dataset.placement;
   const sectionRect = section.getBoundingClientRect();
   const popoverRect = popover.getBoundingClientRect();
-  const overflowRight = popoverRect.right - (sectionRect.right - margin);
-  const overflowLeft = sectionRect.left + margin - popoverRect.left;
+  const overflowRight = popoverRect.right - (sectionRect.right - POPOVER_MARGIN);
+  const overflowLeft = sectionRect.left + POPOVER_MARGIN - popoverRect.left;
   if (overflowRight > 0) popover.style.setProperty("--cro-pop-shift", `${-overflowRight}px`);
   else if (overflowLeft > 0) popover.style.setProperty("--cro-pop-shift", `${overflowLeft}px`);
+  const anchorRect = popover.parentElement.getBoundingClientRect();
+  const clip = scrollClipBounds(root.getRootNode().host);
+  const spaceBelow = clip.bottom - anchorRect.bottom - POPOVER_GAP - POPOVER_MARGIN;
+  const spaceAbove = anchorRect.top - clip.top - POPOVER_GAP - POPOVER_MARGIN;
+  const isOpenAbove = popoverRect.height > spaceBelow && spaceAbove > spaceBelow;
+  const availableHeight = isOpenAbove ? spaceAbove : spaceBelow;
+  if (isOpenAbove) popover.dataset.placement = "top";
+  if (popoverRect.height > availableHeight) {
+    popover.style.setProperty("--cro-pop-max-h", `${Math.round(Math.max(POPOVER_MIN_HEIGHT, availableHeight))}px`);
+  }
 };
 const renderUnavailableCard = (ctx, { role, mode, title, quantity }) => {
   const isReward = role === "reward";
@@ -1444,6 +1417,7 @@ const renderTriggerCard = (ctx, card) => {
 };
 const renderTrigger = (ctx, trigger) => {
   if (!trigger) return "";
+  if (!trigger.cards.length && ctx.isBuilderMode) return renderListPlaceholder("Select the products customers need to buy");
   return `
             <div class="cro-bxgy__trigger cro-bxgy__trigger--${trigger.mode}">
                 ${trigger.cards.map((card) => renderTriggerCard(ctx, card)).join("")}
@@ -1504,8 +1478,8 @@ const renderReward = (ctx, reward, isLocked) => {
                         </div>
                     </div>
                 ` : ""}
-                <div class="cro-bxgy__reward-list">
-                    ${reward.cards.map((card) => renderRewardCard(ctx, card)).join("")}
+                <div class="cro-bxgy__reward-list"${isLocked ? " inert" : ""}>
+                    ${!reward.cards.length && ctx.isBuilderMode ? renderListPlaceholder("Select the products customers will get") : reward.cards.map((card) => renderRewardCard(ctx, card)).join("")}
                 </div>
             </div>
         `;
@@ -1554,8 +1528,9 @@ const showEcomposerToast = (message, status) => {
 const DEFAULT_TEXT = Object.freeze({
   headerTitleText: "Buy more, get a free gift",
   headerSubtitleText: "Add the eligible items to unlock your free reward",
+  countdownText: "Ends in {{countdown}}",
   rewardLabel: "Your free reward preview",
-  giftTagText: "Gift",
+  giftTagText: "GIFT",
   rewardFreeText: "Free",
   footerSummaryText: "Total {{count}} items in this bundle :",
   footerSavingsText: "You save {{amount}} ({{percent}}%)",
@@ -1570,6 +1545,7 @@ const DEFAULT_TEXT = Object.freeze({
   chooseOptionsErrorText: "Please choose an option for every item.",
   repeatLimitErrorText: "You've reached the limit for this offer in your cart.",
   lineLimitErrorText: "This offer can include up to {{max}} different items.",
+  cartLineLimitErrorText: "Your cart can hold up to {{max}} offer items. Remove some to add this offer.",
   rewardLockedText: "Locked",
   itemAddText: "Add items",
   itemAddMoreText: "Add {{remaining}} More",
@@ -1625,10 +1601,11 @@ const STYLE_TOKENS = Object.freeze([
 ]);
 const hasCampaignData = (data) => Boolean(data?.campaign || data?.candidates?.length);
 const SUBMIT_RESET_MS = 3e3;
+const COUNTDOWN_TICK_MS = 1e3;
 const toCandidates = (data) => {
   if (Array.isArray(data?.candidates)) return data.candidates.filter((candidate) => candidate?.campaign);
   if (!data?.campaign) return [];
-  return [{ campaign: data.campaign, settings: data.settings, styles: data.styles, variantMap: data.variantMap }];
+  return [{ campaign: data.campaign, settings: data.settings, styles: data.styles }];
 };
 class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
 }) {
@@ -1636,6 +1613,13 @@ class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
     super();
     this.store = createStore();
     if (isBrowser) {
+      this._repositionEditor = () => {
+        if (!this.store.editor || this._repositionFrame) return;
+        this._repositionFrame = requestAnimationFrame(() => {
+          this._repositionFrame = null;
+          positionEditor(this._content);
+        });
+      };
       this.attachShadow({ mode: "open" });
       this._content = document.createElement("div");
       this._announcer = document.createElement("div");
@@ -1663,12 +1647,19 @@ class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
     if (isBrowser) {
       this.render();
       guardBuilderNavigation(this);
+      window.addEventListener("resize", this._repositionEditor, { passive: true });
+      window.addEventListener("scroll", this._repositionEditor, { passive: true, capture: true });
     }
     if (!this._embeddedData && typeof queueMicrotask === "function") {
       queueMicrotask(() => {
         if (this.isConnected && hasCampaignData(this.embeddedData)) this.render();
       });
     }
+  }
+  disconnectedCallback() {
+    this._stopCountdown();
+    window.removeEventListener("resize", this._repositionEditor);
+    window.removeEventListener("scroll", this._repositionEditor, { capture: true });
   }
   attributeChangedCallback(name, oldValue, newValue) {
     if ((name === "widget-data" || name === "widgetdata") && oldValue !== newValue) {
@@ -1720,8 +1711,12 @@ class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
   get _hasProvidedProducts() {
     return Array.isArray(this._resolvedWidgetData?.products);
   }
+  get _isStandalonePreview() {
+    return this.isBuilderMode && !readEcBuilder(this);
+  }
   get _loadState() {
-    if (this._hasProvidedProducts || this.isBuilderMode || this.store.loadedProducts) return "ready";
+    if (this._hasProvidedProducts || this.store.loadedProducts) return "ready";
+    if (this._isStandalonePreview) return "ready";
     return "loading";
   }
   _loadProducts() {
@@ -1729,7 +1724,7 @@ class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
     const candidates = this.candidates;
     if (store.loadingCampaign === candidates) return;
     store.loadingCampaign = candidates;
-    loadBxgyOffer(candidates, this.storefrontToken).catch((error) => {
+    loadBxgyOffer(candidates, this.storefrontToken, this.remoteStorefront).catch((error) => {
       console.error("[cro-bxgy] loading the offer failed:", error);
       return { candidateIndex: -1, products: [] };
     }).then(({ candidateIndex, products }) => {
@@ -1752,7 +1747,7 @@ class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
   }
   get _hasNoFulfillableOffer() {
     const data = this._resolvedWidgetData;
-    return this.store.candidateIndex === -1 && !this.isBuilderMode && !data?.designMode;
+    return this.store.candidateIndex === -1 && !this._isStandalonePreview && !data?.designMode;
   }
   get routesRoot() {
     return isBrowser ? window.Shopify?.routes?.root || "/" : "/";
@@ -1772,10 +1767,14 @@ class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
   get storefrontToken() {
     return this._resolvedWidgetData?.storefrontToken ?? null;
   }
+  get remoteStorefront() {
+    const domain = readEcBuilder(this) ? this._resolvedWidgetData?.storeDomain : null;
+    return domain ? { domain, token: this.storefrontToken } : null;
+  }
   requestVariantDetail(product, variant, needsStock = false) {
     const { store } = this;
     if (store.variantRequests.has(variant.key)) return;
-    store.variantRequests.set(variant.key, loadVariantDetail(product, variant, needsStock ? this.storefrontToken : null).then((detail) => {
+    store.variantRequests.set(variant.key, loadVariantDetail(product, variant, needsStock ? this.storefrontToken : null, this.remoteStorefront).then((detail) => {
       if (this.store !== store) return;
       store.variantDetails.set(variant.key, detail);
       if (!this.isConnected) return;
@@ -1800,8 +1799,32 @@ class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
   get layout() {
     return resolveLayout(this.settings.layout);
   }
+  get countdownEndMs() {
+    return this.settings.showCountdown !== false ? resolveCountdownEndMs(this.campaign?.schedule) : null;
+  }
+  _startCountdown() {
+    this._stopCountdown();
+    const endMs = this.countdownEndMs;
+    if (!endMs || !isBrowser) return;
+    this._countdownTimer = setInterval(() => {
+      const remainingMs = endMs - Date.now();
+      if (remainingMs <= 0) {
+        this._stopCountdown();
+        this.render();
+        return;
+      }
+      const label = this._content.querySelector("[data-countdown-text]");
+      if (label) label.textContent = countdownLabel(this.renderContext, endMs);
+    }, COUNTDOWN_TICK_MS);
+  }
+  _stopCountdown() {
+    clearInterval(this._countdownTimer);
+    this._countdownTimer = null;
+  }
   get renderContext() {
     return {
+      isBuilderMode: this.isBuilderMode,
+      countdown: { endMs: this.countdownEndMs },
       settings: this.settings,
       text: (name, replacements) => this._text(name, replacements),
       template: (name) => resolveLocaleValue(this.settings[name], DEFAULT_TEXT[name]),
@@ -1832,7 +1855,7 @@ class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
     const focusSelectors = [];
     if (action === "open-editor") {
       openEditor(this, role, index);
-      focusSelectors.push(`[data-action="draft-variant"]${cardSelector}:checked`);
+      focusSelectors.push(".cro-bxgy__popover");
     } else if (action === "apply-editor") {
       if (applyEditor(this, role, Number(index))) focusSelectors.push(`[data-action="open-editor"]${cardSelector}`);
     } else if (action === "close-editor") {
@@ -1901,12 +1924,15 @@ class CroBxgyWidget extends (isBrowser ? HTMLElement : class {
     }
     this._setSubmitState("adding");
     const root = window.Shopify?.routes?.root || "/";
-    if (campaign.repeatLimit?.enabled) {
-      const cart2 = await fetchCart(root);
-      if (cart2 && countBxgyBundlesInCart(cart2.items, campaign.id, campaign.parentProduct?.variantId) >= Number(campaign.repeatLimit.max)) {
-        this._setSubmitState("error", this._text("repeatLimitErrorText"));
-        return;
-      }
+    const cartBeforeAdd = await fetchCart(root);
+    if (this.store !== store) return;
+    if (cartBeforeAdd && campaign.repeatLimit?.enabled && countBxgyBundlesInCart(cartBeforeAdd.items, campaign.id, campaign.parentProduct?.variantId) >= Number(campaign.repeatLimit.max)) {
+      this._setSubmitState("error", this._text("repeatLimitErrorText"));
+      return;
+    }
+    if (cartBeforeAdd && countBxgyLinesInCart(cartBeforeAdd.items) + lines.length > BXGY_MAX_CART_LINES) {
+      this._setSubmitState("error", this._text("cartLineLimitErrorText", { max: BXGY_MAX_CART_LINES }));
+      return;
     }
     const result = await addBxgyLinesToCart(root, lines);
     if (this.store !== store) return;
@@ -1974,12 +2000,13 @@ ${this.layout.styles}` : "";
       this._content.innerHTML = "";
       return;
     }
-    if (!productIndexOf(this).size) {
+    if (!this._isStandalonePreview && !productIndexOf(this).size) {
       this._content.innerHTML = emptyState;
       return;
     }
     this._content.innerHTML = `${styles}${layout.render(this.renderContext, buildOfferView(this))}`;
     layout.afterRender?.(this._content, this);
+    this._startCountdown();
   }
 }
 if (isBrowser && !customElements.get("cro-bxgy-bundle-widget")) {

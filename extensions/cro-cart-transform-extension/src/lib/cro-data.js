@@ -20,9 +20,7 @@ const parseCroData = (line) => {
     }
 };
 
-const croDataByLine = new WeakMap();
-
 export const readCroData = (line) => {
-    if (!croDataByLine.has(line)) croDataByLine.set(line, parseCroData(line));
-    return croDataByLine.get(line);
+    if (line.parsedCroData === undefined) line.parsedCroData = parseCroData(line);
+    return line.parsedCroData;
 };

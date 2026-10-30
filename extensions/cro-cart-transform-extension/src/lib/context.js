@@ -9,15 +9,11 @@
  * file.
  */
 export function buildContext(input, handlers) {
-    // Keyed by handler type. Insertion order follows the handler registry, which
-    // is what keeps the `meta=` trace column stable run to run.
     const campaigns = new Map();
-    const metafieldBytes = new Map();
 
     for (const handler of handlers) {
         const read = handler.readCampaigns(input);
         campaigns.set(handler.type, read.campaigns);
-        metafieldBytes.set(handler.type, read.bytes);
     }
 
     return {
@@ -39,14 +35,6 @@ export function buildContext(input, handlers) {
             .map((entry) => String(entry.tag)),
         countryIsoCode: input?.localization?.country?.isoCode ?? null,
         campaigns,
-        // Bytes each campaign metafield delivered, measured BEFORE parsing. A
-        // metafield the function is not allowed to read arrives as null, which
-        // after parsing is indistinguishable from a shop that simply has no
-        // campaigns — both end up an empty map. The raw size is the only thing
-        // that separates "no data reached us" from "data reached us and held
-        // nothing", and that is the difference between a permissions problem and
-        // a config problem.
-        metafieldBytes,
         // Distinct reasons lines were skipped this run, printed once by
         // `cartTransformRun`. Function logs are truncated at 1 kB and a cart can
         // hold a dozen bundle lines that all skip for the same reason, so the

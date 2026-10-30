@@ -61,24 +61,25 @@ export const mixMatchHandler = {
      * missing or unreadable cannot be placed in a bundle at all and is left
      * alone. */
     groupAttribute: "_cro_data",
-    groupKey: (line) => readBundleAttribute(line)?.bundle ?? null,
+    groupKey: (line, croData) => readBundleAttribute(line, croData)?.bundle ?? null,
 
     /** Owned by the cartTransform node in the `$app:` namespace, and requested
      * as `jsonValue`, so this arrives already parsed — see
-     * MMB_FUNCTION_METAFIELD in mix-match-bundle.server.ts. */
+     * MMB_FUNCTION_METAFIELD in mix-match-bundle.server.ts. Shopify ids in it
+     * are stored as their numeric tail only, to stay under the 10 kB limit. */
     readCampaigns(input) {
         const envelope = input?.cartTransform?.mixMatch?.jsonValue;
         return {
             campaigns: indexBundles(envelope),
-            bytes: envelope == null ? 0 : JSON.stringify(envelope).length,
         };
     },
 
     run(lines, context) {
-        // Parsed ONCE here and threaded through the rest of the run: `_cro_data`
-        // is a JSON string, and re-parsing it per check would cost the same work
-        // several times over on a cart that can hold hundreds of lines.
-        const parsed = lines.map((line) => ({ line, mm: readBundleAttribute(line) }));
+        // Reuse the dispatcher's parsed JSON; the cache belongs to this invocation.
+        const parsed = lines.map((line) => ({
+            line,
+            mm: readBundleAttribute(line, context.croDataByLine?.get(line)),
+        }));
         if (parsed.some((entry) => !entry.mm)) return skip(context, "line has no readable _cro_data");
 
         const campaignId = sharedCampaignId(parsed);
@@ -92,16 +93,15 @@ export const mixMatchHandler = {
         // config (see `indexBundles`).
         const config = context.campaigns.get(TYPE).get(campaignId);
         if (!config) {
-            // The ids the metafield DID carry, so one run tells the two causes
-            // apart: an empty list means no campaign data reached the function
-            // (see `metafieldBytes`), a non-empty one means this cart names a
-            // bundle that is no longer active.
+            // An empty list means no campaigns are available; a non-empty list
+            // means this cart names a bundle that is no longer active.
             const known = [...context.campaigns.get(TYPE).keys()].map(tailOf).join(",");
             return skip(context, `campaign ${tailOf(campaignId)} not in metafield [${known || "empty"}]`);
         }
 
-        const parentVariantId = config.bundleParent?.variantId;
-        if (!parentVariantId) return skip(context, `campaign ${campaignId} has no bundleParent variant`);
+        const parentVariantNumericId = numericId(config.bundleParent?.variantId);
+        if (!parentVariantNumericId) return skip(context, `campaign ${campaignId} has no bundleParent variant`);
+        const parentVariantId = `gid://shopify/ProductVariant/${parentVariantNumericId}`;
 
         // The window and today are both in the reason: `withinDateRange` fails
         // CLOSED on a missing `today`, and "no local time" looks identical to
@@ -140,21 +140,14 @@ export const mixMatchHandler = {
         const rate = presentmentRate(context);
         const method = config.discount?.method ?? "none";
         const discountCents = computeDiscountCents(config.discount, facts, rate);
-        if (discountCents <= 0) {
-            return skip(
-                context,
-                `campaign ${tailOf(campaignId)} method ${method} qualifies for no discount`
-                + ` (qty ${facts.totalQuantity}, sub ${facts.subtotalCents})`
-            );
-        }
-
         const percent = percentageDecrease(facts.subtotalCents, discountCents);
-        if (percent <= 0) return skip(context, "discount rounds to 0%");
 
         const merge = {
             parentVariantId,
-            cartLines: facts.lines.map((line) => ({ cartLineId: line.cartLineId, quantity: line.cartQuantity })),
-            price: { percentageDecrease: { value: percent.toFixed(6) } },
+            cartLines: facts.lines.map((line) => ({ cartLineId: line.cartLineId, quantity: line.quantity })),
+            // A bundle that earns no discount is still merged under its parent;
+            // `price` is simply left off so the lines keep Shopify's own prices.
+            ...(percent > 0 && { price: { percentageDecrease: { value: percent.toFixed(6) } } }),
             // Without this the cart collapses two bundle instances of the SAME
             // items into one line of quantity 2: both merges use the same parent
             // variant, title and percentage, so two merges of an identical
@@ -210,6 +203,8 @@ function indexBundles(envelope) {
  * ObjectIds that share their leading timestamp bytes, and Shopify truncates
  * function logs at 1 kB per run. The tail is both the shorter and the more
  * distinguishing half. */
+const numericId = (id) => String(id ?? "").split("/").pop() ?? "";
+
 const tailOf = (id) => (String(id ?? "").split("/").pop() || "").slice(-6) || "?";
 
 /**
@@ -220,8 +215,7 @@ const tailOf = (id) => (String(id ?? "").split("/").pop() || "").slice(-6) || "?
  * Returns null for anything not fully readable — no field here has a safe
  * default, and a null makes the line unbundlable rather than mis-bundled.
  */
-const readBundleAttribute = (line) => {
-    const parsed = readCroData(line);
+const readBundleAttribute = (line, parsed = readCroData(line)) => {
     if (!parsed) return null;
 
     const campaign = String(parsed.campaign ?? "");
@@ -245,15 +239,17 @@ const sharedCampaignId = (parsed) => {
 /**
  * How many complete bundle sets these cart lines represent.
  *
- * Shopify IGNORES `LinesMergeOperation.cartLines[].quantity`: it merges each
- * line's FULL quantity into one parent line and derives that parent's own
- * quantity itself. So when a shopper raises the merged line to 3, every
- * component quantity is multiplied by 3 and this function re-runs on the
- * tripled cart — which, with nothing to compare against, looks exactly like a
- * shopper who picked three times as much of everything. Every absolute-amount
- * method would then be applied ONCE for what is really three bundles ($15 off
- * three bundles), and `bundle` would be worse than that: a $99 bundle price
- * would price all three sets at $99 together.
+ * `LinesMergeOperation.cartLines[].quantity` is the quantity of that component
+ * PER parent unit, and Shopify derives the parent's own quantity from it
+ * (cart quantity / operation quantity). So when a shopper raises the merged
+ * line to 3, every component's cart quantity is multiplied by 3 and this
+ * function re-runs on the tripled cart — which, with nothing to compare against,
+ * looks exactly like a shopper who picked three times as much of everything.
+ * Every absolute-amount method would then be applied ONCE for what is really
+ * three bundles ($15 off three bundles), and `bundle` would be worse than that:
+ * a $99 bundle price would price all three sets at $99 together. The operation
+ * therefore names the per-set quantity (`readLines`), which keeps the parent at
+ * quantity 3 instead of one parent holding three sets' worth of components.
  *
  * `_cro_data`'s `qty` is the per-set quantity the widget wrote at add-to-cart
  * time (`_buildCartLines`), and the multiplier is what every line has been
@@ -287,8 +283,8 @@ const bundleMultiplier = (parsed) => {
  *
  * Every quantity here is for ONE bundle set (the cart quantity divided by
  * `multiplier`), so both the group gates and the discount describe a single
- * bundle no matter how many sets the shopper bought. `cartQuantity` keeps the
- * real cart figure, which is what the merge operation itself has to name.
+ * bundle no matter how many sets the shopper bought. The merge operation names
+ * these per-set quantities too; `cartQuantity` is kept as the raw cart figure.
  */
 const readLines = (parsed, multiplier) => {
     const read = [];
@@ -310,7 +306,7 @@ const readLines = (parsed, multiplier) => {
         const groupId = mm.group;
         const collectionIds = (line.merchandise?.inCollections ?? [])
             .filter((membership) => membership?.isMember)
-            .map((membership) => String(membership.collectionId));
+            .map((membership) => numericId(membership.collectionId));
         const tags = (line.merchandise?.product?.hasTags ?? [])
             .filter((response) => response?.hasTag)
             .map((response) => String(response.tag));
@@ -320,8 +316,8 @@ const readLines = (parsed, multiplier) => {
             cartQuantity,
             unitCents,
             groupId,
-            variantId: String(line.merchandise?.id ?? ""),
-            productId: String(line.merchandise?.product?.id ?? ""),
+            variantId: numericId(line.merchandise?.id),
+            productId: numericId(line.merchandise?.product?.id),
             vendor: String(line.merchandise?.product?.vendor ?? ""),
             productType: String(line.merchandise?.product?.productType ?? ""),
             collectionIds,
@@ -365,7 +361,7 @@ const indexGroups = (config) => {
  *
  * A group's sources are five kinds (`product`, `collection`, `vendor`,
  * `product_type`, `tag`), and all five are now verifiable against the input
- * query: `product` via `resourceId`/`variantIds`, `collection` via
+ * query: `product` via the item `id`, `collection` via
  * `merchandise.inCollections` (fed by `$collectionIds`), `vendor`/`product_type`
  * via the plain scalar fields on `merchandise.product`, and `tag` via
  * `merchandise.product.hasTags` (fed by `$tags`) — see `readLines` for how each
@@ -384,8 +380,8 @@ const checkMembership = (lines, groupIndex, discount) => {
     // narrowed it), once per bundle set, and only for the "free" method —
     // anything else claiming the gift group was hand-made.
     const freeProduct = discount?.method === "free" ? discount.freeProduct : null;
-    const giftProductId = String(freeProduct?.id ?? "");
-    const giftVariantIds = Array.isArray(freeProduct?.variantIds) ? freeProduct.variantIds.map(String) : [];
+    const giftProductId = numericId(freeProduct?.id);
+    const giftVariantIds = Array.isArray(freeProduct?.variantIds) ? freeProduct.variantIds.map(numericId) : [];
     let giftLines = 0;
     for (const line of lines) {
         if (line.groupId === CURRENT_PRODUCT_GROUP_ID) continue;
@@ -405,9 +401,9 @@ const checkMembership = (lines, groupIndex, discount) => {
         if (isExcluded(group, line)) return `line is in group "${line.groupId}" exclude list`;
 
         const items = Array.isArray(group.items) ? group.items : [];
-        const unverifiable = items.find((item) => !KNOWN_GROUP_ITEM_TYPES.has(item?.type));
+        const unverifiable = items.find((item) => !KNOWN_GROUP_ITEM_TYPES.has(item?.t));
         if (unverifiable) {
-            return `group "${line.groupId}" holds item type "${unverifiable?.type}" this extension cannot verify`;
+            return `group "${line.groupId}" holds item type "${unverifiable?.t}" this extension cannot verify`;
         }
         if (!items.some((item) => matchesGroupItem(item, line))) {
             return `line is not offered by group "${line.groupId}"`;
@@ -420,7 +416,7 @@ const checkMembership = (lines, groupIndex, discount) => {
 const KNOWN_GROUP_ITEM_TYPES = new Set(["product", "collection", "vendor", "product_type", "tag"]);
 
 const matchesGroupItem = (item, line) => {
-    switch (item?.type) {
+    switch (item?.t) {
         case "collection":
             return matchesCollectionItem(item, line);
         case "vendor":
@@ -437,14 +433,11 @@ const matchesGroupItem = (item, line) => {
 };
 
 const matchesProductItem = (item, line) => {
-    const productId = String(item?.resourceId ?? item?.id ?? "");
-    if (productId !== line.productId) return false;
-    const variantIds = Array.isArray(item?.variantIds) ? item.variantIds.map(String) : [];
-    return variantIds.length === 0 || variantIds.includes(line.variantId);
+    return numericId(item?.id) === line.productId;
 };
 
 const matchesCollectionItem = (item, line) => {
-    const collectionId = String(item?.resourceId ?? item?.id ?? "");
+    const collectionId = numericId(item?.id);
     return line.collectionIds.includes(collectionId);
 };
 
@@ -452,17 +445,14 @@ const matchesCollectionItem = (item, line) => {
  * item's candidates; `tag` matches when the line's tag list overlaps them —
  * `hasAnyTag` semantics, mirroring the widget's own "any of these tags". */
 const matchesValuesItem = (item, singleValue, listValue) => {
-    const candidates = Array.isArray(item?.values) ? item.values.map(String) : [];
+    const candidates = Array.isArray(item?.v) ? item.v.map(String) : [];
     if (listValue) return listValue.some((value) => candidates.includes(value));
     return candidates.includes(singleValue);
 };
 
 const isExcluded = (group, line) => {
     const excluded = Array.isArray(group.excludeProducts) ? group.excludeProducts : [];
-    return excluded.some((entry) => {
-        if (entry?.variantId) return String(entry.variantId) === line.variantId;
-        return String(entry?.id ?? "") === line.productId;
-    });
+    return excluded.some((entry) => !entry?.variantId && numericId(entry?.id) === line.productId);
 };
 
 /**
@@ -580,9 +570,9 @@ const computeDiscountCents = (discount, facts, rate) => {
         const metric = discount.tierBasis === "total_amount" ? toShopUnits(itemsSubtotalCents, rate) : totalQuantity;
         const tier = qualifyingTier(discount.tiers, metric);
         if (!tier) return 0;
-        const amount = tier.type === "percentage"
-            ? Math.round(subtotalCents * (Number(tier.value) || 0) / 100)
-            : toPresentmentCents(tier.value, rate);
+        const amount = tier.t === "percentage"
+            ? Math.round(subtotalCents * (Number(tier.v) || 0) / 100)
+            : toPresentmentCents(tier.v, rate);
         return clampToSubtotal(amount, subtotalCents);
     }
 
@@ -626,8 +616,8 @@ const computeDiscountCents = (discount, facts, rate) => {
  * in the widget. */
 const qualifyingTier = (tiers, metric) =>
     (Array.isArray(tiers) ? tiers : [])
-        .filter((tier) => metric >= (Number(tier?.threshold) || 0))
-        .sort((left, right) => (Number(right.threshold) || 0) - (Number(left.threshold) || 0))[0] || null;
+        .filter((tier) => metric >= (Number(tier?.at) || 0))
+        .sort((left, right) => (Number(right.at) || 0) - (Number(left.at) || 0))[0] || null;
 
 /** Total of the `units` cheapest units in the bundle, where a line of quantity 3
  * is three units at that line's own price. Walks the lines cheapest-first

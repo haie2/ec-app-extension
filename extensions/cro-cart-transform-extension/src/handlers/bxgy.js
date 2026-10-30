@@ -2,8 +2,7 @@ import { withinSchedule } from "../lib/schedule.js";
 import { readCroData } from "../lib/cro-data.js";
 
 const TYPE = "bxgy";
-const MAX_BUNDLE_LINES = 25;
-const ROLES = ["trigger", "reward"];
+const CART_LINE_BUDGET = 25;
 const PRODUCT_GID_PREFIX = "gid://shopify/Product/";
 const VARIANT_GID_PREFIX = "gid://shopify/ProductVariant/";
 
@@ -18,106 +17,99 @@ export const bxgyHandler = {
     readCampaigns(input) {
         const envelope = input?.cartTransform?.bxgy?.jsonValue;
         return {
-            campaigns: indexCampaigns(envelope),
+            campaigns: { byId: indexCampaigns(envelope), processedLines: 0 },
             bytes: null,
         };
     },
 
     run(lines, context) {
-        if (lines.length > MAX_BUNDLE_LINES) return skip(context, `bundle has ${lines.length} lines, more than ${MAX_BUNDLE_LINES}`);
+        const state = context.campaigns.get(TYPE);
+        if (state.processedLines + lines.length > CART_LINE_BUDGET) {
+            return null;
+        }
+        state.processedLines += lines.length;
+
+        const firstData = readBxgyData(lines[0]);
+        if (!firstData) return null;
+        const campaignId = firstData.campaign;
+        const bundleId = firstData.bundle;
 
         const facts = [];
         for (const line of lines) {
-            const fact = readFact(line);
-            if (!fact) return skip(context, "line has no readable _cro_data");
-            facts.push(fact);
+            const data = readBxgyData(line);
+            if (!data) return null;
+            if (data.campaign !== campaignId) return null;
+            if (line.sellingPlanAllocation) return null;
+            if (line.parentRelationship) return null;
+            if (line.merchandise?.__typename !== "ProductVariant") return null;
+            facts.push(readFact(line, data));
         }
 
-        const campaignId = facts[0].campaign;
-        const bundleId = facts[0].bundle;
-        for (const fact of facts) {
-            if (fact.campaign !== campaignId) return skip(context, "lines of one bundle disagree on campaign");
-        }
-
-        const campaign = context.campaigns.get(TYPE).get(campaignId);
-        if (!campaign) {
-            const known = [...context.campaigns.get(TYPE).keys()].map(tailOf).join(",");
-            return skip(context, `campaign ${tailOf(campaignId)} not in metafield [${known || "empty"}]`);
-        }
+        const campaign = state.byId.get(campaignId);
+        if (!campaign) return null;
 
         const parentVariantId = toNumericId(campaign.parentProduct?.variantId);
-        if (!parentVariantId) return skip(context, `campaign ${tailOf(campaignId)} has no parent variant`);
+        if (!parentVariantId) return null;
 
-        if (campaign.schedule?.enabled && !context.today) return skip(context, `campaign ${tailOf(campaignId)} is scheduled but today is unknown`);
-        if (!withinSchedule(campaign.schedule, context.today)) {
-            return skip(
-                context,
-                `campaign ${tailOf(campaignId)} outside ${campaign.schedule?.startsAt ?? "-"}..${campaign.schedule?.endsAt ?? "-"}`
-                + ` (today ${context.today})`
-            );
-        }
-
-        for (const line of lines) {
-            if (line.sellingPlanAllocation) return skip(context, "line has a selling plan");
-            if (line.parentRelationship) return skip(context, "line is already a bundle component");
-            if (line.merchandise?.__typename !== "ProductVariant") return skip(context, "line is not a product variant");
-        }
+        if (campaign.schedule?.enabled && !context.today) return null;
+        if (!withinSchedule(campaign.schedule, context.today)) return null;
 
         const multiplier = bundleMultiplier(facts);
+        const triggerUnits = [];
+        const rewardUnits = [];
+        let subtotalCents = 0;
+
         for (const fact of facts) {
             fact.quantity = Math.floor(fact.cartQuantity / multiplier);
-            if (fact.quantity <= 0) return skip(context, "line has no usable quantity");
-        }
+            if (fact.quantity <= 0) return null;
 
-        const matchError = assignItems(facts, campaign);
-        if (matchError) return skip(context, `campaign ${tailOf(campaignId)}: ${matchError}`);
+            const itemIndex = matchItem(campaign, fact);
+            if (itemIndex === NOT_OFFERED) return null;
+            if (itemIndex === MATCHES_SEVERAL) return null;
+
+            const unitsByItem = fact.role === "trigger" ? triggerUnits : rewardUnits;
+            if (unitsByItem[itemIndex]) unitsByItem[itemIndex].push(fact);
+            else unitsByItem[itemIndex] = [fact];
+            subtotalCents += fact.unitCents * fact.cartQuantity;
+        }
 
         const rate = presentmentRate(context);
-        const triggerLines = facts.filter((fact) => fact.role === "trigger");
-        const rewardLines = facts.filter((fact) => fact.role === "reward");
-
-        if (!triggerQualifies(campaign.trigger, triggerLines, groupFactsByItem(triggerLines), rate)) {
-            return skip(context, `campaign ${tailOf(campaignId)} trigger ${campaign.trigger?.type ?? "?"} not met`);
+        if (!triggerQualifies(campaign.trigger, triggerUnits, rate)) {
+            return null;
         }
 
-        const rewardCents = rewardCentsPerSet(campaign.reward, groupFactsByItem(rewardLines));
-        if (rewardCents <= 0) return skip(context, `campaign ${tailOf(campaignId)} has no reward to discount`);
-
-        const discountPerSet = discountCentsPerSet(campaign.reward?.discountOffer, rewardCents, rate);
-        if (discountPerSet <= 0) return skip(context, `campaign ${tailOf(campaignId)} reward offer gives no discount`);
+        const rewardCents = rewardCentsPerSet(campaign.reward, rewardUnits);
+        if (rewardCents <= 0) return null;
 
         const sets = allowedSets(campaign, multiplier);
-        if (sets <= 0) return skip(context, `campaign ${tailOf(campaignId)} reached its repeat limit`);
+        if (sets <= 0) return null;
 
-        let subtotalCents = 0;
-        for (const fact of facts) subtotalCents += fact.unitCents * fact.cartQuantity;
+        const discountPerSet = discountCentsPerSet(campaign.reward?.discountOffer, rewardCents, rate);
         const discountCents = discountPerSet * sets;
         const percent = percentageDecrease(subtotalCents, discountCents);
-        if (percent <= 0) return skip(context, "discount rounds to 0%");
 
         campaign.usedSets += sets;
 
-        context.applied.push(
-            `bxgy/${tailOf(campaignId)} n=${facts.length} sets=${sets}/${multiplier}`
-            + ` sub=${subtotalCents} off=${discountCents} pct=${percent.toFixed(4)}`
-            + ` parent=${tailOf(parentVariantId)} inst=${bundleId}`
-        );
+        const cartLines = [];
+        for (const fact of facts) cartLines.push({ cartLineId: fact.cartLineId, quantity: fact.quantity });
 
-        return {
-            linesMerge: {
-                parentVariantId: `${VARIANT_GID_PREFIX}${parentVariantId}`,
-                cartLines: facts.map((fact) => ({ cartLineId: fact.cartLineId, quantity: fact.cartQuantity })),
-                price: { percentageDecrease: { value: percent.toFixed(6) } },
-                attributes: [
-                    { key: "_cro_bundle", value: bundleId },
-                    { key: "_cro_data", value: JSON.stringify({ type: TYPE, campaign: campaignId, bundle: bundleId }) },
-                ],
-            },
+        const linesMerge = {
+            parentVariantId: `${VARIANT_GID_PREFIX}${parentVariantId}`,
+            cartLines,
+            attributes: [
+                { key: "_cro_bundle", value: bundleId },
+                { key: "_cro_data", value: JSON.stringify({ type: TYPE, campaign: campaignId, bundle: bundleId, lines: facts.length }) },
+            ],
         };
+        if (percent > 0) linesMerge.price = { percentageDecrease: { value: percent.toFixed(6) } };
+
+        return { linesMerge };
     },
 };
 
 const SUPPORTED_ENVELOPE_VERSION = 1;
+const NOT_OFFERED = -1;
+const MATCHES_SEVERAL = -2;
 
 const indexCampaigns = (envelope) => {
     const map = new Map();
@@ -130,13 +122,6 @@ const indexCampaigns = (envelope) => {
     return map;
 };
 
-const skip = (context, reason) => {
-    context.skipReasons.add(`${TYPE}/${reason}`);
-    return null;
-};
-
-const tailOf = (id) => (String(id ?? "").split("/").pop() || "").slice(-6) || "?";
-
 const toNumericId = (value) => {
     const text = String(value ?? "");
     const id = Number(text.slice(text.lastIndexOf("/") + 1));
@@ -148,29 +133,28 @@ const positiveInteger = (value) => {
     return Number.isFinite(number) && number > 0 ? number : 0;
 };
 
-const readFact = (line) => {
+const readBxgyData = (line) => {
     const parsed = readCroData(line);
     if (parsed?.type !== TYPE) return null;
 
     const campaign = String(parsed.campaign ?? "");
     const bundle = String(parsed.bundle ?? "");
-    const role = ROLES.includes(parsed.role) ? parsed.role : null;
+    const role = parsed.role === "trigger" || parsed.role === "reward" ? parsed.role : null;
     if (!campaign || !bundle || !role) return null;
 
-    return {
-        campaign,
-        bundle,
-        role,
-        cartLineId: line.id,
-        unitQuantity: Math.floor(Number(parsed.qty) || 0),
-        cartQuantity: Math.floor(Number(line.quantity) || 0),
-        quantity: 0,
-        unitCents: Math.round((Number(line.cost?.amountPerQuantity?.amount) || 0) * 100),
-        productGid: String(line.merchandise?.product?.id ?? ""),
-        variantId: toNumericId(line.merchandise?.id),
-        itemIndex: -1,
-    };
+    return parsed;
 };
+
+const readFact = (line, data) => ({
+    role: data.role,
+    cartLineId: line.id,
+    unitQuantity: Math.floor(Number(data.qty) || 0),
+    cartQuantity: Math.floor(Number(line.quantity) || 0),
+    quantity: 0,
+    unitCents: Math.round((Number(line.cost?.amountPerQuantity?.amount) || 0) * 100),
+    productGid: line.merchandise?.product?.id ?? "",
+    variantGid: line.merchandise?.id ?? "",
+});
 
 const bundleMultiplier = (facts) => {
     let multiplier = 0;
@@ -189,13 +173,12 @@ const bundleMultiplier = (facts) => {
 
 const indexItemsByProduct = (items) => {
     const itemsByProduct = new Map();
-    items.forEach((item, index) => {
-        const productGid = `${PRODUCT_GID_PREFIX}${toNumericId(item?.productId)}`;
-        const variantIds = Array.isArray(item?.variantIds) ? item.variantIds : [];
-        const entries = itemsByProduct.get(productGid) ?? [];
-        entries.push({ index, variantIds });
-        itemsByProduct.set(productGid, entries);
-    });
+    for (let index = 0; index < items.length; index += 1) {
+        const productGid = `${PRODUCT_GID_PREFIX}${toNumericId(items[index]?.productId)}`;
+        const indexes = itemsByProduct.get(productGid);
+        if (indexes) indexes.push(index);
+        else itemsByProduct.set(productGid, [index]);
+    }
     return itemsByProduct;
 };
 
@@ -207,19 +190,10 @@ const itemsByProductOf = (campaign, role) => {
     return campaign.itemsByProduct[role];
 };
 
-const assignItems = (facts, campaign) => {
-    for (const fact of facts) {
-        const candidates = itemsByProductOf(campaign, fact.role).get(fact.productGid);
-        let matchedIndex = -1;
-        for (const candidate of candidates ?? []) {
-            if (candidate.variantIds.length > 0 && !candidate.variantIds.includes(fact.variantId)) continue;
-            if (matchedIndex >= 0) return `${fact.role} line ${tailOf(fact.variantId)} matches more than one item`;
-            matchedIndex = candidate.index;
-        }
-        if (matchedIndex < 0) return `${fact.role} line ${tailOf(fact.variantId)} is not offered`;
-        fact.itemIndex = matchedIndex;
-    }
-    return null;
+const matchItem = (campaign, fact) => {
+    const indexes = itemsByProductOf(campaign, fact.role).get(fact.productGid);
+    if (!indexes) return NOT_OFFERED;
+    return indexes.length > 1 ? MATCHES_SEVERAL : indexes[0];
 };
 
 const presentmentRate = (context) => {
@@ -229,47 +203,56 @@ const presentmentRate = (context) => {
 
 const toPresentmentCents = (amount, rate) => Math.round(Math.round((Number(amount) || 0) * 100) * rate);
 
-const groupFactsByItem = (roleFacts) => {
-    const factsByItem = new Map();
-    for (const fact of roleFacts) {
-        const itemFacts = factsByItem.get(fact.itemIndex) ?? [];
-        itemFacts.push(fact);
-        factsByItem.set(fact.itemIndex, itemFacts);
-    }
-    return factsByItem;
+const countOf = (units) => {
+    let count = 0;
+    if (!units) return count;
+    for (let index = 0; index < units.length; index += 1) count += units[index].quantity;
+    return count;
 };
 
-const itemUnits = (factsByItem, itemIndex) => factsByItem.get(itemIndex) ?? [];
-
-const centsOf = (units) => units.reduce((total, unit) => total + unit.unitCents * unit.quantity, 0);
-
-const countOf = (units) => units.reduce((total, unit) => total + unit.quantity, 0);
-
-const triggerQualifies = (trigger, triggerLines, triggerUnits, rate) => {
+const triggerQualifies = (trigger, triggerUnits, rate) => {
     const items = Array.isArray(trigger?.items) ? trigger.items : [];
 
     switch (trigger?.type) {
-        case "fixed":
-            return items.length > 0 && items.every((item, index) => countOf(itemUnits(triggerUnits, index)) >= positiveInteger(item.quantity));
-        case "mixMatch":
-            return countOf(triggerLines) >= Math.max(1, positiveInteger(trigger.minQuantity));
-        case "spend":
-            return centsOf(triggerLines) >= Math.max(1, toPresentmentCents(trigger.minAmount, rate));
+        case "fixed": {
+            if (items.length === 0) return false;
+            for (let index = 0; index < items.length; index += 1) {
+                if (countOf(triggerUnits[index]) < positiveInteger(items[index].quantity)) return false;
+            }
+            return true;
+        }
+        case "mixMatch": {
+            let units = 0;
+            for (const itemUnits of triggerUnits) units += countOf(itemUnits);
+            return units >= Math.max(1, positiveInteger(trigger.minQuantity));
+        }
+        case "spend": {
+            let spentCents = 0;
+            for (const itemUnits of triggerUnits) {
+                if (!itemUnits) continue;
+                for (let index = 0; index < itemUnits.length; index += 1) spentCents += itemUnits[index].unitCents * itemUnits[index].quantity;
+            }
+            return spentCents >= Math.max(1, toPresentmentCents(trigger.minAmount, rate));
+        }
         default:
             return false;
     }
 };
 
-const cheapestUnits = (units, limit) => {
-    const taken = [];
-    let remaining = Math.max(0, limit);
-    for (const unit of [...units].sort((left, right) => left.unitCents - right.unitCents)) {
+const byUnitCents = (left, right) => left.unitCents - right.unitCents;
+
+const cheapestFirst = (units) => (units.length > 1 ? [...units].sort(byUnitCents) : units);
+
+const cheapestCents = (units, limit) => {
+    let remaining = limit;
+    let cents = 0;
+    for (const unit of cheapestFirst(units)) {
         if (remaining <= 0) break;
         const quantity = Math.min(unit.quantity, remaining);
-        taken.push({ unitCents: unit.unitCents, quantity });
+        cents += unit.unitCents * quantity;
         remaining -= quantity;
     }
-    return taken;
+    return { cents, count: limit - remaining };
 };
 
 const rewardCentsPerSet = (reward, rewardUnits) => {
@@ -279,16 +262,26 @@ const rewardCentsPerSet = (reward, rewardUnits) => {
         let total = 0;
         for (let index = 0; index < items.length; index += 1) {
             const required = positiveInteger(items[index].quantity);
-            const taken = cheapestUnits(itemUnits(rewardUnits, index), required);
-            if (!required || countOf(taken) < required) return 0;
-            total += centsOf(taken);
+            if (!required) return 0;
+            const taken = cheapestCents(rewardUnits[index] ?? [], required);
+            if (taken.count < required) return 0;
+            total += taken.cents;
         }
         return total;
     }
 
     if (reward?.type === "mixMatch") {
-        const eligible = items.flatMap((item, index) => cheapestUnits(itemUnits(rewardUnits, index), positiveInteger(item.quantity)));
-        return centsOf(cheapestUnits(eligible, positiveInteger(reward.maxQuantity)));
+        const eligible = [];
+        for (let index = 0; index < items.length; index += 1) {
+            let remaining = positiveInteger(items[index].quantity);
+            for (const unit of cheapestFirst(rewardUnits[index] ?? [])) {
+                if (remaining <= 0) break;
+                const quantity = Math.min(unit.quantity, remaining);
+                eligible.push({ unitCents: unit.unitCents, quantity });
+                remaining -= quantity;
+            }
+        }
+        return cheapestCents(eligible, positiveInteger(reward.maxQuantity)).cents;
     }
 
     return 0;

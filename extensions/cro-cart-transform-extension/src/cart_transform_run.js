@@ -26,17 +26,19 @@ const HANDLER_BY_TYPE = new Map(HANDLERS.map((handler) => [handler.type, handler
  * line's own id so each line gets a job to itself. The key is namespaced by
  * type, so two handlers can never collide on one.
  */
-function groupCartLines(lines) {
+function groupCartLines(lines, croDataByLine) {
     const jobsByKey = new Map();
 
     for (const line of lines) {
-        const croType = readCroData(line)?.type;
+        const croData = readCroData(line);
+        const croType = croData?.type;
         const handler = croType ? HANDLER_BY_TYPE.get(croType) : null;
         if (!handler) continue;
 
-        const groupKey = handler.groupKey(line);
+        const groupKey = handler.groupKey(line, croData);
         if (!groupKey) continue;
 
+        croDataByLine.set(line, croData);
         const key = `${handler.type}/${groupKey}`;
         let job = jobsByKey.get(key);
         if (!job) {
@@ -50,10 +52,13 @@ function groupCartLines(lines) {
 }
 
 export function cartTransformRun(input) {
-    const context = buildContext(input, HANDLERS);
     const lines = input?.cart?.lines ?? [];
+    const croDataByLine = new Map();
+    const jobs = groupCartLines(lines, croDataByLine);
+    if (!jobs.length) return NO_CHANGES;
 
-    const jobs = groupCartLines(lines);
+    const context = buildContext(input, HANDLERS);
+    context.croDataByLine = croDataByLine;
     const operations = jobs.map((job) => job.handler.run(job.lines, context)).filter(Boolean);
 
     return operations.length ? { operations } : NO_CHANGES;

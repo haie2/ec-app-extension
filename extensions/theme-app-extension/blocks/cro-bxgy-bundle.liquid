@@ -63,13 +63,10 @@
         {%- for offer in bxgy_offers -%}
           {%- if offer.id == candidate_id -%}
             {%- assign widget_config = bxgy_widgets[offer.id] -%}
-            {%- assign variant_map_key = 'bxgy_variants_' | append: offer.id -%}
-            {%- assign variant_map = shop.metafields.cro_hub[variant_map_key].value -%}
             {
               "campaign": {{ offer | json }},
               "settings": {%- if widget_config.settings -%}{{ widget_config.settings | json }}{%- else -%}{}{%- endif -%},
-              "styles": {%- if widget_config.styles -%}{{ widget_config.styles | json }}{%- else -%}{}{%- endif -%},
-              "variantMap": {%- if variant_map -%}{{ variant_map | json }}{%- else -%}null{%- endif -%}
+              "styles": {%- if widget_config.styles -%}{{ widget_config.styles | json }}{%- else -%}{}{%- endif -%}
             }
             {%- break -%}
           {%- endif -%}
