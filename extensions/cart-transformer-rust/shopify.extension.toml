@@ -1,0 +1,18 @@
+api_version = "2026-07"
+
+[[extensions]]
+name = "t:name"
+handle = "cro-cart-transform-extension"
+type = "function"
+uid = "c383ec85-d59d-cf66-7927-1e3c63dfd4f0bbbe5e8a"
+description = "t:description"
+
+  [[extensions.targeting]]
+  target = "cart.transform.run"
+  input_query = "src/cart_transform_run.graphql"
+  export = "cart_transform_run"
+
+  [extensions.build]
+  command = "cargo build --target=wasm32-unknown-unknown --release"
+  path = "target/wasm32-unknown-unknown/release/cart-transformer-rust.wasm"
+  watch = [ "src/**/*.rs" ]

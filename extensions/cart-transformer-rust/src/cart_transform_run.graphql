@@ -1,0 +1,62 @@
+# Deploy-time limits: complexity <= 30 (scalar leaves) and <= 3000 chars
+# INCLUDING comments. Keep this terse.
+query CartTransformRunInput {
+    cart {
+        lines {
+            id
+            quantity
+
+            cost {
+                amountPerQuantity {
+                    amount
+                }
+            }
+
+            merchandise {
+                __typename
+                ... on ProductVariant {
+                    id
+                    product {
+                        id
+                    }
+                }
+            }
+
+            # Every cro type packs its `type` plus everything its handler
+            # needs into this one JSON attribute - one block per field would
+            # not fit the 3000-char limit.
+            croData: attribute(key: "_cro_data") {
+                value
+            }
+
+            parentRelationship {
+                parent {
+                    id
+                }
+            }
+
+            sellingPlanAllocation {
+                sellingPlan {
+                    id
+                }
+            }
+        }
+    }
+
+    # Campaign amounts are shop currency, cart is presentment.
+    presentmentCurrencyRate
+
+    shop {
+        localTime {
+            date
+        }
+    }
+
+    # Owned by cartTransform, not shop — see APP_CART_TRANSFORM_NAMESPACE on
+    # the server.
+    cartTransform {
+        bxgy: metafield(namespace: "$app:cro-bundle", key: "bxgyRules") {
+            jsonValue
+        }
+    }
+}
