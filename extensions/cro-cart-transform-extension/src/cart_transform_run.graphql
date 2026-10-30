@@ -1,19 +1,5 @@
-# Deploy-time limits: complexity <= 30 (scalar leaves — buy room by dropping
-# leaves, not flattening) and <= 3000 chars INCLUDING comments. Field rationale
-# and what got dropped to fit live in MIX_MATCH_FLOW.md §2.4. Keep this terse.
-query CartTransformRunInput($collectionIds: [ID!], $tags: [String!], $customerTags: [String!]) {
+query CartTransformRunInput {
     cart {
-        buyerIdentity {
-            isAuthenticated
-            customer {
-                numberOfOrders
-                # $customerTags is a dedup union across bundles — see MIX_MATCH_FLOW.md §2.4.
-                hasTags(tags: $customerTags) {
-                    tag
-                    hasTag
-                }
-            }
-        }
         lines {
             id
             quantity
@@ -30,23 +16,10 @@ query CartTransformRunInput($collectionIds: [ID!], $tags: [String!], $customerTa
                     id
                     product {
                         id
-                        vendor
-                        productType
-                        hasTags(tags: $tags) {
-                            tag
-                            hasTag
-                        }
-                    }
-                    inCollections(ids: $collectionIds) {
-                        collectionId
-                        isMember
                     }
                 }
             }
 
-            # Every cro type packs its `type` plus everything its handler
-            # needs into this one JSON attribute - one block per field would
-            # not fit the 3000-char limit.
             croData: attribute(key: "_cro_data") {
                 value
             }
@@ -65,13 +38,6 @@ query CartTransformRunInput($collectionIds: [ID!], $tags: [String!], $customerTa
         }
     }
 
-    localization {
-        country {
-            isoCode
-        }
-    }
-
-    # Campaign amounts are shop currency, cart is presentment.
     presentmentCurrencyRate
 
     shop {
@@ -80,12 +46,7 @@ query CartTransformRunInput($collectionIds: [ID!], $tags: [String!], $customerTa
         }
     }
 
-    # Owned by cartTransform, not shop — see APP_CART_TRANSFORM_NAMESPACE on
-    # the server.
     cartTransform {
-        mixMatch: metafield(namespace: "$app:cro-bundle", key: "mixMatchRules") {
-            jsonValue
-        }
         bxgy: metafield(namespace: "$app:cro-bundle", key: "bxgyRules") {
             jsonValue
         }
