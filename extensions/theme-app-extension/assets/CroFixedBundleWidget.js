@@ -103,7 +103,6 @@ const fillTextTemplate = (template, replacements = {}) => String(template).repla
 const resolveTextTemplate = (value, replacements = {}, fallback = "") => fillTextTemplate(resolveLocaleValue(value, fallback), replacements);
 const fixedBundleStyles = '*,\n*::before,\n*::after {\n    box-sizing: border-box;\n    margin: 0;\n    padding: 0;\n}\n\n:host {\n    display: block;\n    width: 100%;\n}\n\n:host([data-editing]) {\n    position: relative;\n    z-index: 2147483000;\n}\n\nbutton,\nselect,\ninput {\n    font: inherit;\n    color: inherit;\n}\n\n.cro-fbw {\n\n    --cro-fg: #17191c;\n    --cro-muted: #71767c;\n    --cro-bg: #ffffff;\n    --cro-surface: #f6f7f8;\n    --cro-line-2: #cfd2d5;\n    --cro-faint: color-mix(in srgb, var(--cro-fg) 45%, var(--cro-bg));\n    --cro-line: color-mix(in srgb, var(--cro-border-subtle) 45%, transparent);\n    --cro-sel: #17191c;\n    --cro-sel-fg: #ffffff;\n    --cro-cta-bg: #17191c;\n    --cro-cta-fg: #ffffff;\n    --cro-arrow-bg: #ffffff;\n    --cro-arrow-fg: #17191c;\n    --cro-save-color: #BB0606;\n    --cro-border-subtle: #00000033;\n    --cro-header-bg: var(--cro-surface);\n    --cro-header-fg: var(--cro-muted);\n    --cro-note: #000000;\n    --cro-badge-bg: var(--cro-sel);\n    --cro-badge-fg: var(--cro-sel-fg);\n\n    --cro-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;\n    --cro-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;\n    --cro-fs-base: 16px;\n    --cro-fs-xl: calc(var(--cro-fs-base) * 1.25);\n    --cro-fs-lg: calc(var(--cro-fs-base) * 1.125);\n    --cro-fs-md: calc(var(--cro-fs-base) * 0.875);\n    --cro-fs-sm: calc(var(--cro-fs-base) * 0.75);\n    --cro-fs-xs: calc(var(--cro-fs-base) * 0.625);\n\n    --cro-fw-medium: 500;\n    --cro-fw-semibold: 600;\n    --cro-fw-bold: 700;\n\n    --cro-lh-base: 1;\n    --cro-lh-text: 1.35;\n    --cro-ls-flat: 0;\n\n    --cro-card-title-fs: var(--cro-fs-md);\n    --cro-card-price-fs: var(--cro-fs-md);\n    --cro-cta-fs: var(--cro-fs-lg);\n    --cro-control-fs: var(--cro-fs-sm);\n    --cro-badge-fs: var(--cro-fs-xs);\n    --cro-badge-tracking: .04em;\n    --cro-badge-case: uppercase;\n    --cro-header-align: center;\n\n    --cro-radius: 10px;\n    --cro-radius-sm: 4px;\n    --cro-radius-md: 8px;\n    --cro-radius-full: 50%;\n    --cro-card-radius: 12px;\n    --cro-image-radius: var(--cro-radius-sm);\n    --cro-badge-radius: 5px;\n    --cro-btn-radius: var(--cro-radius-md);\n    --cro-control-radius: 7px;\n    --cro-container-border-w: 2px;\n    --cro-inner-radius: max(0px, calc(var(--cro-radius) - var(--cro-container-border-w)));\n    --cro-card-border-w: 1px;\n    --cro-divider-w: 1px;\n\n    --cro-space: 8px;\n    --cro-container-margin: 0px;\n    --cro-content-padding: 20px;\n    --cro-header-pad: 16px;\n    --cro-row-pad: 18px;\n    --cro-grid-gap: 12px;\n    --cro-slide-gap: 10px;\n    --cro-card-pad: 5px;\n    --cro-card-body-pad: 10px;\n    --cro-card-body-gap: 12px;\n    --cro-foot-gap: 12px;\n    --cro-foot-pad: 12px 20px;\n    --cro-cta-pad: 19px;\n    --cro-cta-gap: 8px;\n    --cro-cta-min-h: 52px;\n    --cro-badge-pad: 3px 8px;\n    --cro-control-pad: 8px 10px;\n    --cro-sheet-pad: 14px;\n    --cro-change-pad: 10px;\n\n    --cro-card-min-w: 200px;\n    --cro-slide-card-w: 262px;\n    --cro-img-ratio: 200 / 180;\n    --cro-img-h-w: 105px;\n    --cro-img-h-h: 124px;\n    --cro-qty-size: 27px;\n    --cro-thumb-size: 31px;\n    --cro-chevron-size: 24px;\n    --cro-chevron-icon: 14px;\n    --cro-arrow-size: 30px;\n    --cro-arrow-offset: 0;\n    --cro-arrow-shadow: 0 1px 3px rgba(0, 0, 0, .12);\n    --cro-control-h: 40px;\n    --cro-radio-dot: 15px;\n    --cro-option-min-w: 92px;\n    --cro-spinner-size: 15px;\n\n    position: relative;\n    container-type: inline-size;\n    width: 100%;\n    min-width: min(100%, 320px);\n    margin: var(--cro-container-margin);\n    background-color: var(--cro-bg);\n    color: var(--cro-fg);\n    border-radius: var(--cro-radius);\n    border: var(--cro-container-border-w) solid var(--cro-border-subtle);\n    font-family: var(--cro-font);\n    line-height: var(--cro-lh-base);\n}\n\n.cro-fbw__list {\n    display: flex;\n    flex-direction: column;\n}\n\n.cro-fbw__bundle+.cro-fbw__bundle::before {\n    content: "";\n    display: block;\n    border-top: var(--cro-divider-w) solid var(--cro-border-subtle);\n    margin-inline: var(--cro-content-padding);\n}\n\n.cro-fbw__head {\n    width: 100%;\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    background: none;\n    border: 0;\n    text-align: start;\n    cursor: pointer;\n    color: inherit;\n    padding: var(--cro-row-pad) var(--cro-content-padding);\n    margin-bottom: 13px;\n}\n\n.cro-fbw__head--static {\n    cursor: default;\n}\n\n.cro-fbw__head-copy {\n    flex: 1;\n    min-width: 0;\n    display: flex;\n    flex-direction: column;\n    gap: 9px;\n}\n\n.cro-fbw__bundle-title-wrapper {\n    display: flex;\n    align-items: center;\n    gap: 9px;\n    flex-wrap: wrap;\n}\n\n.cro-fbw__bundle-title {\n    font-size: var(--cro-fs-lg);\n    font-weight: var(--cro-fw-medium);\n    letter-spacing: -.02em;\n    overflow-wrap: anywhere;\n}\n\na.cro-fbw__bundle-title {\n    color: inherit;\n    text-decoration: none;\n    cursor: pointer;\n}\n\na.cro-fbw__bundle-title:hover {\n    text-decoration: underline;\n}\n\n.cro-fbw__flag {\n    font-size: var(--cro-badge-fs);\n    font-weight: var(--cro-fw-bold);\n    text-transform: var(--cro-badge-case);\n    letter-spacing: var(--cro-badge-tracking);\n    color: var(--cro-badge-fg);\n    background: var(--cro-badge-bg);\n    border-radius: var(--cro-badge-radius);\n    padding: var(--cro-badge-pad);\n}\n\n.cro-fbw__price {\n    text-align: end;\n    flex: none;\n    display: flex;\n    flex-direction: column;\n    align-items: flex-end;\n    gap: 11px;\n}\n\n.cro-fbw__price-now {\n    white-space: nowrap;\n    font-size: var(--cro-fs-lg);\n    font-weight: var(--cro-fw-medium);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n.cro-fbw__price-was {\n    white-space: nowrap;\n    font-size: var(--cro-fs-md);\n    color: var(--cro-muted);\n    text-decoration: line-through;\n    font-weight: var(--cro-fw-medium);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n.cro-fbw__save {\n    font-size: var(--cro-fs-sm);\n    color: var(--cro-save-color);\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__bundle--unavailable .cro-fbw__bundle-title,\n.cro-fbw__bundle--unavailable .cro-fbw__price {\n    opacity: .5;\n}\n\n.cro-fbw__panel[hidden] {\n    display: none;\n}\n\n.cro-fbw__panel {\n    padding: 0 var(--cro-content-padding);\n}\n\n.cro-fbw__panel:not(:has(> .cro-fbw__foot)) {\n    padding-bottom: var(--cro-content-padding);\n}\n\n.cro-fbw__img {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    display: block;\n}\n\n.cro-fbw__img--ph {\n    background: var(--cro-surface);\n}\n\n.cro-fbw__qty {\n    position: absolute;\n    top: 8px;\n    inset-inline-end: 8px;\n    min-width: var(--cro-qty-size);\n    height: var(--cro-qty-size);\n    padding: 9px;\n    border-radius: var(--cro-radius-sm);\n    background: var(--cro-fg);\n    color: var(--cro-bg);\n    font-size: var(--cro-fs-sm);\n    font-weight: var(--cro-fw-semibold);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.cro-fbw__name {\n    font-size: var(--cro-card-title-fs);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-text);\n    display: -webkit-box;\n    -webkit-line-clamp: 2;\n    -webkit-box-orient: vertical;\n    overflow: hidden;\n    color: var(--cro-fg);\n}\n\na.cro-fbw__name {\n    text-decoration: none;\n}\n\na.cro-fbw__name:hover {\n    text-decoration: underline;\n}\n\n.cro-fbw__card-price {\n    font-size: var(--cro-card-price-fs);\n    line-height: var(--cro-lh-base);\n}\n\n.cro-fbw__card-was {\n    white-space: nowrap;\n    color: var(--cro-muted);\n    text-decoration: line-through;\n    margin-inline-end: 6px;\n    font-size: var(--cro-card-price-fs);\n}\n\n.cro-fbw__card-now {\n    white-space: nowrap;\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__variant {\n    font-size: var(--cro-fs-sm);\n    color: var(--cro-muted);\n    line-height: var(--cro-lh-text);\n    display: -webkit-box;\n    -webkit-line-clamp: 2;\n    -webkit-box-orient: vertical;\n    font-weight: 400;\n    overflow: hidden;\n}\n\n.cro-fbw__ico {\n    width: 14px;\n    height: 14px;\n}\n\n.cro-fbw__oos {\n    margin-top: 8px;\n    font-family: var(--cro-mono);\n    font-size: var(--cro-fs-sm);\n    font-weight: var(--cro-fw-bold);\n    color: var(--cro-muted);\n}\n\n.cro-fbw__foot {\n    display: flex;\n    flex-direction: column;\n    gap: var(--cro-foot-gap);\n    padding-block: var(--cro-foot-pad);\n}\n\n.cro-fbw__cta {\n    width: 100%;\n    min-height: var(--cro-cta-min-h);\n    border: 0;\n    border-radius: var(--cro-btn-radius);\n    padding: var(--cro-cta-pad);\n\n    background: var(--cro-cta-bg);\n    color: var(--cro-cta-fg);\n    font-size: var(--cro-cta-fs);\n    font-weight: var(--cro-fw-semibold);\n    line-height: var(--cro-lh-base);\n    letter-spacing: var(--cro-ls-flat);\n\n    cursor: pointer;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    gap: var(--cro-cta-gap);\n}\n\n.cro-fbw__cta:not([disabled]):hover {\n    opacity: .90;\n}\n\n.cro-fbw__sheet-close:hover {\n    background: var(--cro-line-2);\n}\n\n.cro-fbw__cta[disabled] {\n    cursor: not-allowed;\n}\n\n.cro-fbw__cta--unavailable {\n    opacity: .5;\n}\n\n.cro-fbw__cta--loading {\n    opacity: .8;\n}\n\n.cro-fbw__cta--success {\n    background: var(--cro-bg);\n    color: var(--cro-fg);\n    border: 1.5px solid var(--cro-sel);\n}\n\n.cro-fbw__spinner {\n    width: var(--cro-spinner-size);\n    height: var(--cro-spinner-size);\n    border: 2px solid color-mix(in srgb, var(--cro-cta-fg) 35%, transparent);\n    border-top-color: var(--cro-cta-fg);\n    border-radius: var(--cro-radius-full);\n    animation: cro-fbw-spin .7s linear infinite;\n}\n\n@keyframes cro-fbw-spin {\n    to {\n        transform: rotate(360deg);\n    }\n}\n\n.cro-fbw__note {\n    font-size: var(--cro-fs-md);\n    text-align: center;\n    color: var(--cro-note);\n    line-height: var(--cro-lh-base);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n.cro-fbw__note-save {\n    white-space: nowrap;\n    color: var(--cro-save-color);\n    font-weight: var(--cro-fw-medium);\n    line-height: var(--cro-lh-base);\n    letter-spacing: var(--cro-ls-flat);\n}\n\n.cro-fbw__editor {\n    position: absolute;\n    inset: 0;\n    z-index: 30;\n}\n\n.cro-fbw__editor[hidden] {\n    display: none;\n}\n\n.cro-fbw__backdrop {\n    position: absolute;\n    inset: 0;\n    background: transparent;\n    border-radius: var(--cro-inner-radius);\n}\n\n.cro-fbw__sheet {\n    position: absolute;\n    left: var(--cro-pop-left, 16px);\n    top: var(--cro-pop-top, 60px);\n    width: var(--cro-pop-w, 288px);\n    max-height: var(--cro-pop-max-h, 86%);\n    display: flex;\n    flex-direction: column;\n    overflow: hidden;\n    background: var(--cro-bg);\n    border: 1px solid var(--cro-line-2);\n    border-radius: var(--cro-radius);\n    padding: var(--cro-sheet-pad);\n    box-shadow: 0 12px 34px rgba(0, 0, 0, .22);\n}\n\n.cro-fbw__sheet-head {\n    flex: none;\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    gap: 10px;\n    margin-bottom: 8px;\n}\n\n.cro-fbw__sheet-body {\n    flex: 1 1 auto;\n    min-height: 0;\n    overflow: auto;\n}\n\n.cro-fbw__sheet-title {\n    margin: 0;\n    font-size: var(--cro-fs-md);\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__sheet-close {\n    border: 0;\n    background: var(--cro-surface);\n    width: 30px;\n    height: 30px;\n    border-radius: var(--cro-radius-md);\n    cursor: pointer;\n    font-size: 16px;\n    color: var(--cro-fg);\n    flex: none;\n}\n\n.cro-fbw__opt {\n    margin-top: 10px;\n    border: 0;\n    padding: 0;\n}\n\n.cro-fbw__opt-label {\n    width: 100%;\n    background: var(--cro-bg);\n    font-size: var(--cro-fs-sm);\n    font-weight: var(--cro-fw-bold);\n    color: var(--cro-muted);\n    text-transform: uppercase;\n    letter-spacing: .04em;\n    padding-bottom: 6px;\n    display: block;\n}\n\n.cro-fbw__opt--many .cro-fbw__opt-label {\n    position: sticky;\n    top: 0;\n    z-index: 1;\n}\n\n.cro-fbw__radios {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(var(--cro-option-min-w), 1fr));\n    gap: 6px;\n}\n\n.cro-fbw__radio {\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    border: 1px solid var(--cro-line-2);\n    border-radius: var(--cro-control-radius);\n    padding: var(--cro-control-pad);\n    min-height: var(--cro-control-h);\n    cursor: pointer;\n    background: var(--cro-bg);\n    font-size: var(--cro-control-fs);\n}\n\n.cro-fbw__radio:hover {\n    border-color: var(--cro-faint);\n}\n\n.cro-fbw__radio-input {\n    position: absolute;\n    opacity: 0;\n    width: 0;\n    height: 0;\n}\n\n.cro-fbw__radio-dot {\n    width: var(--cro-radio-dot);\n    height: var(--cro-radio-dot);\n    border-radius: var(--cro-radius-full);\n    box-shadow: inset 0 0 0 1.5px var(--cro-line-2);\n    flex: none;\n    display: grid;\n    place-items: center;\n}\n\n.cro-fbw__radio:has(.cro-fbw__radio-input:checked) {\n    border-color: var(--cro-sel);\n    background: var(--cro-surface);\n}\n\n.cro-fbw__radio:has(.cro-fbw__radio-input:checked) .cro-fbw__radio-dot {\n    box-shadow: inset 0 0 0 1.5px var(--cro-sel);\n    background: radial-gradient(circle at center,\n            var(--cro-sel) 0 calc(var(--cro-radio-dot) * .235),\n            transparent calc(var(--cro-radio-dot) * .235));\n}\n\n.cro-fbw__radio:has(.cro-fbw__radio-input:checked) .cro-fbw__radio-text {\n    font-weight: var(--cro-fw-bold);\n}\n\n.cro-fbw__radio--sold {\n    opacity: .4;\n    cursor: not-allowed;\n}\n\n.cro-fbw__radio--sold .cro-fbw__radio-text {\n    text-decoration: line-through;\n}\n\n.cro-fbw__head:focus-visible,\n.cro-fbw__change:focus-visible,\n.cro-fbw__cta:focus-visible,\n.cro-fbw__arrow:focus-visible,\n.cro-fbw__radio:has(:focus-visible),\n.cro-fbw__sheet-close:focus-visible {\n    outline: 2px solid var(--cro-fg);\n    outline-offset: 2px;\n}\n\n@container (max-width:430px) {\n    .cro-fbw__radios {\n        grid-template-columns: 1fr 1fr;\n    }\n}\n\n@media (prefers-reduced-motion:reduce) {\n\n    *,\n    *::before,\n    *::after {\n        transition: none !important;\n        animation: none !important;\n        scroll-behavior: auto !important;\n    }\n}\n\n.cro-fbw__sk {\n    display: inline-block;\n    border-radius: 6px;\n    vertical-align: middle;\n    opacity: .85;\n    background: linear-gradient(90deg, #e9eaed 25%, #f3f4f6 37%, #e9eaed 63%);\n    background-size: 400% 100%;\n    animation: cro-fbw-sk 1.2s ease infinite\n}\n\n@keyframes cro-fbw-sk {\n    0% {\n        background-position: 100% 0\n    }\n\n    100% {\n        background-position: 0 0\n    }\n}\n\n.cro-fbw__sheet,\n.cro-fbw__sheet-body {\n    scrollbar-width: thin;\n    scrollbar-color: rgba(0, 0, 0, .28) transparent\n}\n\n.cro-fbw__sheet::-webkit-scrollbar,\n.cro-fbw__sheet-body::-webkit-scrollbar {\n    width: 3px;\n    height: 3px\n}\n\n.cro-fbw__sheet::-webkit-scrollbar-thumb,\n.cro-fbw__sheet-body::-webkit-scrollbar-thumb {\n    background: rgba(0, 0, 0, .28);\n    border-radius: 9px\n}\n\n.cro-fbw__sheet::-webkit-scrollbar-track,\n.cro-fbw__sheet-body::-webkit-scrollbar-track {\n    background: transparent\n}\n\n.cro-fbw__head-copy {\n    min-width: 0\n}\n\n.cro-fbw__bundle-title-wrapper {\n    display: flex;\n    align-items: center;\n    flex-wrap: nowrap;\n    min-width: 0\n}\n\n.cro-fbw__bundle-title-wrapper .cro-fbw__chevron-wrap,\n.cro-fbw__bundle-title-wrapper .cro-fbw__flag {\n    flex-shrink: 0\n}\n\n.cro-fbw__bundle-title {\n    min-width: 0;\n    display: -webkit-box;\n    -webkit-box-orient: vertical;\n    -webkit-line-clamp: 2;\n    line-clamp: 2;\n    overflow: hidden;\n    line-height: var(--cro-lh-text);\n}\n\n.cro-fbw__picker {\n    position: relative;\n    display: inline-flex;\n    align-self: flex-start;\n    width: min(100%, calc(var(--cro-option-min-w) * 1.5));\n    height: calc(var(--cro-control-h) * .75);\n}\n\n.cro-fbw__picker--multi {\n    width: auto;\n    min-width: min(100%, calc(var(--cro-option-min-w) * 1.5));\n    max-width: min(100%, calc(var(--cro-option-min-w) * 3));\n}\n\n.cro-fbw__picker--multi .cro-fbw__picker-input {\n    width: auto;\n    min-width: 100%;\n    max-width: 100%;\n}\n\n.cro-fbw__picker-input {\n    display: flex;\n    align-items: center;\n    width: 100%;\n    height: 100%;\n    padding-block: 0;\n    padding-inline: 9px 24px;\n    overflow: hidden;\n    appearance: none;\n    background-color: var(--cro-bg);\n    border: var(--cro-card-border-w) solid var(--cro-border-subtle);\n    border-radius: var(--cro-control-radius);\n    color: var(--cro-fg);\n    cursor: pointer;\n    font: inherit;\n    font-size: var(--cro-control-fs);\n    line-height: var(--cro-lh-base);\n    text-align: start;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    transition: border-color .15s ease;\n}\n\n.cro-fbw__picker-input:hover {\n    border-color: var(--cro-faint);\n}\n\n.cro-fbw__picker-input:focus-visible {\n    outline: 2px solid var(--cro-sel);\n    outline-offset: 1px;\n}\n\n.cro-fbw__picker-label {\n    min-width: 0;\n    overflow: hidden;\n    text-overflow: ellipsis;\n}\n\n.cro-fbw__picker--unavailable .cro-fbw__picker-input {\n    border-color: var(--cro-save-color);\n}\n\n.cro-fbw__caret {\n    position: absolute;\n    top: 50%;\n    inset-inline-end: 9px;\n    width: 8px;\n    height: 5px;\n    transform: translateY(-50%);\n    pointer-events: none;\n    color: var(--cro-muted);\n}\n\n.cro-fbw__row {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n    padding: 10px 0;\n}\n\n.cro-fbw__row + .cro-fbw__row {\n    border-top: 1px solid var(--cro-line);\n}\n\n.cro-fbw__row--unavailable {\n    opacity: .7;\n}\n\n.cro-fbw__row-media {\n    position: relative;\n    flex: none;\n    width: calc(var(--cro-img-h-w) * .5);\n    height: calc(var(--cro-img-h-h) * .5);\n    border-radius: var(--cro-image-radius);\n    border: 1px solid var(--cro-line);\n    background: var(--cro-surface);\n    overflow: hidden;\n}\n\n.cro-fbw__row-media .cro-fbw__qty {\n    top: 4px;\n    inset-inline-end: 4px;\n    min-width: calc(var(--cro-qty-size) * .67);\n    height: calc(var(--cro-qty-size) * .67);\n    padding: 0 5px;\n    font-size: var(--cro-fs-xs);\n}\n\n.cro-fbw__row-info {\n    flex: 1;\n    min-width: 0;\n    display: flex;\n    flex-direction: column;\n    gap: 5px;\n}\n\n.cro-fbw__row-info .cro-fbw__name {\n    -webkit-line-clamp: 1;\n}\n\n.cro-fbw__row-end {\n    flex: none;\n    display: flex;\n    flex-direction: column;\n    align-items: flex-end;\n    gap: 4px;\n    text-align: end;\n}\n\n.cro-fbw__row-info .cro-fbw__oos {\n    margin-top: 0;\n}\n\n@container (max-width: 430px) {\n    .cro-fbw__row {\n        align-items: flex-start;\n        gap: 10px;\n    }\n}\n';
 const headerStyles = '.cro-fbw__header {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    gap: 19px;\n    padding: var(--cro-header-pad);\n    background: var(--cro-header-bg);\n    border-radius: var(--cro-inner-radius) var(--cro-inner-radius) 0 0;\n}\n\n.cro-fbw__header::before,\n.cro-fbw__header::after {\n    content: "";\n    flex: none;\n    width: 37px;\n    height: 1px;\n    background: var(--cro-header-fg);\n}\n\n.cro-fbw__header-text {\n    text-align: center;\n    color: var(--cro-header-fg);\n    font-size: var(--cro-fs-xl);\n    font-weight: var(--cro-fw-semibold);\n    letter-spacing: .04em;\n    text-transform: uppercase;\n}\n\n.cro-fbw__header--ribbon::before,\n.cro-fbw__header--ribbon::after,\n.cro-fbw__header--notch::before,\n.cro-fbw__header--notch::after,\n.cro-fbw__header--tab::before,\n.cro-fbw__header--tab::after,\n.cro-fbw__header--arrow::before,\n.cro-fbw__header--arrow::after {\n    content: none;\n}\n\n.cro-fbw__header--ribbon .cro-fbw__header-text,\n.cro-fbw__header--notch .cro-fbw__header-text,\n.cro-fbw__header--tab .cro-fbw__header-text,\n.cro-fbw__header--arrow .cro-fbw__header-text {\n    color: inherit;\n    font-size: var(--cro-fs-md);\n    font-weight: var(--cro-fw-bold);\n    letter-spacing: .06em;\n    line-height: 1.3;\n    overflow-wrap: anywhere;\n}\n\n.cro-fbw__header-icon {\n    width: 18px;\n    height: 18px;\n    flex: none;\n}\n\n.cro-fbw__header-sub {\n    font-size: var(--cro-fs-md);\n    font-weight: var(--cro-fw-medium);\n    line-height: 1.3;\n    overflow-wrap: anywhere;\n}\n\n.cro-fbw__header--ribbon {\n    flex-wrap: wrap;\n    gap: 6px 10px;\n    min-height: 44px;\n    padding: max(6px, calc(var(--cro-header-pad) - 6px)) var(--cro-content-padding);\n    background: var(--cro-sel);\n    color: var(--cro-sel-fg);\n    text-align: center;\n}\n\n.cro-fbw__header-main {\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n    min-width: 0;\n}\n\n.cro-fbw__header-sep {\n    flex: none;\n    width: 4px;\n    height: 4px;\n    border-radius: var(--cro-radius-full);\n    background: currentColor;\n    opacity: .5;\n}\n\n.cro-fbw__header--ribbon .cro-fbw__header-sub {\n    opacity: .85;\n}\n\n.cro-fbw:has(> .cro-fbw__header--notch) {\n    margin-top: 18px;\n}\n\n.cro-fbw__header--notch {\n    margin-top: calc(-15px - var(--cro-container-border-w) / 2);\n    margin-bottom: 8px;\n    padding: 0 var(--cro-content-padding);\n    background: none;\n    border-radius: 0;\n}\n\n.cro-fbw__header-pill {\n    max-width: 100%;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n    padding: 7px 16px;\n    border-radius: var(--cro-btn-radius);\n    background: var(--cro-sel);\n    color: var(--cro-sel-fg);\n    text-align: center;\n}\n\n.cro-fbw__header-pill .cro-fbw__header-icon {\n    width: 14px;\n    height: 14px;\n}\n\n.cro-fbw__header--notch .cro-fbw__header-text {\n    font-size: var(--cro-fs-sm);\n    line-height: 16px;\n}\n\n.cro-fbw:has(> .cro-fbw__header--tab) {\n    margin-top: 38px;\n    border-start-start-radius: 0;\n}\n\n.cro-fbw__header--tab {\n    position: absolute;\n    z-index: 1;\n    bottom: 100%;\n    inset-inline-start: calc(-1 * var(--cro-container-border-w));\n    max-width: calc(100% - 32px);\n    min-height: 40px;\n    gap: 8px;\n    padding: 8px 18px;\n    background: var(--cro-sel);\n    color: var(--cro-sel-fg);\n    border: var(--cro-container-border-w) solid var(--cro-sel);\n    border-bottom: 0;\n    border-radius: var(--cro-radius) var(--cro-radius) 0 0;\n}\n\n.cro-fbw__header--tab .cro-fbw__header-text {\n    min-width: 0;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    letter-spacing: 0;\n    text-transform: none;\n    unicode-bidi: plaintext;\n}\n\n.cro-fbw__header--arrow {\n    justify-content: flex-start;\n    align-items: stretch;\n    gap: 0;\n    min-height: 46px;\n    padding: 0;\n    background: color-mix(in srgb, var(--cro-sel) 8%, var(--cro-bg));\n    overflow: hidden;\n}\n\n.cro-fbw__header-label {\n    flex: none;\n    max-width: 55%;\n    display: flex;\n    align-items: center;\n    gap: 8px;\n    padding-block: max(6px, calc(var(--cro-header-pad) - 6px));\n    padding-inline: var(--cro-content-padding) 28px;\n    background: var(--cro-sel);\n    color: var(--cro-sel-fg);\n    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);\n}\n\n.cro-fbw__header-label:dir(rtl) {\n    clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%);\n}\n\n.cro-fbw__header--arrow .cro-fbw__header-text {\n    text-align: start;\n}\n\n.cro-fbw__header--arrow .cro-fbw__header-sub {\n    min-width: 0;\n    display: flex;\n    align-items: center;\n    padding-block: max(6px, calc(var(--cro-header-pad) - 6px));\n    padding-inline: 12px var(--cro-content-padding);\n    color: var(--cro-fg);\n}\n\n@container (max-width: 430px) {\n    .cro-fbw__header-sep {\n        display: none;\n    }\n\n    .cro-fbw__header--ribbon .cro-fbw__header-sub {\n        flex-basis: 100%;\n    }\n\n    .cro-fbw__header--arrow {\n        flex-wrap: wrap;\n    }\n\n    .cro-fbw__header-label {\n        max-width: 100%;\n        padding-inline-start: 16px;\n    }\n\n    .cro-fbw__header--arrow .cro-fbw__header-sub {\n        flex: 1 1 140px;\n        font-size: var(--cro-fs-sm);\n    }\n}\n';
-const sectionVariantKey = (handle, ids) => `${handle}::${ids.join(",")}`;
 const visibleBundles = (widget) => {
   const bundles = widget.embeddedData?.bundles || [];
   const maxBundles = Math.min(5, Math.max(1, Number(widget.settings?.max_bundles_display) || 3));
@@ -117,46 +116,365 @@ const initialOpenBundleId = (widget, bundles) => {
   const defaultState = widget.settings?.default_bundle_state || "first_expanded";
   return defaultState === "first_expanded" ? bundles[0].id : null;
 };
-const normalizeAjaxProduct = (raw) => {
-  const variants = raw.variants || [];
+const STOREFRONT_API_VERSION = "2026-10";
+const STOREFRONT_BATCH_SIZE = 10;
+const MAX_REQUEST_ATTEMPTS = 3;
+const RETRY_BASE_DELAY_MS = 300;
+const REQUEST_TIMEOUT_MS = 1e4;
+const PRODUCT_GID_PREFIX = "gid://shopify/Product/";
+const CONTEXT_VARIABLES = "$country: CountryCode, $language: LanguageCode";
+const IN_CONTEXT = "@inContext(country: $country, language: $language)";
+const VARIANT_FIELDS = "id availableForSale price { amount } compareAtPrice { amount } selectedOptions { name value } image { url }";
+const COMPONENT_PRODUCTS_QUERY = `query FixedBundleComponents($ids: [ID!]!, ${CONTEXT_VARIABLES}) ${IN_CONTEXT} {
+    nodes(ids: $ids) {
+        ... on Product {
+            id handle title availableForSale
+            featuredImage { url }
+            priceRange { minVariantPrice { amount } }
+            compareAtPriceRange { minVariantPrice { amount } }
+            variantsCount { count }
+            options { id name optionValues { id name } }
+            encodedVariantExistence
+            encodedVariantAvailability
+            variants(first: 250) { pageInfo { hasNextPage } nodes { ${VARIANT_FIELDS} } }
+        }
+    }
+}`;
+const BUNDLE_PRODUCT_QUERY = `query FixedBundleProduct($ids: [ID!]!, ${CONTEXT_VARIABLES}) ${IN_CONTEXT} {
+    nodes(ids: $ids) {
+        ... on Product {
+            id handle title
+            options { id name optionValues { id name } }
+            encodedVariantExistence
+            encodedVariantAvailability
+            selectedOrFirstAvailableVariant { ${VARIANT_FIELDS} }
+            adjacentVariants { ${VARIANT_FIELDS} }
+        }
+    }
+}`;
+const VARIANT_NEIGHBORHOOD_QUERY = `query FixedBundleVariantNeighborhood($id: ID!, $selectedOptions: [SelectedOptionInput!]!, ${CONTEXT_VARIABLES}) ${IN_CONTEXT} {
+    product(id: $id) {
+        variantBySelectedOptions(selectedOptions: $selectedOptions) { ${VARIANT_FIELDS} }
+        adjacentVariants(selectedOptions: $selectedOptions) { ${VARIANT_FIELDS} }
+    }
+}`;
+const toNumericId = (value) => {
+  const id = String(value ?? "").split("/").pop();
+  return /^[1-9]\d*$/.test(id) ? id : null;
+};
+const toCents = (money) => money?.amount == null ? null : Math.round(Number(money.amount) * 100);
+const readStorefrontContext = () => {
+  const country = String(window.Shopify?.country ?? "").toUpperCase();
+  const language = String(window.Shopify?.locale ?? "").replace("-", "_").toUpperCase();
   return {
-    id: raw.id,
-    handle: raw.handle,
-    title: raw.title,
-    imageUrl: raw.featured_image || null,
-    price: raw.price,
-    compare_at_price: raw.compare_at_price,
-    available: raw.available,
-    variantsCount: variants.length >= 250 ? 1e5 : variants.length,
-    optionNames: (raw.options || []).map((option) => typeof option === "string" ? option : option.name),
-    variants: variants.map((variant) => ({
-      id: variant.id,
-      values: variant.options || [],
-      price: variant.price,
-      compareAtPrice: variant.compare_at_price,
-      available: variant.available,
-      imageUrl: variant.featured_image?.src || raw.featured_image || null
-    }))
+    country: /^[A-Z]{2}$/.test(country) ? country : null,
+    language: /^[A-Z]{2}(_[A-Z]{2})?$/.test(language) ? language : null
   };
 };
-const fetchComponentProduct = async (handle) => {
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sendStorefrontRequest = async (query, variables) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const response = await fetch(`/api/${STOREFRONT_API_VERSION}/graphql.json`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ query, variables: { ...readStorefrontContext(), ...variables } }),
+      signal: controller.signal
+    });
+    if (!response.ok) return { data: null, isRetryable: response.status === 429 || response.status >= 500 };
+    const body = await response.json();
+    if (body?.errors?.length) return { data: null, isRetryable: false };
+    return { data: body?.data ?? null, isRetryable: false };
+  } catch {
+    return { data: null, isRetryable: true };
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
+const requestStorefront = async (query, variables) => {
+  for (let attempt = 1; attempt <= MAX_REQUEST_ATTEMPTS; attempt += 1) {
+    const { data, isRetryable } = await sendStorefrontRequest(query, variables);
+    if (data || !isRetryable) return data;
+    if (attempt < MAX_REQUEST_ATTEMPTS) await wait(RETRY_BASE_DELAY_MS * 2 ** (attempt - 1));
+  }
+  return null;
+};
+const toBatches = (values) => Array.from(
+  { length: Math.ceil(values.length / STOREFRONT_BATCH_SIZE) },
+  (_, index) => values.slice(index * STOREFRONT_BATCH_SIZE, (index + 1) * STOREFRONT_BATCH_SIZE)
+);
+const findValueId = (option, valueName) => option?.values.find((value) => value.name === valueName)?.id ?? null;
+const normalizeStorefrontVariant = (variant, options, productImageUrl) => {
+  const values = options.map(() => null);
+  const valueIds = options.map(() => null);
+  for (const selectedOption of variant.selectedOptions ?? []) {
+    const optionIndex = options.findIndex((option) => option.name === selectedOption.name);
+    if (optionIndex < 0) continue;
+    values[optionIndex] = selectedOption.value;
+    valueIds[optionIndex] = findValueId(options[optionIndex], selectedOption.value);
+  }
+  return {
+    id: Number(toNumericId(variant.id)),
+    values,
+    valueIds,
+    price: toCents(variant.price) ?? 0,
+    compareAtPrice: toCents(variant.compareAtPrice),
+    available: variant.availableForSale !== false,
+    imageUrl: variant.image?.url ?? productImageUrl
+  };
+};
+const normalizeStorefrontOptions = (node) => (node.options ?? []).map((option) => ({
+  id: toNumericId(option.id),
+  name: option.name ?? "",
+  values: (option.optionValues ?? []).map((value) => ({ id: toNumericId(value.id), name: value.name ?? "" }))
+}));
+const decodeEncodedVariants = (encoded) => {
+  if (typeof encoded !== "string" || !encoded.startsWith("v1_")) return [];
+  const source = encoded.slice(3);
+  const tokenizer = /[ :,-]/g;
+  const combinations = [];
+  const current = [];
+  let depth = 0;
+  let index = 0;
+  let rangeStart = null;
+  let token;
+  while (token = tokenizer.exec(source)) {
+    const operation = token[0];
+    const valueIndex = Number.parseInt(source.slice(index, token.index), 10) || 0;
+    if (rangeStart !== null) {
+      for (; rangeStart < valueIndex; rangeStart += 1) {
+        current[depth] = rangeStart;
+        combinations.push([...current]);
+      }
+      rangeStart = null;
+    }
+    current[depth] = valueIndex;
+    if (operation === "-") {
+      rangeStart = valueIndex;
+    } else if (operation === ":") {
+      depth += 1;
+    } else {
+      if (operation === " " || operation === "," && source[token.index - 1] !== ",") combinations.push([...current]);
+      if (operation === ",") {
+        current.pop();
+        depth -= 1;
+      }
+    }
+    index = tokenizer.lastIndex;
+  }
+  const tail = source.match(/\d+$/);
+  if (tail) {
+    const lastIndex = Number.parseInt(tail[0], 10);
+    if (rangeStart !== null) {
+      for (; rangeStart <= lastIndex; rangeStart += 1) {
+        current[depth] = rangeStart;
+        combinations.push([...current]);
+      }
+    } else {
+      current[depth] = lastIndex;
+      combinations.push([...current]);
+    }
+  }
+  return combinations;
+};
+const toComboKey = (valueIds) => valueIds.join(",");
+const decodeVariantCombos = (node, options) => {
+  const positionsToValueIds = (positions) => positions.map((position, optionIndex) => options[optionIndex]?.values[position]?.id ?? null);
+  const availableComboKeys = new Set(decodeEncodedVariants(node.encodedVariantAvailability).map((positions) => toComboKey(positionsToValueIds(positions))));
+  return decodeEncodedVariants(node.encodedVariantExistence).map(positionsToValueIds).filter((valueIds) => valueIds.length === options.length && valueIds.every(Boolean)).map((valueIds) => ({ key: toComboKey(valueIds), valueIds, available: availableComboKeys.has(toComboKey(valueIds)) }));
+};
+const hasCompleteValueIds = (variant) => variant.valueIds.length > 0 && variant.valueIds.every(Boolean);
+const buildVariantStubs = (combos, options) => combos.map((combo) => ({
+  id: null,
+  values: combo.valueIds.map((valueId, optionIndex) => options[optionIndex].values.find((value) => value.id === valueId)?.name ?? null),
+  valueIds: combo.valueIds,
+  price: null,
+  compareAtPrice: null,
+  available: combo.available,
+  imageUrl: null
+}));
+const mergeVariantDetails = (variants, details) => {
+  const detailByComboKey = new Map(details.filter(hasCompleteValueIds).map((detail) => [toComboKey(detail.valueIds), detail]));
+  return variants.map((variant) => detailByComboKey.get(toComboKey(variant.valueIds)) ?? variant);
+};
+const normalizeStorefrontProduct = (node) => {
+  const options = normalizeStorefrontOptions(node);
+  const imageUrl = node.featuredImage?.url ?? null;
+  const firstVariants = (node.variants?.nodes ?? []).map((variant) => normalizeStorefrontVariant(variant, options, imageUrl));
+  const variantStubs = node.variants?.pageInfo?.hasNextPage ? buildVariantStubs(decodeVariantCombos(node, options), options) : [];
+  const loadsVariantsLazily = variantStubs.length > 0;
+  const variants = loadsVariantsLazily ? mergeVariantDetails(variantStubs, firstVariants) : firstVariants;
+  return {
+    id: Number(toNumericId(node.id)),
+    handle: node.handle ?? "",
+    title: node.title ?? "",
+    imageUrl,
+    price: toCents(node.priceRange?.minVariantPrice) ?? 0,
+    compare_at_price: toCents(node.compareAtPriceRange?.minVariantPrice),
+    available: node.availableForSale !== false,
+    variantsCount: Number(node.variantsCount?.count) || variants.length,
+    optionNames: options.map((option) => option.name),
+    hasShopifyIds: true,
+    loadsVariantsLazily,
+    options,
+    variants
+  };
+};
+const normalizeStorefrontBundleProduct = (node) => {
+  const options = normalizeStorefrontOptions(node);
+  const defaultVariant = node.selectedOrFirstAvailableVariant ? normalizeStorefrontVariant(node.selectedOrFirstAvailableVariant, options, null) : null;
+  const prefetchedVariants = [defaultVariant, ...(node.adjacentVariants ?? []).map((variant) => normalizeStorefrontVariant(variant, options, null))].filter(Boolean);
+  const variants = mergeVariantDetails(buildVariantStubs(decodeVariantCombos(node, options), options), prefetchedVariants);
+  return {
+    id: Number(toNumericId(node.id)),
+    handle: node.handle ?? "",
+    title: node.title ?? "",
+    variantsCount: variants.length,
+    optionNames: options.map((option) => option.name),
+    hasShopifyIds: true,
+    loadsVariantsLazily: true,
+    options,
+    variants,
+    defaultVariant
+  };
+};
+const nameBasedValueId = (optionIndex, valueName) => `name:${optionIndex}:${valueName}`;
+const buildOptionsFromVariantValues = (optionNames, variants) => optionNames.map((name, optionIndex) => {
+  const valueNames = [...new Set(variants.map((variant) => variant.values?.[optionIndex]).filter((value) => value != null))];
+  return {
+    id: null,
+    name,
+    values: valueNames.map((valueName) => ({ id: nameBasedValueId(optionIndex, valueName), name: valueName }))
+  };
+});
+const attachValueIds = (variant, options) => {
+  if (!variant) return variant;
+  const valueIds = options.map((option, optionIndex) => findValueId(option, variant.values?.[optionIndex]));
+  return { ...variant, valueIds };
+};
+const normalizePreviewProduct = (product) => {
+  if (product?.options) return product;
+  const options = buildOptionsFromVariantValues(product?.optionNames || [], product?.variants || []);
+  return {
+    ...product,
+    hasShopifyIds: false,
+    options,
+    variants: (product?.variants || []).map((variant) => attachValueIds(variant, options))
+  };
+};
+const productRequests = () => {
   window.__croFixedProductCache ||= /* @__PURE__ */ new Map();
-  const cache = window.__croFixedProductCache;
-  if (cache.has(handle)) return cache.get(handle);
-  const root = window.Shopify?.routes?.root || "/";
-  const request = fetch(`${root}products/${encodeURIComponent(handle)}.js`, { headers: { Accept: "application/json" } }).then((response) => response.ok ? response.json() : null).then((raw) => raw ? normalizeAjaxProduct(raw) : null).catch(() => null);
-  cache.set(handle, request);
+  return window.__croFixedProductCache;
+};
+const bundleProductRequests = () => {
+  window.__croFixedBundleProductCache ||= /* @__PURE__ */ new Map();
+  return window.__croFixedBundleProductCache;
+};
+const requestProductBatch = async (productIds) => {
+  const data = await requestStorefront(COMPONENT_PRODUCTS_QUERY, { ids: productIds.map((productId) => `${PRODUCT_GID_PREFIX}${productId}`) });
+  if (!data) return null;
+  const productsById = /* @__PURE__ */ new Map();
+  for (const node of data?.nodes ?? []) {
+    const productId = toNumericId(node?.id);
+    if (productId) productsById.set(productId, normalizeStorefrontProduct(node));
+  }
+  return productsById;
+};
+const fetchComponentProducts = (productIds) => {
+  const requests = productRequests();
+  const productIdsToRequest = productIds.filter((productId) => !requests.has(productId));
+  for (const batch of toBatches(productIdsToRequest)) {
+    const batchRequest = requestProductBatch(batch).then((productsById) => {
+      if (!productsById) for (const productId of batch) requests.delete(productId);
+      return productsById;
+    });
+    for (const productId of batch) {
+      requests.set(productId, batchRequest.then((productsById) => productsById?.get(productId) ?? null));
+    }
+  }
+  return Promise.all(productIds.map((productId) => requests.get(productId)));
+};
+const fetchBundleProduct = (bundleProductId) => {
+  const requests = bundleProductRequests();
+  if (!requests.has(bundleProductId)) {
+    requests.set(bundleProductId, requestStorefront(BUNDLE_PRODUCT_QUERY, { ids: [`${PRODUCT_GID_PREFIX}${bundleProductId}`] }).then((data) => {
+      if (!data) requests.delete(bundleProductId);
+      const node = data?.nodes?.[0];
+      return toNumericId(node?.id) ? normalizeStorefrontBundleProduct(node) : null;
+    }));
+  }
+  return requests.get(bundleProductId);
+};
+const neighborhoodKey = (product, comboKey) => `${product.id}:${comboKey}`;
+const toSelectedOptions = (product, valueIds) => valueIds.map((valueId, optionIndex) => {
+  const option = product.options[optionIndex];
+  return { name: option.name, value: option.values.find((value) => value.id === valueId)?.name ?? "" };
+});
+const fetchVariantNeighborhood = async (product, valueIds) => {
+  const data = await requestStorefront(VARIANT_NEIGHBORHOOD_QUERY, {
+    id: `${PRODUCT_GID_PREFIX}${product.id}`,
+    selectedOptions: toSelectedOptions(product, valueIds)
+  });
+  if (!data?.product) return null;
+  const { variantBySelectedOptions, adjacentVariants } = data.product;
+  const normalize = (variant) => normalizeStorefrontVariant(variant, product.options, product.imageUrl ?? null);
+  return {
+    selectedVariant: variantBySelectedOptions ? normalize(variantBySelectedOptions) : null,
+    variants: [variantBySelectedOptions, ...adjacentVariants ?? []].filter(Boolean).map(normalize).filter(hasCompleteValueIds)
+  };
+};
+const renderIfCurrent = (widget, store) => {
+  if (widget.store === store && widget.isConnected) widget.render();
+};
+const startNeighborhoodRequest = (store, requestKey, load, afterSettle) => {
+  if (store.neighborhoodRequests.has(requestKey)) return store.neighborhoodRequests.get(requestKey);
+  if (store.failedNeighborhoods.has(requestKey)) return Promise.resolve(false);
+  const request = load().then((isLoaded) => {
+    if (!isLoaded) {
+      store.neighborhoodRequests.delete(requestKey);
+      store.failedNeighborhoods.add(requestKey);
+    }
+    afterSettle();
+    return isLoaded;
+  });
+  store.neighborhoodRequests.set(requestKey, request);
   return request;
+};
+const requestVariantNeighborhood = (widget, product, valueIds, isDetailMissing) => {
+  const { store } = widget;
+  const comboKey = toComboKey(valueIds);
+  return startNeighborhoodRequest(store, neighborhoodKey(product, comboKey), async () => {
+    const neighborhood = await fetchVariantNeighborhood(product, valueIds);
+    if (!neighborhood) return false;
+    if (!store.variantDetails.has(product.id)) store.variantDetails.set(product.id, /* @__PURE__ */ new Map());
+    const details = store.variantDetails.get(product.id);
+    for (const variant of neighborhood.variants) details.set(toComboKey(variant.valueIds), variant);
+    if (!details.has(comboKey)) details.set(comboKey, neighborhood.selectedVariant);
+    return true;
+  }, () => {
+    if (isDetailMissing) renderIfCurrent(widget, store);
+  });
 };
 const hydrateBundle = async (widget, bundle) => {
   const { store } = widget;
   if (!bundle || store.hydratedBundleIds.has(bundle.id) || store.hydratingBundleIds.has(bundle.id)) return;
   store.hydratingBundleIds.add(bundle.id);
-  const handles = [...new Set((bundle.components || []).map((c) => c.handle).filter(Boolean))];
-  const products = await Promise.all(handles.map((handle) => fetchComponentProduct(handle)));
-  for (const product of products) if (product) store.productMap.set(product.id, product);
-  store.hydratingBundleIds.delete(bundle.id);
-  store.hydratedBundleIds.add(bundle.id);
+  const productIds = [...new Set((bundle.components || []).map((c) => toNumericId(c.productId)).filter(Boolean))];
+  const bundleProductId = toNumericId(widget.embeddedData?.bundleProducts?.[bundle.bundleHandle]?.id);
+  try {
+    const [products, bundleProduct] = await Promise.all([
+      fetchComponentProducts(productIds),
+      bundleProductId ? fetchBundleProduct(bundleProductId) : null
+    ]);
+    for (const product of products) if (product) store.productMap.set(product.id, product);
+    if (bundleProduct) store.bundleProductMap.set(bundle.bundleHandle, bundleProduct);
+  } catch (error) {
+    console.error("[cro-fixed-bundle] failed to load bundle data:", bundle.id, error);
+  } finally {
+    store.hydratingBundleIds.delete(bundle.id);
+    store.hydratedBundleIds.add(bundle.id);
+  }
 };
 const hydrateRemainingBundles = (widget, bundles, skipId) => {
   for (const bundle of bundles) {
@@ -172,7 +490,7 @@ const hydrateWidget = async (widget) => {
   store.hydrating = true;
   if (widget.isBuilderMode) {
     const products = widget.embeddedData?.products || [];
-    store.productMap = new Map(products.map((product) => [product.id, product]));
+    store.productMap = new Map(products.map((product) => [product.id, normalizePreviewProduct(product)]));
     for (const bundle of widget.embeddedData?.bundles || []) store.hydratedBundleIds.add(bundle.id);
     store.hydrated = true;
     store.hydrating = false;
@@ -187,35 +505,6 @@ const hydrateWidget = async (widget) => {
   store.hydrating = false;
   if (widget.isConnected) widget.render();
   hydrateRemainingBundles(widget, bundles, initialId);
-};
-const readCurrentVariant = (widget, doc) => {
-  try {
-    const el = doc.querySelector(`script[type="application/json"][data-cro-current="${CSS.escape(widget.widgetId)}"]`);
-    return el ? JSON.parse(el.textContent) : void 0;
-  } catch {
-    return void 0;
-  }
-};
-const resolveViaSectionRender = async (widget, handle, ids) => {
-  const { store } = widget;
-  const key = sectionVariantKey(handle, ids);
-  if (store.variantCache.has(key) || store.variantPending.has(key)) return;
-  const sectionId = widget.getAttribute("section-id") || null;
-  if (!sectionId || !handle || ids.some((id) => id == null)) return;
-  store.variantPending.add(key);
-  try {
-    const root = window.Shopify?.routes?.root || "/";
-    const url = `${root}products/${encodeURIComponent(handle)}?section_id=${encodeURIComponent(sectionId)}&option_values=${encodeURIComponent(ids.join(","))}`;
-    const response = await fetch(url);
-    const doc = new DOMParser().parseFromString(await response.text(), "text/html");
-    store.variantCache.set(key, { variant: readCurrentVariant(widget, doc) || null });
-  } catch (error) {
-    console.error("[cro-fixed-bundle] section render resolve failed:", error);
-    store.variantCache.set(key, { variant: null });
-  } finally {
-    store.variantPending.delete(key);
-    if (widget.isConnected) widget.render();
-  }
 };
 const PIXEL_BASE_URL = "https://pixel-dev.ecomposer.app";
 const CLIENT_ID_STORAGE_KEY = "_cro_client_id";
@@ -345,13 +634,59 @@ const publishCroContext = (shopCurrency, analyticsEnabled) => {
   }, SHOPIFY_ANALYTICS_POLL_MS);
 };
 const DEFAULT_TITLE_RE = /^default\s*title$/i;
+const UNMATCHED_VALUE_ID = "unmatched";
 const safeImageUrl = (url) => url ? url.startsWith("//") ? "https:" + url : url : "";
 const findBundle = (widget, bundleId) => (widget.embeddedData?.bundles || []).find((b) => String(b.id) === String(bundleId));
-const bundleProductOf = (widget, bundle) => widget.embeddedData?.bundleProducts?.[bundle.bundleHandle] || null;
-const isTrulyHighVariant = (product) => Number(product?.variantsCount) > 250;
-const isHighVariant = (widget, product) => {
-  if (widget.isBuilderMode) return false;
-  return isTrulyHighVariant(product);
+const normalizedBundleProducts = /* @__PURE__ */ new WeakMap();
+const bundlesWarnedAboutStaleIds = /* @__PURE__ */ new WeakSet();
+const normalizeBundleProduct = (bundleProduct) => {
+  const hasShopifyIds = Array.isArray(bundleProduct.optionValues) && bundleProduct.optionValues.length > 0;
+  const options = hasShopifyIds ? bundleProduct.optionValues.map((option) => ({
+    id: null,
+    name: option.name,
+    values: (option.values || []).map((value) => ({ id: String(value.id), name: value.value }))
+  })) : buildOptionsFromVariantValues(bundleProduct.optionNames || [], bundleProduct.variants || []);
+  return {
+    ...bundleProduct,
+    hasShopifyIds,
+    loadsVariantsLazily: false,
+    options,
+    variants: (bundleProduct.variants || []).map((variant) => attachValueIds(variant, options)),
+    defaultVariant: attachValueIds(bundleProduct.defaultVariant, options)
+  };
+};
+const embeddedBundleProductOf = (widget, bundle) => {
+  const embeddedBundleProduct = widget.embeddedData?.bundleProducts?.[bundle.bundleHandle];
+  if (!embeddedBundleProduct) return null;
+  if (!normalizedBundleProducts.has(embeddedBundleProduct)) {
+    normalizedBundleProducts.set(embeddedBundleProduct, normalizeBundleProduct(embeddedBundleProduct));
+  }
+  return normalizedBundleProducts.get(embeddedBundleProduct);
+};
+const bundleProductOf = (widget, bundle) => widget.isBuilderMode ? embeddedBundleProductOf(widget, bundle) : widget.store.bundleProductMap.get(bundle.bundleHandle) ?? null;
+const bundleTitleOf = (widget, bundle) => bundleProductOf(widget, bundle)?.title || widget.embeddedData?.bundleProducts?.[bundle.bundleHandle]?.title || "";
+const hasVariantDetail = (variant) => variant?.id != null;
+const variantIndexes = /* @__PURE__ */ new WeakMap();
+const findVariantByComboKey = (product, comboKey) => {
+  if (!variantIndexes.has(product.variants)) {
+    variantIndexes.set(product.variants, new Map(product.variants.map((variant) => [toComboKey(variant.valueIds), variant])));
+  }
+  return variantIndexes.get(product.variants).get(comboKey) ?? null;
+};
+const lookupVariantDetail = (widget, product, comboKey) => {
+  const { variantDetails, failedNeighborhoods } = widget.store;
+  const loadedDetails = variantDetails.get(product.id);
+  if (loadedDetails?.has(comboKey)) return { isPending: false, variant: loadedDetails.get(comboKey) };
+  const variant = findVariantByComboKey(product, comboKey);
+  if (hasVariantDetail(variant)) return { isPending: false, variant };
+  if (!variant || !product.loadsVariantsLazily || failedNeighborhoods.has(neighborhoodKey(product, comboKey))) {
+    return { isPending: false, variant: null };
+  }
+  return { isPending: true, variant: null };
+};
+const hasUnloadedVariants = (product) => {
+  const variantsCount = Number(product?.variantsCount);
+  return Number.isFinite(variantsCount) && variantsCount > (product?.variants?.length ?? 0);
 };
 const orderedComponents = (widget, bundle) => {
   const components = bundle.components || [];
@@ -361,44 +696,10 @@ const orderedComponents = (widget, bundle) => {
   if (index <= 0) return components;
   return [components[index], ...components.slice(0, index), ...components.slice(index + 1)];
 };
-const optionKey = (opt) => opt.rawName || opt.name;
-const bundleDesired = (widget, bundle, selection = widget.store.selection[bundle.id] || {}) => {
-  const desired = {};
-  for (const comp of bundle.components || []) {
-    for (const opt of comp.options || []) {
-      if (!opt.parentName) continue;
-      const key = optionKey(opt);
-      const val = selection[comp.productId]?.[key] ?? ((opt.values || []).length === 1 ? opt.values[0] : null);
-      if (val != null) desired[opt.parentName] = val;
-    }
-  }
-  return desired;
-};
-const optionValueIds = (optionValues, desiredByName) => (optionValues || []).map((option) => {
-  const wanted = desiredByName[option.name];
-  return (option.values || []).find((value) => value.value === wanted)?.id ?? null;
-});
-const bundleVariantKey = (widget, bundle, selection) => {
-  const bundleProduct = bundleProductOf(widget, bundle);
-  if (!bundleProduct) return null;
-  const ids = optionValueIds(bundleProduct.optionValues, bundleDesired(widget, bundle, selection));
-  if (ids.some((id) => id == null)) return null;
-  return { handle: bundleProduct.handle, ids, key: sectionVariantKey(bundleProduct.handle, ids) };
-};
-const ensureBundleVariantResolved = (widget, bundle) => {
-  const bundleProduct = bundleProductOf(widget, bundle);
-  if (!isHighVariant(widget, bundleProduct)) return;
-  const resolved = bundleVariantKey(widget, bundle);
-  if (resolved && !widget.store.variantCache.has(resolved.key)) {
-    resolveViaSectionRender(widget, resolved.handle, resolved.ids);
-  }
-};
-const bundleVariantPending = (widget, bundle) => {
-  const bundleProduct = bundleProductOf(widget, bundle);
-  if (!isHighVariant(widget, bundleProduct)) return false;
-  const resolved = bundleVariantKey(widget, bundle);
-  return Boolean(resolved) && !widget.store.variantCache.has(resolved.key);
-};
+const productOf = (widget, component) => widget.store.productMap.get(component.productId);
+const isAxisOption = (option) => (option.values || []).length >= 2;
+const isFixedOption = (option) => (option.values || []).length === 1;
+const toOptionKey = (option) => option.id != null ? String(option.id) : option.rawName || option.name;
 const rawOptionName = (product, optionName) => {
   const title = product?.title;
   if (title && optionName.startsWith(`${title} (`) && optionName.endsWith(")")) {
@@ -406,242 +707,332 @@ const rawOptionName = (product, optionName) => {
   }
   return optionName;
 };
-const optionIndex = (product, optionName) => {
+const findLiveIndexByName = (product, optionName) => {
   const names = product?.optionNames || [];
   const direct = names.indexOf(optionName);
   if (direct >= 0) return direct;
   const raw = rawOptionName(product, optionName);
   return raw === optionName ? -1 : names.indexOf(raw);
 };
-const liveValuesForOption = (product, optionName) => {
-  const idx = optionIndex(product, optionName);
-  if (idx < 0) return [];
-  const seen = [];
-  for (const v of product?.variants || []) {
-    const val = v.values?.[idx];
-    if (val != null && !seen.includes(val)) seen.push(val);
+const findLiveIndexById = (product, option) => {
+  if (!product?.hasShopifyIds || option.id == null) return -1;
+  return product.options.findIndex((liveOption) => liveOption.id === String(option.id));
+};
+const resolveComponentOption = (product, option) => {
+  const valueNames = option.values || [];
+  const liveIndexById = findLiveIndexById(product, option);
+  const liveIndex = liveIndexById >= 0 ? liveIndexById : findLiveIndexByName(product, option.rawName || option.name);
+  const hasStoredValueIds = Array.isArray(option.valueIds) && option.valueIds.length === valueNames.length;
+  const useStoredValueIds = hasStoredValueIds && (liveIndexById >= 0 || !product);
+  const liveOption = liveIndex >= 0 ? product?.options?.[liveIndex] : null;
+  const valueIds = useStoredValueIds ? option.valueIds.map(String) : valueNames.map((valueName) => liveOption?.values.find((value) => value.name === valueName)?.id ?? null);
+  return { option, key: toOptionKey(option), liveIndex, valueIds };
+};
+const resolveComponentOptions = (component, product) => (component.options || []).map((option) => resolveComponentOption(product, option));
+const resolveBundleOption = (bundleProduct, option) => {
+  const valueNames = option.values || [];
+  const bundleOptions = bundleProduct?.options || [];
+  const hasStoredParentValueIds = bundleProduct?.hasShopifyIds && Array.isArray(option.parentValueIds) && option.parentValueIds.length === valueNames.length;
+  if (hasStoredParentValueIds) {
+    const parentValueIds2 = option.parentValueIds.map(String);
+    const bundleOptionIndex2 = bundleOptions.findIndex((bundleOption2) => bundleOption2.values.some((value) => value.id === parentValueIds2[0]));
+    return { bundleOptionIndex: bundleOptionIndex2, isStale: bundleOptionIndex2 < 0, parentValueIds: parentValueIds2 };
   }
-  return seen;
+  const bundleOptionIndex = (bundleProduct?.optionNames || []).indexOf(option.parentName);
+  const bundleOption = bundleOptionIndex >= 0 ? bundleOptions[bundleOptionIndex] : null;
+  const parentValueIds = valueNames.map((valueName) => bundleOption?.values.find((value) => value.name === valueName)?.id ?? null);
+  return { bundleOptionIndex, isStale: false, parentValueIds };
 };
-const realOptionOrder = (product, key) => {
-  const idx = optionIndex(product, key);
-  return idx < 0 ? Number.MAX_SAFE_INTEGER : idx;
-};
-const pickerOptions = (component, product) => {
-  if (isTrulyHighVariant(product)) return [];
-  const result = [];
-  for (const opt of component.options || []) {
-    const allowed = opt.values || [];
-    if (allowed.length < 2) continue;
-    const key = optionKey(opt);
-    const live = liveValuesForOption(product, key);
-    const values = allowed.filter((v) => live.includes(v));
-    if (values.length >= 2) result.push({ name: opt.name, key, parentName: opt.parentName, values });
-  }
-  result.sort((a, b) => realOptionOrder(product, a.key) - realOptionOrder(product, b.key));
-  return result;
-};
-const componentDesired = (widget, bundleId, component) => {
-  const desired = {};
-  const sel = widget.store.selection[bundleId]?.[component.productId] || {};
-  for (const opt of component.options || []) {
-    const allowed = opt.values || [];
-    const key = optionKey(opt);
-    if (allowed.length >= 2) {
-      if (sel[key] != null) desired[key] = sel[key];
-    } else if (allowed.length === 1) {
-      desired[key] = allowed[0];
-    }
-  }
-  return desired;
-};
-const componentDesiredBefore = (widget, bundleId, component, product, optionName) => {
-  const desired = {};
-  const sel = widget.store.selection[bundleId]?.[component.productId] || {};
-  const testedIndex = optionIndex(product, optionName);
-  for (const opt of component.options || []) {
-    const allowed = opt.values || [];
-    const key = optionKey(opt);
-    if (allowed.length === 1) {
-      desired[key] = allowed[0];
-      continue;
-    }
-    if (allowed.length < 2 || key === optionName) continue;
-    const idx = optionIndex(product, key);
-    if (idx < 0 || testedIndex < 0 || idx >= testedIndex) continue;
-    if (sel[key] != null) desired[key] = sel[key];
-  }
-  return desired;
-};
-const matchVariant = (product, desiredByName) => {
-  const variants = product?.variants || [];
-  const matches = (v) => Object.entries(desiredByName).every(([name, val]) => {
-    const idx = optionIndex(product, name);
-    return idx < 0 ? true : v.values?.[idx] === val;
+const buildBundleMapping = (bundleProduct, component, resolved) => {
+  const { bundleOptionIndex, isStale, parentValueIds } = resolveBundleOption(bundleProduct, resolved.option);
+  const parentByValueId = /* @__PURE__ */ new Map();
+  const valueByParentId = /* @__PURE__ */ new Map();
+  resolved.valueIds.forEach((valueId, valueIndex) => {
+    const parentValueId = parentValueIds[valueIndex];
+    if (!valueId || !parentValueId) return;
+    parentByValueId.set(valueId, parentValueId);
+    valueByParentId.set(parentValueId, valueId);
   });
-  return variants.find((v) => v.available !== false && matches(v)) || variants.find((v) => matches(v)) || variants.find((v) => v.available !== false) || variants[0] || null;
+  return { component, option: resolved.option, key: resolved.key, bundleOptionIndex, isStale, parentByValueId, valueByParentId };
 };
-const resolveComponentVariant = (widget, bundleId, component, product) => {
-  if (isTrulyHighVariant(product)) return null;
-  if (!product?.variants?.length) return null;
-  return matchVariant(product, componentDesired(widget, bundleId, component));
-};
-const valueAvailable = (widget, bundle, component, product, optionName, value) => {
-  const desired = { ...componentDesiredBefore(widget, bundle.id, component, product, optionName), [optionName]: value };
-  return (product?.variants || []).some((v) => v.available !== false && Object.entries(desired).every(([name, val]) => {
-    const idx = optionIndex(product, name);
-    return idx < 0 ? true : v.values?.[idx] === val;
-  }));
-};
-const bundleOptionMappings = (widget, bundle) => {
+const bundleMappings = (widget, bundle) => {
   const bundleProduct = bundleProductOf(widget, bundle);
-  const optionNames = bundleProduct?.optionNames || [];
   const mappings = [];
-  for (const comp of bundle.components || []) {
-    for (const option of comp.options || []) {
-      if (!option.parentName) continue;
-      const bundleOptionIndex = optionNames.indexOf(option.parentName);
-      if (bundleOptionIndex < 0) continue;
-      mappings.push({ component: comp, option, key: optionKey(option), bundleOptionIndex });
+  for (const component of bundle.components || []) {
+    for (const resolved of resolveComponentOptions(component, productOf(widget, component))) {
+      if (resolved.option.parentName) mappings.push(buildBundleMapping(bundleProduct, component, resolved));
     }
   }
   return mappings;
 };
-const defaultValue = (product, optionName, values, desiredSoFar = {}) => {
-  const idx = optionIndex(product, optionName);
-  const matchesSoFar = (v) => Object.entries(desiredSoFar).every(([name, val]) => {
-    const dIdx = optionIndex(product, name);
-    return dIdx < 0 ? true : v.values?.[dIdx] === val;
-  });
-  const variants = product?.variants || [];
-  const firstAvail = values.find((val) => variants.some((v) => v.available !== false && matchesSoFar(v) && v.values?.[idx] === val));
-  if (firstAvail) return firstAvail;
-  const firstMatching = values.find((val) => variants.some((v) => matchesSoFar(v) && v.values?.[idx] === val));
-  return firstMatching || values[0];
+const activeMappings = (mappings) => mappings.filter((mapping) => mapping.bundleOptionIndex >= 0 && !mapping.isStale);
+const hasStaleMapping = (mappings) => mappings.some((mapping) => mapping.isStale);
+const warnStaleBundleOnce = (bundle) => {
+  if (bundlesWarnedAboutStaleIds.has(bundle)) return;
+  bundlesWarnedAboutStaleIds.add(bundle);
+  console.warn("[cro-fixed-bundle] bundle options no longer match the bundle product:", bundle.id);
 };
-const seedFromBundleDefaultVariant = (widget, bundle) => {
-  const { store } = widget;
-  const bundleProduct = bundleProductOf(widget, bundle);
-  const defaultVariant = bundleProduct?.defaultVariant;
-  if (!defaultVariant) return;
-  const mappings = bundleOptionMappings(widget, bundle);
-  if (!mappings.length) return;
-  store.selection[bundle.id] ||= {};
-  const selection = store.selection[bundle.id];
-  for (const { component, key, bundleOptionIndex } of mappings) {
-    const value = defaultVariant.values?.[bundleOptionIndex];
-    if (value == null) continue;
-    selection[component.productId] ||= {};
-    selection[component.productId][key] ??= value;
+const desiredParentValueIds = (selection, mappings) => {
+  const desired = /* @__PURE__ */ new Map();
+  for (const mapping of activeMappings(mappings)) {
+    const selectedValueId = selection[mapping.component.productId]?.[mapping.key];
+    if (selectedValueId == null) continue;
+    desired.set(mapping.bundleOptionIndex, mapping.parentByValueId.get(selectedValueId) ?? UNMATCHED_VALUE_ID);
   }
-  if (isHighVariant(widget, bundleProduct)) {
-    const resolved = bundleVariantKey(widget, bundle);
-    if (resolved && !store.variantCache.has(resolved.key)) {
-      store.variantCache.set(resolved.key, { variant: defaultVariant });
+  return desired;
+};
+const currentSelection = (widget, bundle) => widget.store.selection[bundle.id] || {};
+const variantMatches = (variant, desiredValueIds) => {
+  for (const [index, valueId] of desiredValueIds) {
+    if (variant.valueIds?.[index] !== valueId) return false;
+  }
+  return true;
+};
+const isAvailable = (variant) => variant.available !== false;
+const findBundleCombo = (bundleProduct, desiredValueIds) => bundleProduct.variants.find((variant) => isAvailable(variant) && variantMatches(variant, desiredValueIds)) || bundleProduct.variants.find((variant) => variantMatches(variant, desiredValueIds)) || null;
+const selectedBundleCombo = (widget, bundle, selection = currentSelection(widget, bundle)) => {
+  const bundleProduct = bundleProductOf(widget, bundle);
+  if (!bundleProduct) return null;
+  const mappings = bundleMappings(widget, bundle);
+  if (hasStaleMapping(mappings)) return null;
+  const combo = findBundleCombo(bundleProduct, desiredParentValueIds(selection, mappings));
+  return combo ? { bundleProduct, combo, comboKey: toComboKey(combo.valueIds) } : null;
+};
+const prefetchBundleNeighborhood = (widget, bundle) => {
+  const selected = selectedBundleCombo(widget, bundle);
+  if (!selected?.bundleProduct.loadsVariantsLazily) return;
+  const { bundleProduct, combo, comboKey } = selected;
+  const defaultVariant = bundleProduct.defaultVariant;
+  if (defaultVariant && toComboKey(defaultVariant.valueIds) === comboKey) return;
+  requestVariantNeighborhood(widget, bundleProduct, combo.valueIds, lookupVariantDetail(widget, bundleProduct, comboKey).isPending);
+};
+const displayedBundleVariant = (widget, bundle) => {
+  const { shownBundleVariants } = widget.store;
+  const selected = selectedBundleCombo(widget, bundle);
+  if (!selected) return { variant: null, pending: false };
+  const { isPending, variant } = lookupVariantDetail(widget, selected.bundleProduct, selected.comboKey);
+  if (!isPending) {
+    if (variant) shownBundleVariants.set(bundle.id, variant);
+    return { variant, pending: false };
+  }
+  const previousVariant = shownBundleVariants.get(bundle.id);
+  if (!previousVariant) return { variant: null, pending: true };
+  return { variant: { ...previousVariant, available: isAvailable(selected.combo) }, pending: false };
+};
+const pickerOptions = (component, product) => {
+  if (hasUnloadedVariants(product)) return [];
+  const result = [];
+  for (const resolved of resolveComponentOptions(component, product)) {
+    if (!isAxisOption(resolved.option) || resolved.liveIndex < 0) continue;
+    const liveValueIds = new Set((product?.variants || []).map((variant) => variant.valueIds?.[resolved.liveIndex]).filter(Boolean));
+    const valueIds = resolved.valueIds.filter((valueId) => valueId && liveValueIds.has(valueId));
+    if (valueIds.length >= 2) {
+      result.push({ name: resolved.option.name, key: resolved.key, liveIndex: resolved.liveIndex, valueIds });
     }
   }
+  result.sort((a, b) => a.liveIndex - b.liveIndex);
+  return result;
 };
-const syncSelectionToAvailableBundleVariant = (widget, bundle) => {
+const desiredFromFixedOptions = (resolvedOptions) => {
+  const desired = /* @__PURE__ */ new Map();
+  for (const resolved of resolvedOptions) {
+    if (isFixedOption(resolved.option) && resolved.liveIndex >= 0) {
+      desired.set(resolved.liveIndex, resolved.valueIds[0] ?? UNMATCHED_VALUE_ID);
+    }
+  }
+  return desired;
+};
+const componentDesired = (widget, bundleId, component, product) => {
+  const componentSelection = widget.store.selection[bundleId]?.[component.productId] || {};
+  const resolvedOptions = resolveComponentOptions(component, product);
+  const desired = desiredFromFixedOptions(resolvedOptions);
+  for (const resolved of resolvedOptions) {
+    const selectedValueId = componentSelection[resolved.key];
+    if (isAxisOption(resolved.option) && resolved.liveIndex >= 0 && selectedValueId != null) {
+      desired.set(resolved.liveIndex, selectedValueId);
+    }
+  }
+  return desired;
+};
+const componentDesiredBefore = (widget, bundleId, component, product, testedLiveIndex) => {
+  const componentSelection = widget.store.selection[bundleId]?.[component.productId] || {};
+  const resolvedOptions = resolveComponentOptions(component, product);
+  const desired = desiredFromFixedOptions(resolvedOptions);
+  if (testedLiveIndex < 0) return desired;
+  for (const resolved of resolvedOptions) {
+    const isBefore = resolved.liveIndex >= 0 && resolved.liveIndex < testedLiveIndex;
+    const selectedValueId = componentSelection[resolved.key];
+    if (isAxisOption(resolved.option) && isBefore && selectedValueId != null) {
+      desired.set(resolved.liveIndex, selectedValueId);
+    }
+  }
+  return desired;
+};
+const matchVariant = (product, desired) => {
+  const variants = product?.variants || [];
+  return variants.find((v) => v.available !== false && variantMatches(v, desired)) || variants.find((v) => variantMatches(v, desired)) || variants.find((v) => v.available !== false) || variants[0] || null;
+};
+const resolveComponentVariant = (widget, bundleId, component, product) => {
+  if (hasUnloadedVariants(product)) return null;
+  if (!product?.variants?.length) return null;
+  return matchVariant(product, componentDesired(widget, bundleId, component, product));
+};
+const prefetchComponentNeighborhoods = (widget, bundle) => {
+  for (const component of bundle.components || []) {
+    const product = productOf(widget, component);
+    if (!product?.loadsVariantsLazily) continue;
+    const variant = resolveComponentVariant(widget, bundle.id, component, product);
+    if (!variant) continue;
+    const { isPending } = lookupVariantDetail(widget, product, toComboKey(variant.valueIds));
+    requestVariantNeighborhood(widget, product, variant.valueIds, isPending);
+  }
+};
+const displayedComponentVariant = (widget, bundle, component, product, matchedVariant) => {
+  if (!matchedVariant) return null;
+  const { shownComponentVariants } = widget.store;
+  const shownKey = `${bundle.id}:${component.productId}`;
+  const detailedVariant = lookupVariantDetail(widget, product, toComboKey(matchedVariant.valueIds)).variant;
+  if (detailedVariant) {
+    shownComponentVariants.set(shownKey, detailedVariant);
+    return detailedVariant;
+  }
+  const previousVariant = shownComponentVariants.get(shownKey);
+  if (!previousVariant) return matchedVariant;
+  return { ...previousVariant, values: matchedVariant.values, valueIds: matchedVariant.valueIds, available: matchedVariant.available };
+};
+const valueAvailable = (widget, bundle, component, product, pickerOption, valueId) => {
+  const desired = componentDesiredBefore(widget, bundle.id, component, product, pickerOption.liveIndex);
+  desired.set(pickerOption.liveIndex, valueId);
+  return (product?.variants || []).some((v) => v.available !== false && variantMatches(v, desired));
+};
+const pickDefaultValueId = (product, liveIndex, valueIds, desiredSoFar) => {
+  const variants = product?.variants || [];
+  const hasVariantWith = (variant, valueId) => liveIndex >= 0 && variantMatches(variant, desiredSoFar) && variant.valueIds?.[liveIndex] === valueId;
+  const firstAvailable = valueIds.find((valueId) => variants.some((v) => v.available !== false && hasVariantWith(v, valueId)));
+  if (firstAvailable) return firstAvailable;
+  const firstExisting = valueIds.find((valueId) => variants.some((v) => hasVariantWith(v, valueId)));
+  return firstExisting || valueIds[0];
+};
+const seedVariantOf = (widget, bundle) => {
+  const bundleProduct = bundleProductOf(widget, bundle);
+  if (widget.isBuilderMode || !widget.embeddedData?.isCurrentProductBundle) return bundleProduct?.defaultVariant;
+  return embeddedBundleProductOf(widget, bundle)?.defaultVariant ?? bundleProduct?.defaultVariant;
+};
+const seedFromBundleDefaultVariant = (widget, bundle, mappings) => {
+  const { store } = widget;
+  const defaultVariant = seedVariantOf(widget, bundle);
+  if (!defaultVariant || hasStaleMapping(mappings)) return;
+  const usableMappings = activeMappings(mappings);
+  if (!usableMappings.length) return;
+  store.selection[bundle.id] ||= {};
+  const selection = store.selection[bundle.id];
+  for (const mapping of usableMappings) {
+    const valueId = mapping.valueByParentId.get(defaultVariant.valueIds?.[mapping.bundleOptionIndex]);
+    if (valueId == null) continue;
+    selection[mapping.component.productId] ||= {};
+    selection[mapping.component.productId][mapping.key] ??= valueId;
+  }
+};
+const syncSelectionToAvailableBundleVariant = (widget, bundle, mappings) => {
   const { store } = widget;
   const bundleProduct = bundleProductOf(widget, bundle);
-  if (isTrulyHighVariant(bundleProduct)) return;
-  if (!bundleProduct?.variants?.length) return;
-  const mappings = bundleOptionMappings(widget, bundle);
-  const candidates = bundleProduct.variants.filter((variant) => variant.available !== false && mappings.every(({ option, bundleOptionIndex }) => !option.values?.length || option.values.includes(variant.values?.[bundleOptionIndex])));
+  if (!bundleProduct?.variants.length || hasUnloadedVariants(bundleProduct) || hasStaleMapping(mappings)) return;
+  const usableMappings = activeMappings(mappings);
+  const candidates = bundleProduct.variants.filter((combo) => isAvailable(combo) && usableMappings.every(({ valueByParentId, bundleOptionIndex }) => valueByParentId.has(combo.valueIds[bundleOptionIndex])));
   if (!candidates.length) return;
   const selection = store.selection[bundle.id] || {};
+  const selectedParentValueId = (mapping) => mapping.parentByValueId.get(selection[mapping.component.productId]?.[mapping.key]);
   const lastPicked = store.lastPicked[bundle.id];
-  const lastPickedMapping = lastPicked && mappings.find((m) => m.component.productId === lastPicked.productId && m.key === lastPicked.key);
-  const lastPickedValue = lastPickedMapping ? selection[lastPicked.productId]?.[lastPicked.key] : null;
-  const keepsLastPicked = (variant) => !lastPickedMapping || lastPickedValue == null || variant.values?.[lastPickedMapping.bundleOptionIndex] === lastPickedValue;
+  const lastPickedMapping = lastPicked && usableMappings.find((m) => m.component.productId === lastPicked.productId && m.key === lastPicked.key);
+  const lastPickedValueId = lastPickedMapping ? selection[lastPicked.productId]?.[lastPicked.key] : null;
+  const keepsLastPicked = (combo) => !lastPickedMapping || lastPickedValueId == null || combo.valueIds[lastPickedMapping.bundleOptionIndex] === selectedParentValueId(lastPickedMapping);
   const pool = candidates.filter(keepsLastPicked);
   const candidatePool = pool.length ? pool : candidates;
-  const score = (variant) => mappings.reduce((total, { component, key, bundleOptionIndex }) => {
-    const selected = selection[component.productId]?.[key];
-    return total + (selected != null && selected === variant.values?.[bundleOptionIndex] ? 1 : 0);
+  const score = (combo) => usableMappings.reduce((total, mapping) => {
+    const parentValueId = selectedParentValueId(mapping);
+    return total + (parentValueId != null && parentValueId === combo.valueIds[mapping.bundleOptionIndex] ? 1 : 0);
   }, 0);
-  const selectedVariant = candidatePool.reduce((best, candidate) => score(candidate) > score(best) ? candidate : best, candidatePool[0]);
-  for (const { component, option, key, bundleOptionIndex } of mappings) {
-    if ((option.values || []).length < 2) continue;
-    const value = selectedVariant.values?.[bundleOptionIndex];
-    if (value == null || !option.values.includes(value)) continue;
-    selection[component.productId] ||= {};
-    selection[component.productId][key] = value;
+  const bestCombo = candidatePool.reduce((best, candidate) => score(candidate) > score(best) ? candidate : best, candidatePool[0]);
+  for (const mapping of usableMappings) {
+    if (!isAxisOption(mapping.option)) continue;
+    const valueId = mapping.valueByParentId.get(bestCombo.valueIds[mapping.bundleOptionIndex]);
+    if (valueId == null) continue;
+    selection[mapping.component.productId] ||= {};
+    selection[mapping.component.productId][mapping.key] = valueId;
+  }
+};
+const ensureComponentSelection = (componentSelection, component, product) => {
+  const resolvedOptions = resolveComponentOptions(component, product);
+  const desiredSoFar = desiredFromFixedOptions(resolvedOptions);
+  if (hasUnloadedVariants(product)) {
+    for (const resolved of resolvedOptions) {
+      if (!isAxisOption(resolved.option)) continue;
+      componentSelection[resolved.key] ??= pickDefaultValueId(product, resolved.liveIndex, resolved.valueIds.filter(Boolean), desiredSoFar);
+      if (resolved.liveIndex >= 0 && componentSelection[resolved.key] != null) {
+        desiredSoFar.set(resolved.liveIndex, componentSelection[resolved.key]);
+      }
+    }
+    return;
+  }
+  for (const pickerOption of pickerOptions(component, product)) {
+    const current = componentSelection[pickerOption.key];
+    const currentStillValid = current != null && pickerOption.valueIds.includes(current) && (product.variants || []).some((v) => v.available !== false && variantMatches(v, desiredSoFar) && v.valueIds?.[pickerOption.liveIndex] === current);
+    componentSelection[pickerOption.key] = currentStillValid ? current : pickDefaultValueId(product, pickerOption.liveIndex, pickerOption.valueIds, desiredSoFar);
+    desiredSoFar.set(pickerOption.liveIndex, componentSelection[pickerOption.key]);
   }
 };
 const ensureSelection = (widget, bundle) => {
   const { store } = widget;
   store.selection[bundle.id] ||= {};
-  seedFromBundleDefaultVariant(widget, bundle);
-  const sel = store.selection[bundle.id];
-  for (const comp of bundle.components || []) {
-    const product = store.productMap.get(comp.productId);
+  const mappings = bundleMappings(widget, bundle);
+  seedFromBundleDefaultVariant(widget, bundle, mappings);
+  const selection = store.selection[bundle.id];
+  for (const component of bundle.components || []) {
+    const product = productOf(widget, component);
     if (!product) continue;
-    sel[comp.productId] ||= {};
-    const compSel = sel[comp.productId];
-    const desiredSoFar = {};
-    for (const opt of comp.options || []) {
-      if ((opt.values || []).length === 1) desiredSoFar[optionKey(opt)] = opt.values[0];
-    }
-    if (isTrulyHighVariant(product)) {
-      for (const opt of comp.options || []) {
-        const key = optionKey(opt);
-        if ((opt.values || []).length < 2) continue;
-        compSel[key] ??= defaultValue(product, key, opt.values, desiredSoFar);
-        desiredSoFar[key] = compSel[key];
-      }
-      continue;
-    }
-    const options = pickerOptions(comp, product);
-    if (!options.length) continue;
-    for (const opt of options) {
-      const idx = optionIndex(product, opt.key);
-      const current = compSel[opt.key];
-      const matchesSoFar = (v) => Object.entries(desiredSoFar).every(([name, val]) => {
-        const dIdx = optionIndex(product, name);
-        return dIdx < 0 ? true : v.values?.[dIdx] === val;
-      });
-      const currentStillValid = current != null && opt.values.includes(current) && (product.variants || []).some((v) => v.available !== false && matchesSoFar(v) && v.values?.[idx] === current);
-      compSel[opt.key] = currentStillValid ? current : defaultValue(product, opt.key, opt.values, desiredSoFar);
-      desiredSoFar[opt.key] = compSel[opt.key];
-    }
+    selection[component.productId] ||= {};
+    ensureComponentSelection(selection[component.productId], component, product);
   }
-  syncSelectionToAvailableBundleVariant(widget, bundle);
-  ensureBundleVariantResolved(widget, bundle);
+  syncSelectionToAvailableBundleVariant(widget, bundle, mappings);
 };
-const applyVariantPick = (widget, bundleId, productId, optionName, value) => {
+const prefetchVariantNeighborhoods = (widget, bundles) => {
+  if (widget.isBuilderMode) return;
+  for (const bundle of bundles) {
+    if (!widget.store.hydratedBundleIds.has(bundle.id)) continue;
+    prefetchBundleNeighborhood(widget, bundle);
+    prefetchComponentNeighborhoods(widget, bundle);
+  }
+};
+const applyVariantPick = (widget, bundleId, productId, optionKey, valueId) => {
   const { store } = widget;
   const numericId = Number(productId);
   store.selection[bundleId] ||= {};
   store.selection[bundleId][numericId] ||= {};
-  if (store.selection[bundleId][numericId][optionName] === value) return false;
-  store.selection[bundleId][numericId][optionName] = value;
-  store.lastPicked[bundleId] = { productId: numericId, key: optionName };
+  if (store.selection[bundleId][numericId][optionKey] === valueId) return false;
+  store.selection[bundleId][numericId][optionKey] = valueId;
+  store.lastPicked[bundleId] = { productId: numericId, key: optionKey };
+  store.failedNeighborhoods.clear();
   if (store.addState !== "idle") {
     store.addState = "idle";
     store.addBundleId = null;
   }
-  const bundle = findBundle(widget, bundleId);
-  if (bundle) ensureBundleVariantResolved(widget, bundle);
   return true;
 };
-const resolveBundleVariant = (widget, bundle, selection = widget.store.selection[bundle.id] || {}) => {
-  const bundleProduct = bundleProductOf(widget, bundle);
-  if (!bundleProduct) return null;
-  if (isHighVariant(widget, bundleProduct)) {
-    const resolved = bundleVariantKey(widget, bundle, selection);
-    if (!resolved) return null;
-    const cached = widget.store.variantCache.get(resolved.key);
-    return cached ? cached.variant : null;
+const resolveBundleVariant = (widget, bundle, selection = currentSelection(widget, bundle)) => {
+  if (hasStaleMapping(bundleMappings(widget, bundle))) {
+    warnStaleBundleOnce(bundle);
+    return null;
   }
-  if (!bundleProduct.variants?.length) return null;
-  const desired = bundleDesired(widget, bundle, selection);
-  const names = bundleProduct.optionNames || [];
-  const matches = (v) => Object.entries(desired).every(([name, val]) => {
-    const idx = names.indexOf(name);
-    return idx < 0 ? true : v.values?.[idx] === val;
-  });
-  return bundleProduct.variants.find((v) => v.available !== false && matches(v)) || bundleProduct.variants.find((v) => matches(v)) || null;
+  const selected = selectedBundleCombo(widget, bundle, selection);
+  if (!selected) return null;
+  return lookupVariantDetail(widget, selected.bundleProduct, selected.comboKey).variant;
+};
+const loadBundleVariant = async (widget, bundle) => {
+  const selected = hasStaleMapping(bundleMappings(widget, bundle)) ? null : selectedBundleCombo(widget, bundle);
+  if (selected && lookupVariantDetail(widget, selected.bundleProduct, selected.comboKey).isPending) {
+    await requestVariantNeighborhood(widget, selected.bundleProduct, selected.combo.valueIds, false);
+  }
+  return resolveBundleVariant(widget, bundle);
 };
 const bundleTotals = (bundle, components, productMap) => {
   let now = bundle.discounted_total;
@@ -667,7 +1058,7 @@ const bundleTotals = (bundle, components, productMap) => {
   return { now, original, saved, pct };
 };
 const resolveTotals = (widget, bundle, components) => {
-  const bundleVariant = resolveBundleVariant(widget, bundle);
+  const { variant: bundleVariant, pending } = displayedBundleVariant(widget, bundle);
   const fallback = bundleTotals(bundle, components, widget.store.productMap);
   let totals = fallback;
   if (bundleVariant) {
@@ -678,7 +1069,7 @@ const resolveTotals = (widget, bundle, components) => {
     totals = { now, original, saved, pct };
   }
   const addable = Boolean(bundleVariant) && bundleVariant.available !== false;
-  return { totals, addable, pending: bundleVariantPending(widget, bundle) };
+  return { totals, addable, pending };
 };
 const variantSummaryText = (product, variant) => {
   if (!product) return "";
@@ -694,21 +1085,23 @@ const variantSummaryText = (product, variant) => {
   });
   return parts.join(" ⦁ ") || product.option_note || "";
 };
+const valueLabel = (product, liveIndex, valueId) => product?.options?.[liveIndex]?.values?.find((value) => value.id === valueId)?.name ?? "";
 const buildPickerOptions = (widget, bundle, component, product) => {
   if (widget.pickerLayout === "none" || !product) return [];
   const selected = widget.store.selection[bundle.id]?.[component.productId] || {};
-  return pickerOptions(component, product).map((opt) => ({
-    name: opt.name,
-    key: opt.key,
-    values: opt.values.map((value) => ({
-      value,
-      selected: selected[opt.key] === value,
-      available: valueAvailable(widget, bundle, component, product, opt.key, value)
+  return pickerOptions(component, product).map((pickerOption) => ({
+    name: pickerOption.name,
+    key: pickerOption.key,
+    values: pickerOption.valueIds.map((valueId) => ({
+      id: valueId,
+      label: valueLabel(product, pickerOption.liveIndex, valueId),
+      selected: selected[pickerOption.key] === valueId,
+      available: valueAvailable(widget, bundle, component, product, pickerOption, valueId)
     }))
   }));
 };
 const buildCardView = (widget, bundle, component, product) => {
-  const variant = resolveComponentVariant(widget, bundle.id, component, product);
+  const variant = displayedComponentVariant(widget, bundle, component, product, resolveComponentVariant(widget, bundle.id, component, product));
   const price = variant?.price ?? product?.price ?? 0;
   const compare = variant?.compareAtPrice ?? product?.compare_at_price ?? 0;
   const hasPicker = widget.pickerLayout !== "none" && product && pickerOptions(component, product).length > 0;
@@ -731,7 +1124,7 @@ const buildCardView = (widget, bundle, component, product) => {
   };
 };
 const buildItems = (widget, bundle, components, withCards) => components.map((component) => {
-  const product = widget.store.productMap.get(component.productId);
+  const product = productOf(widget, component);
   return {
     component,
     product,
@@ -751,7 +1144,7 @@ const buildBundleView = (widget, bundle, index, allowCollapse) => {
     hydrated,
     allowCollapse,
     isOpen: allowCollapse ? store.expandedBundles.has(bundle.id) : true,
-    title: bundleProductOf(widget, bundle)?.title || "",
+    title: bundleTitleOf(widget, bundle),
     items: buildItems(widget, bundle, components, hydrated),
     count: components.reduce((sum, c) => sum + (c.quantity ?? 1), 0),
     totals,
@@ -856,14 +1249,20 @@ const fireOfferAccepted = (widget, bundle, { presentmentUpsellValue, upsellQuant
 const addBundleToCart = async (widget, bundle) => {
   const { store } = widget;
   if (widget.isBuilderMode) return;
-  const variant = resolveBundleVariant(widget, bundle);
-  if (!variant || variant.available === false) return;
-  const root = window.Shopify?.routes?.root || "/";
-  const id = Number(String(variant.id).split("/").pop());
-  if (!id) return;
   store.addState = "adding";
   store.addBundleId = bundle.id;
   widget.render();
+  const variant = await loadBundleVariant(widget, bundle);
+  const id = Number(String(variant?.id ?? "").split("/").pop());
+  const isStillAdding = store.addState === "adding" && store.addBundleId === bundle.id;
+  if (!isStillAdding) return;
+  if (!id || variant.available === false) {
+    store.addState = "idle";
+    store.addBundleId = null;
+    widget.render();
+    return;
+  }
+  const root = window.Shopify?.routes?.root || "/";
   let cartErrorMessage = "";
   try {
     const properties = { _cro_ext: EXTENSION_TYPE, _cro_campaign: String(bundle.id) };
@@ -1180,10 +1579,10 @@ const renderCta = (ctx, view) => {
 };
 const renderPicker = (editor) => editor.options.map((opt) => {
   const attrs = `data-bundle-id="${escapeHtml(editor.bundleId)}" data-product-id="${escapeHtml(editor.productId)}" data-option="${escapeHtml(opt.key)}"`;
-  const radios = opt.values.map(({ value, selected, available }) => `<label class="cro-fbw__radio${!available ? " cro-fbw__radio--sold" : ""}">
-                    <input type="radio" class="cro-fbw__radio-input" name="${escapeHtml(`${editor.bundleId}:${editor.productId}:${opt.key}`)}" value="${escapeHtml(value)}" ${selected ? "checked" : ""} ${!available ? "disabled" : ""} data-action="pick" ${attrs} data-value="${escapeHtml(value)}">
+  const radios = opt.values.map(({ id, label, selected, available }) => `<label class="cro-fbw__radio${!available ? " cro-fbw__radio--sold" : ""}">
+                    <input type="radio" class="cro-fbw__radio-input" name="${escapeHtml(`${editor.bundleId}:${editor.productId}:${opt.key}`)}" value="${escapeHtml(id)}" ${selected ? "checked" : ""} ${!available ? "disabled" : ""} data-action="pick" ${attrs} data-value="${escapeHtml(id)}">
                     <span class="cro-fbw__radio-dot" aria-hidden="true"></span>
-                    <span class="cro-fbw__radio-text">${escapeHtml(value)}</span>
+                    <span class="cro-fbw__radio-text">${escapeHtml(label)}</span>
                 </label>`).join("");
   return `<fieldset class="cro-fbw__opt${opt.values.length >= STICKY_LABEL_MIN_VALUES ? " cro-fbw__opt--many" : ""}">
                 <legend class="cro-fbw__opt-label">${escapeHtml(opt.name)}</legend>
@@ -1191,7 +1590,7 @@ const renderPicker = (editor) => editor.options.map((opt) => {
             </fieldset>`;
 }).join("");
 const CARET_ICON = `<svg class="cro-fbw__caret" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 1 5 5 9 1"/></svg>`;
-const selectedValuesLabel = (options) => options.map((option) => option.values.find((choice) => choice.selected)?.value).filter(Boolean).join(" / ");
+const selectedValuesLabel = (options) => options.map((option) => option.values.find((choice) => choice.selected)?.label).filter(Boolean).join(" / ");
 const renderVariantPicker = (ctx, card) => {
   if (!card.hasPicker || !card.options.length || card.unavailable && card.noAlternativeVariant) return "";
   const ids = `data-bundle-id="${escapeHtml(card.bundleId)}" data-product-id="${escapeHtml(card.productId)}"`;
@@ -1199,9 +1598,9 @@ const renderVariantPicker = (ctx, card) => {
   if (card.options.length === 1) {
     const [option] = card.options;
     const soldOutText = ctx.text("out_of_stock_text");
-    const choices = option.values.map(({ value, selected, available }) => {
-      const label2 = available || !soldOutText ? value : `${value} - ${soldOutText}`;
-      return `<option value="${escapeHtml(value)}"${selected ? " selected" : ""}${available ? "" : " disabled"}>${escapeHtml(label2)}</option>`;
+    const choices = option.values.map(({ id, label: label2, selected, available }) => {
+      const text = available || !soldOutText ? label2 : `${label2} - ${soldOutText}`;
+      return `<option value="${escapeHtml(id)}"${selected ? " selected" : ""}${available ? "" : " disabled"}>${escapeHtml(text)}</option>`;
     }).join("");
     return `<span class="${pickerClass}">
             <select class="cro-fbw__picker-input" data-action="pick" ${ids} data-option="${escapeHtml(option.key)}" aria-label="${escapeHtml(`${option.name}, ${card.title}`)}">${choices}</select>
@@ -2095,8 +2494,12 @@ const createStore = () => ({
   selection: {},
   lastPicked: {},
   productMap: /* @__PURE__ */ new Map(),
-  variantCache: /* @__PURE__ */ new Map(),
-  variantPending: /* @__PURE__ */ new Set(),
+  bundleProductMap: /* @__PURE__ */ new Map(),
+  shownBundleVariants: /* @__PURE__ */ new Map(),
+  shownComponentVariants: /* @__PURE__ */ new Map(),
+  variantDetails: /* @__PURE__ */ new Map(),
+  neighborhoodRequests: /* @__PURE__ */ new Map(),
+  failedNeighborhoods: /* @__PURE__ */ new Set(),
   hydrated: false,
   hydrating: false,
   hydratedBundleIds: /* @__PURE__ */ new Set(),
@@ -2349,6 +2752,7 @@ ${layout.renderCurrentBundle(context, view)}`;
       this._attachEvents();
       this._afterRender();
       tagNativeAddToCartForms(this, bundles[0]);
+      prefetchVariantNeighborhoods(this, [bundles[0]]);
       return;
     }
     const settings = this.settings || {};
@@ -2364,6 +2768,7 @@ ${layout.renderCurrentBundle(context, view)}`;
 ${layout.renderBundles(context, views, buildEditorView(this))}`;
     this._attachEvents();
     this._afterRender();
+    prefetchVariantNeighborhoods(this, views.filter((view) => view.isOpen || store.lastPicked[view.bundle.id]).map((view) => view.bundle));
   }
   _afterRender() {
     this._restoreScroll(this._pendingScroll);

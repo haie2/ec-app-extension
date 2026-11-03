@@ -1,6 +1,6 @@
 use crate::bxgy::{self, BxgyLine, BxgyState};
 use crate::cro_data::{read_cro_line, CroLine};
-use crate::mix_match::{self, MixMatchLine};
+use crate::mix_match::{self, MixMatchLine, MixMatchState};
 use crate::schema;
 use crate::schema::cart_transform_run::cart_transform_run_input::cart::Lines;
 use shopify_function::prelude::*;
@@ -31,6 +31,7 @@ pub fn cart_transform_run(
         presentment_rate: input.presentment_currency_rate().as_f64(),
     };
     let mut bxgy_state: Option<BxgyState> = None;
+    let mut mix_match_state: Option<MixMatchState> = None;
     let mut operations = Vec::new();
 
     for job in &jobs {
@@ -51,11 +52,12 @@ pub fn cart_transform_run(
                 bxgy::run(&job_lines, state, &context)
             }
             Job::MixMatch(entries) => {
+                let state = mix_match_state.get_or_insert_with(|| MixMatchState::new(&input));
                 let job_lines: Vec<(&Lines, &MixMatchLine)> = entries
                     .iter()
                     .map(|(index, data)| (&lines[*index], data))
                     .collect();
-                mix_match::run(&job_lines, &context)
+                mix_match::run(&job_lines, state, &context)
             }
         };
         if let Some(lines_merge) = lines_merge {

@@ -7,10 +7,10 @@ kèm phần trăm giảm giá nếu có.
 | Loại | Trạng thái |
 |------|-----------|
 | BXGY (`type: "bxgy"`) | Đã chuyển sang Rust, tương đương bản JS cũ |
-| Mix & Match (`type: "mixMatch"`) | Đã chừa module `src/mix_match/`, **chưa migrate** — line Mix & Match hiện được bỏ qua |
+| Mix & Match (`type: "mixMatch"`) | Đã chuyển sang Rust, tương đương bản JS cũ |
 
 Bản JS cũ (cả BXGY lẫn Mix & Match) được giữ ở
-`share-extensions/extensions/cro-cart-transform-extension-js/` để tham chiếu khi migrate.
+`share-extensions/extensions/cro-cart-transform-extension-js/` để tham chiếu.
 
 ## Vì sao là Rust
 
@@ -49,11 +49,12 @@ cro-cart-transform-extension/
     │   ├── pricing.rs            # trigger, reward, discount, repeat limit, phần trăm
     │   └── tests.rs              # test hành vi (cargo test)
     └── mix_match/
-        ├── mod.rs                # TYPE, MixMatchLine, read_line, run — hiện trả None
-        ├── campaign.rs           # để trống, dành cho migrate
-        ├── eligibility.rs
-        ├── membership.rs
-        └── pricing.rs
+        ├── mod.rs                # read_line, run: gom line của một instance, per-set quantity, linesMerge
+        ├── campaign.rs           # index metafield mixMatchRules, id theo đuôi số, lịch (fail closed), group id
+        ├── eligibility.rs        # khách: logged_in / new / tagged, quốc gia — chỉ đọc khi tìm thấy campaign
+        ├── membership.rs         # line thuộc group (product/collection/vendor/product_type/tag), quà tặng, Min/Max
+        ├── pricing.rs            # 6 cách giảm giá → một phần trăm của subtotal
+        └── tests.rs
 ```
 
 Quy ước:
@@ -69,21 +70,15 @@ Quy ước:
   `PriceAdjustmentValue.value` được override sang `String` trong `main.rs`, vì
   `Decimal` của crate in số nhỏ dạng `1e-6`.
 
-## Migrate Mix & Match
+## Mix & Match
 
-1. Đọc logic gốc ở `cro-cart-transform-extension-js/src/handlers/mix-match.js`.
-2. Thêm lại các field Mix & Match cần vào `src/cart_transform_run.graphql`
-   (`buyerIdentity`, `localization`, `product.vendor/productType/hasTags`,
-   `inCollections`, metafield `mixMatchRules`) và khối
-   `[extensions.input.variables]` vào `shopify.extension.toml` — xem bản JS.
-3. Viết `mix_match::read_line` (đọc `campaign`, `bundle`, `group`, `qty`) và
-   `mix_match::run`, chia logic vào `campaign.rs` / `eligibility.rs` /
-   `membership.rs` / `pricing.rs`. Thông tin khách hàng chỉ nên đọc khi cart có
-   job Mix & Match.
-4. Lưu ý chi phí: mảng `hasTags`/`inCollections` nằm trên **mọi** line và vẫn tốn
-   lệnh trong Rust dù code không đọc tới. Với 100 tag + 100 collection, 25 line
-   bộ + 50 line thường tốn khoảng 22,9M (vượt trần), nên cần hạ trần hoặc đổi cách
-   lấy dữ liệu trước khi bật lại.
+- Input query cần `buyerIdentity`, `localization`, `product.vendor/productType/hasTags`,
+  `inCollections` và metafield `mixMatchRules`; biến `$collectionIds`/`$tags`/`$customerTags`
+  lấy từ chính metafield đó qua `[extensions.input.variables]` trong toml.
+- Chi phí: mảng `hasTags`/`inCollections` nằm trên **mọi** line và vẫn tốn lệnh
+  trong Rust dù code không đọc tới. Với 100 tag + 100 collection, 25 line bộ + 50
+  line thường tốn khoảng 22,9M (vượt trần), nên cần hạ trần số tag/collection hoặc
+  đổi cách lấy dữ liệu nếu shop dùng nhiều.
 
 ## Build, test, đo
 

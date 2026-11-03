@@ -12,6 +12,15 @@ description = "t:description"
   input_query = "src/cart_transform_run.graphql"
   export = "cart_transform_run"
 
+  # Same metafield mixMatchRules is written by MMB_FUNCTION_METAFIELD in
+  # mix-match-bundle.server.ts — its top-level `collectionIds`/`tags`/
+  # `customerTags` keys are read here and fed into the input query as
+  # `$collectionIds`/`$tags`/`$customerTags`; the input query also reads the
+  # whole value for the bundle list (10 kB cap).
+  [extensions.input.variables]
+  namespace = "$app:cro-bundle"
+  key = "mixMatchRules"
+
   [extensions.build]
   command = "cargo build --target=wasm32-unknown-unknown --release"
   path = "target/wasm32-unknown-unknown/release/cro-cart-transform-extension.wasm"

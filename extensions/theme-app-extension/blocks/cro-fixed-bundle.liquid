@@ -13,7 +13,6 @@
   is-builder-mode="{{ EComBuilderMode | json }}"
   design-mode="{{ request.design_mode }}"
   widget-id="{{ block.id }}"
-  section-id="{{ section.id }}"
   store-id="{{ fixed_store_id }}"
   analytics-enabled="{{ fixed_analytics_enabled }}"
   shop-currency="{{ shop.currency }}"
@@ -71,7 +70,8 @@
       {{ bp_sep }}{{ bundle_handle | json }}: {
         "id": {{ bundle_product.id | json }},
         "title": {{ bundle_product.title | json }},
-        "handle": {{ bundle_product.handle | json }},
+        "handle": {{ bundle_product.handle | json }}
+        {%- if current_fixed_bundle -%},
         "variantsCount": {{ bundle_product.variants_count | json }},
         "optionNames": [
           {%- assign bon_sep = '' -%}
@@ -119,6 +119,7 @@
             "available": {{ bundle_product.selected_or_first_available_variant.available | json }}
           }
         {%- else -%}null{%- endif -%}
+        {%- endif %}
       }
       {%- assign bp_sep = ',' -%}
     {%- endfor -%}
@@ -133,19 +134,6 @@
     "bundleProducts": {{ bundle_products_info }},
     "fixedWidget": {{ fixed_widget | json }}
   }
-</script>
-
-<script type="application/json" data-cro-current="{{ block.id }}">
-  {%- if product.selected_or_first_available_variant -%}
-    {
-      "id": {{ product.selected_or_first_available_variant.id | json }},
-      "price": {{ product.selected_or_first_available_variant.price | json }},
-      "compareAtPrice": {{ product.selected_or_first_available_variant.compare_at_price | json }},
-      "available": {{ product.selected_or_first_available_variant.available | json }},
-      "options": {{ product.selected_or_first_available_variant.options | json }},
-      "imageUrl": {%- if product.selected_or_first_available_variant.image -%}{{ product.selected_or_first_available_variant.image | image_url | json }}{%- else -%}null{%- endif -%}
-    }
-  {%- else -%}null{%- endif -%}
 </script>
 
 {%- unless EComBuilderMode -%}

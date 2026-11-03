@@ -702,7 +702,7 @@ fn mix_and_match_lines_in_the_same_cart_are_left_to_their_own_handler() {
 }
 
 #[test]
-fn a_bundle_of_more_than_25_lines_is_left_at_full_price_while_one_of_25_still_merges() {
+fn a_bundle_of_more_than_400_lines_is_left_at_full_price_while_one_of_400_still_merges() {
     let bundle_of = |trigger_count: u64| {
         let mut lines: Vec<Value> = (0..trigger_count)
             .map(|index| line(line_options(1000 + index, 100 + index, 10.0)))
@@ -717,8 +717,8 @@ fn a_bundle_of_more_than_25_lines_is_left_at_full_price_while_one_of_25_still_me
         )
     };
 
-    let (at_limit_lines, at_limit_campaign) = bundle_of(24);
-    let (over_limit_lines, over_limit_campaign) = bundle_of(25);
+    let (at_limit_lines, at_limit_campaign) = bundle_of(399);
+    let (over_limit_lines, over_limit_campaign) = bundle_of(400);
 
     assert_eq!(
         run_offer(&at_limit_lines, at_limit_campaign)
@@ -735,7 +735,7 @@ fn a_bundle_of_more_than_25_lines_is_left_at_full_price_while_one_of_25_still_me
 }
 
 #[test]
-fn the_cart_processes_at_most_25_offer_lines_and_a_later_bundle_that_would_pass_the_budget_stays_at_full_price(
+fn the_cart_processes_at_most_400_offer_lines_and_a_later_bundle_that_would_pass_the_budget_stays_at_full_price(
 ) {
     let bundle_of = |bundle: &'static str, trigger_count: u64, first_product: u64| {
         let mut lines: Vec<Value> = (0..trigger_count)
@@ -752,15 +752,15 @@ fn the_cart_processes_at_most_25_offer_lines_and_a_later_bundle_that_would_pass_
         }));
         lines
     };
-    let items: Vec<Value> = (0..30)
+    let items: Vec<Value> = (0..400)
         .map(|index| json!({ "productId": 200 + index, "quantity": 1 }))
         .collect();
     let campaign =
         || offer(json!({ "trigger": { "type": "mixMatch", "minQuantity": 1, "items": items } }));
 
-    let first = bundle_of("b1", 19, 200);
-    let fitting = bundle_of("b2", 4, 220);
-    let overflowing = bundle_of("b3", 5, 220);
+    let first = bundle_of("b1", 380, 200);
+    let fitting = bundle_of("b2", 18, 580);
+    let overflowing = bundle_of("b3", 19, 580);
 
     let with_fitting: Vec<Value> = first.iter().chain(fitting.iter()).cloned().collect();
     let with_overflowing: Vec<Value> = first.iter().chain(overflowing.iter()).cloned().collect();

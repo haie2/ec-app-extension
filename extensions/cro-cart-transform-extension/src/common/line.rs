@@ -1,14 +1,19 @@
+use crate::schema::cart_transform_run::cart_transform_run_input::cart::lines::merchandise::ProductVariant;
 use crate::schema::cart_transform_run::cart_transform_run_input::cart::lines::Merchandise;
 use crate::schema::cart_transform_run::cart_transform_run_input::cart::Lines;
 
-pub fn mergeable_product_id(line: &Lines) -> Option<&str> {
+pub fn mergeable_variant(line: &Lines) -> Option<&ProductVariant> {
     if line.selling_plan_allocation().is_some() || line.parent_relationship().is_some() {
         return None;
     }
     match line.merchandise() {
-        Merchandise::ProductVariant(variant) => Some(variant.product().id()),
+        Merchandise::ProductVariant(variant) => Some(variant),
         _ => None,
     }
+}
+
+pub fn mergeable_product_id(line: &Lines) -> Option<&str> {
+    mergeable_variant(line).map(|variant| variant.product().id().as_str())
 }
 
 pub fn bundle_multiplier(quantities: impl Iterator<Item = (i64, i64)>) -> i64 {

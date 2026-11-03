@@ -19,7 +19,7 @@ use pricing::{
 };
 
 pub const TYPE: &str = "bxgy";
-const CART_LINE_BUDGET: usize = 25;
+const CART_LINE_BUDGET: usize = 400;
 const VARIANT_GID_PREFIX: &str = "gid://shopify/ProductVariant/";
 
 pub struct BxgyLine {
